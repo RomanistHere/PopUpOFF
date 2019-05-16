@@ -4,6 +4,9 @@ function removeFixedElems() {
 	document.documentElement.style.setProperty("overflow-y", "auto", "important")
 	document.body.style.setProperty("overflow-y", "auto", "important")
 
+	document.documentElement.style.setProperty("position", "relative", "important")
+	document.body.style.setProperty("position", "relative", "important")
+
 	// find all fixed elements on page
 	let elems = document.body.getElementsByTagName("*")
 	let len = elems.length

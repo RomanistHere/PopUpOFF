@@ -13,6 +13,9 @@ chrome.runtime.onInstalled.addListener(function(details){
 		// on for this website easy mode set
 		chrome.storage.sync.set({"thisWebsiteWorkEasy": []})
 
+		// open website
+		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/"})
+
     } else if(details.reason == "update"){
         
     }

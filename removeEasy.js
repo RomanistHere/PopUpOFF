@@ -40,4 +40,12 @@ function removeOverflow() {
 	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y') == 'hidden') {
 		document.body.style.setProperty("overflow-y", "auto", "important")
 	}
+
+    if (window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') {
+		document.documentElement.style.setProperty("position", "relative", "important")
+	}
+
+	if (window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') {
+		document.body.style.setProperty("position", "relative", "important")
+	}
 }
