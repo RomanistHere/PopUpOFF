@@ -1,17 +1,17 @@
 {
-    "name": "PopUpOFF - Popup and overlay blocker",
-    "short_name": "PopUpOFF",
-    "version": "1.0.3",
-    "description": "Removes popups, overlays, cookie notifications and restrictions another tools can not. Makes reading experience better.",
-    "permissions": [
-      "activeTab",  
-      "storage",
-      "tabs",
-      "http://*/",
-      "https://*/"
-    ],
-    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
-    "content_scripts": [
+  "name": "PopUpOFF - Popup and overlay blocker",
+  "short_name": "PopUpOFF",
+  "version": "1.0.3",
+  "description": "Removes popups, overlays, cookie notifications and restrictions another tools can not. Makes reading experience better.",
+  "permissions": [
+    "activeTab",  
+    "storage",
+    "tabs",
+    "http://*/",
+    "https://*/"
+  ],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+  "content_scripts": [
     {
       "js":         [ "content.js" ],
       "matches":    [ "<all_urls>" ],
@@ -23,20 +23,20 @@
     "scripts": ["background.js"],
     "persistent": false
   },
-    "browser_action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "images/logo16.png",
-        "32": "images/logo32.png",
-        "48": "images/logo48.png",
-        "128": "images/logo128.png"
-      }
-    },
-    "icons": {
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "16": "images/logo16.png",
       "32": "images/logo32.png",
       "48": "images/logo48.png",
       "128": "images/logo128.png"
-    },
-    "manifest_version": 2
+    }
+  },
+  "icons": {
+    "16": "images/logo16.png",
+    "32": "images/logo32.png",
+    "48": "images/logo48.png",
+    "128": "images/logo128.png"
+  },
+  "manifest_version": 2
 }
