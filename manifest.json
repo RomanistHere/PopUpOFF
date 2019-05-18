@@ -7,7 +7,6 @@
       "activeTab",  
       "storage",
       "tabs",
-      "notifications",
       "http://*/",
       "https://*/"
     ],

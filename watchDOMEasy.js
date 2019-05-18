@@ -59,6 +59,7 @@ function domWatcherHard() {
 			attributeFilter: ['style']
 		})
 	} else {
+		// cant deal with this website, i guess there will be array of this one-like websites or I find out another solution
 		dom_observer_new.observe(document.documentElement, {
 			attributes: true,
 			attributeFilter: ['style']
@@ -74,6 +75,26 @@ domWatcherHard()
 
 function checkElemForPositionHard(element) {
 	if (element instanceof HTMLElement) {
+		// element itself
+		if ((window.getComputedStyle(element, null).getPropertyValue('position') == 'fixed') || 
+	    	(window.getComputedStyle(element, null).getPropertyValue('position') == 'sticky')) {
+
+	    	if ((element.innerHTML.includes('<nav')) || 
+	        	(element.innerHTML.includes('<header')) ||
+	        	(element.innerHTML.includes('search')) ||
+	        	(element.innerHTML.includes('ytmusic')) ||
+	        	(element.tagName == "NAV") ||
+	        	(element.tagName == "HEADER")) {
+	        	// do nothink
+	        } else {
+	        	if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
+		        	// setting uniq data-atr to elems with display block as initial state to restore it later
+		        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+		        }
+	        	element.style.setProperty("display", "none", "important")
+	        }
+	    }
+		// all childs of element
 		let elems = element.querySelectorAll("*")
 		let len = elems.length
 
@@ -110,7 +131,8 @@ function removeOverflow() {
 		document.body.style.setProperty("overflow-y", "auto", "important")
 	}
 
-    if (window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') {
+    if ((window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') ||
+    	(window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'absolute')) {
 		document.documentElement.style.setProperty("position", "relative", "important")
 	}
 
