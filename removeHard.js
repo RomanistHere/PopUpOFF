@@ -2,11 +2,11 @@
 
 function removeFixedElems() {
 	if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y')) {
-		document.documentElement.style.setProperty("overflow-y", "auto", "important")
+		document.documentElement.style.setProperty("overflow-y", "unset", "important")
 	}
 
 	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y')) {
-		document.body.style.setProperty("overflow-y", "auto", "important")
+		document.body.style.setProperty("overflow-y", "unset", "important")
 	}
 
     if (window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') {

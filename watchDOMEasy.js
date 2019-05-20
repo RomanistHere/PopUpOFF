@@ -55,18 +55,15 @@ function domWatcherHard() {
 		dom_observer.observe(document.documentElement, { 
 			childList: true, 
 			subtree: true, 
-			attributes: true,
-			attributeFilter: ['style']
+			attributes: true
 		})
 	} else {
 		// cant deal with this website, i guess there will be array of this one-like websites or I find out another solution
 		dom_observer_new.observe(document.documentElement, {
-			attributes: true,
-			attributeFilter: ['style']
+			attributes: true
 		})
 		dom_observer_new.observe(document.body, {
-			attributes: true,
-			attributeFilter: ['style']
+			attributes: true
 		})
 	}
 }
@@ -124,11 +121,11 @@ function checkElemForPositionHard(element) {
 
 function removeOverflow() {
     if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.documentElement.style.setProperty("overflow-y", "auto", "important")
+		document.documentElement.style.setProperty("overflow-y", "unset", "important")
 	}
 
 	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.body.style.setProperty("overflow-y", "auto", "important")
+		document.body.style.setProperty("overflow-y", "unset", "important")
 	}
 
     if ((window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') ||

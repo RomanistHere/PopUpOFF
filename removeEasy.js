@@ -34,11 +34,11 @@ function removeFixedElems() {
 
 function removeOverflow() {
     if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.documentElement.style.setProperty("overflow-y", "auto", "important")
+		document.documentElement.style.setProperty("overflow-y", "unset", "important")
 	}
 
 	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.body.style.setProperty("overflow-y", "auto", "important")
+		document.body.style.setProperty("overflow-y", "unset", "important")
 	}
 
     if (window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') {
