@@ -17,7 +17,9 @@ chrome.runtime.onInstalled.addListener(function(details){
 		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/"})
 
     } else if(details.reason == "update"){
-        
+    	// 1.0.4 everywhere modes disabled temporairly
+        chrome.storage.sync.set({"autoWork": false})
+        chrome.storage.sync.set({"autoWorkEasy": false})
     }
 })
 
@@ -38,30 +40,30 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 		chrome.browserAction.disable(tabId)
 	} else {
 		// check for active modes		
-		chrome.storage.sync.get("autoWork", function(res) {
-			if (res.autoWork) {
-		    	chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'removeHard.js'}
-		        )
-		    	chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'watchDOM.js'}
-		        )
-		    }
-		})		
-		chrome.storage.sync.get("autoWorkEasy", function(res) {
-			if (res.autoWorkEasy) {
-		    	chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'removeEasy.js'}
-		        )
-		    	chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'watchDOMEasy.js'}
-		        )
-		    }
-		})
+		// chrome.storage.sync.get("autoWork", function(res) {
+		// 	if (res.autoWork) {
+		//     	chrome.tabs.executeScript(
+		//         	tabId,
+		//           	{file: 'removeHard.js'}
+		//         )
+		//     	chrome.tabs.executeScript(
+		//         	tabId,
+		//           	{file: 'watchDOM.js'}
+		//         )
+		//     }
+		// })		
+		// chrome.storage.sync.get("autoWorkEasy", function(res) {
+		// 	if (res.autoWorkEasy) {
+		//     	chrome.tabs.executeScript(
+		//         	tabId,
+		//           	{file: 'removeEasy.js'}
+		//         )
+		//     	chrome.tabs.executeScript(
+		//         	tabId,
+		//           	{file: 'watchDOMEasy.js'}
+		//         )
+		//     }
+		// })
 		chrome.storage.sync.get("thisWebsiteWork", function(res) {
 		    let newUrl = url.substring(
 			    url.lastIndexOf("//") + 2, 
