@@ -41,11 +41,13 @@ function removeOverflow() {
 		document.body.style.setProperty("overflow-y", "unset", "important")
 	}
 
-    if (window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') {
+    if ((window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') ||
+    	(window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'absolute')) {
 		document.documentElement.style.setProperty("position", "relative", "important")
 	}
 
-	if (window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') {
+	if ((window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') ||
+    	(window.getComputedStyle(document.body, null).getPropertyValue('position') == 'absolute')) {
 		document.body.style.setProperty("position", "relative", "important")
 	}
 }

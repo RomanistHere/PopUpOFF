@@ -1,102 +1,102 @@
 'use strict';
 
-// hard mode everywhere
-let toggleEverywhereInp = document.getElementById('toggleEverywhereInp')
+// // hard mode everywhere
+// let toggleEverywhereInp = document.getElementById('toggleEverywhereInp')
 
-toggleEverywhereInp.onchange = function(element) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    	// if on
-		if (toggleEverywhereInp.checked) {
-			// if paired mode was on turn it off
-	        if (toggleEasyInp.checked) {
-	        	// visual part
-	        	toggleEasyInp.checked = false
-	        	document.getElementById('textOnOffEasyMode').textContent="on"
-	        	// do magic
-	        	chrome.tabs.executeScript(
-		        	tabs[0].id,
-		          	{file: 'restore.js'}
-		        )
-		        // set mode
-	        	chrome.storage.sync.set({"autoWorkEasy": false})
-	        }
-	        // do magic
-			chrome.tabs.executeScript(
-	        	tabs[0].id,
-	          	{file: 'removeHard.js'}
-	        )
-	    	chrome.tabs.executeScript(
-	        	tabs[0].id,
-	          	{file: 'watchDOM.js'}
-	        )
-	        // set mode 
-	        chrome.storage.sync.set({"autoWork": true})
-	        document.getElementById('textOnOff').textContent="off"	
-	        // analysis
-	        _gaq.push(['_trackEvent', 'toggleEverywhereInp', 'on'])
-		} else {
-			// do magic
-			chrome.tabs.executeScript(
-	        	tabs[0].id,
-	          	{file: 'restore.js'}
-	        )
-	        // set mode
-	        chrome.storage.sync.set({"autoWork": false})
-    		document.getElementById('textOnOff').textContent="on"
-    		// analysis
-			_gaq.push(['_trackEvent', 'toggleEverywhereInp', 'off'])
-		}
-    })
-}
+// toggleEverywhereInp.onchange = function(element) {
+//     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//     	// if on
+// 		if (toggleEverywhereInp.checked) {
+// 			// if paired mode was on turn it off
+// 	        if (toggleEasyInp.checked) {
+// 	        	// visual part
+// 	        	toggleEasyInp.checked = false
+// 	        	document.getElementById('textOnOffEasyMode').textContent="on"
+// 	        	// do magic
+// 	        	chrome.tabs.executeScript(
+// 		        	tabs[0].id,
+// 		          	{file: 'restore.js'}
+// 		        )
+// 		        // set mode
+// 	        	chrome.storage.sync.set({"autoWorkEasy": false})
+// 	        }
+// 	        // do magic
+// 			chrome.tabs.executeScript(
+// 	        	tabs[0].id,
+// 	          	{file: 'removeHard.js'}
+// 	        )
+// 	    	chrome.tabs.executeScript(
+// 	        	tabs[0].id,
+// 	          	{file: 'watchDOM.js'}
+// 	        )
+// 	        // set mode 
+// 	        chrome.storage.sync.set({"autoWork": true})
+// 	        document.getElementById('textOnOff').textContent="off"	
+// 	        // analysis
+// 	        _gaq.push(['_trackEvent', 'toggleEverywhereInp', 'on'])
+// 		} else {
+// 			// do magic
+// 			chrome.tabs.executeScript(
+// 	        	tabs[0].id,
+// 	          	{file: 'restore.js'}
+// 	        )
+// 	        // set mode
+// 	        chrome.storage.sync.set({"autoWork": false})
+//     		document.getElementById('textOnOff').textContent="on"
+//     		// analysis
+// 			_gaq.push(['_trackEvent', 'toggleEverywhereInp', 'off'])
+// 		}
+//     })
+// }
 
-// easy mode everywhere
-let toggleEasyInp = document.getElementById('toggleEasyInp')
+// // easy mode everywhere
+// let toggleEasyInp = document.getElementById('toggleEasyInp')
 
-toggleEasyInp.onchange = function(element) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    	// if on
-		if (toggleEasyInp.checked) {
-			// if paired mode was on turn it off
-	        if (toggleEverywhereInp.checked) {
-	        	// visual part
-	        	toggleEverywhereInp.checked = false
-	        	document.getElementById('textOnOff').textContent="on"
-	        	// do magic
-	        	chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'restoreEasy.js'}
-		        )
-		        // set mode
-	        	chrome.storage.sync.set({"autoWork": false})
-	        }
-	        // do magic
-			chrome.tabs.executeScript(
-	        	null,
-	          	{file: 'removeEasy.js'}
-	        )
-	    	chrome.tabs.executeScript(
-	        	null,
-	          	{file: 'watchDOM.js'}
-	        )
-	        // set mode 
-	        chrome.storage.sync.set({"autoWorkEasy": true})
-	        document.getElementById('textOnOffEasyMode').textContent="off"	
-	        // analysis
-	        _gaq.push(['_trackEvent', 'toggleEasyInp', 'on'])
-		} else {
-			// do magic
-			chrome.tabs.executeScript(
-	        	null,
-	          	{file: 'restore.js'}
-	        )
-	        // set mode
-	        chrome.storage.sync.set({"autoWorkEasy": false})
-    		document.getElementById('textOnOffEasyMode').textContent="on"
-    		// analysis
-			_gaq.push(['_trackEvent', 'toggleEasyInp', 'off'])
-		}
-    })
-}
+// toggleEasyInp.onchange = function(element) {
+//     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//     	// if on
+// 		if (toggleEasyInp.checked) {
+// 			// if paired mode was on turn it off
+// 	        if (toggleEverywhereInp.checked) {
+// 	        	// visual part
+// 	        	toggleEverywhereInp.checked = false
+// 	        	document.getElementById('textOnOff').textContent="on"
+// 	        	// do magic
+// 	        	chrome.tabs.executeScript(
+// 		        	null,
+// 		          	{file: 'restoreEasy.js'}
+// 		        )
+// 		        // set mode
+// 	        	chrome.storage.sync.set({"autoWork": false})
+// 	        }
+// 	        // do magic
+// 			chrome.tabs.executeScript(
+// 	        	null,
+// 	          	{file: 'removeEasy.js'}
+// 	        )
+// 	    	chrome.tabs.executeScript(
+// 	        	null,
+// 	          	{file: 'watchDOM.js'}
+// 	        )
+// 	        // set mode 
+// 	        chrome.storage.sync.set({"autoWorkEasy": true})
+// 	        document.getElementById('textOnOffEasyMode').textContent="off"	
+// 	        // analysis
+// 	        _gaq.push(['_trackEvent', 'toggleEasyInp', 'on'])
+// 		} else {
+// 			// do magic
+// 			chrome.tabs.executeScript(
+// 	        	null,
+// 	          	{file: 'restore.js'}
+// 	        )
+// 	        // set mode
+// 	        chrome.storage.sync.set({"autoWorkEasy": false})
+//     		document.getElementById('textOnOffEasyMode').textContent="on"
+//     		// analysis
+// 			_gaq.push(['_trackEvent', 'toggleEasyInp', 'off'])
+// 		}
+//     })
+// }
 
 // hard mode this site
 let toggleThisWebSiteInp = document.getElementById('toggleThisWebSiteInp')
@@ -137,10 +137,12 @@ toggleThisWebSiteInp.onchange = function(element) {
 				document.getElementById('textOnOffSite').textContent="off"
 				_gaq.push(['_trackEvent', 'toggleThisWebSiteInp', 'on'])
 			} else {
-				chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'restore.js'}
-		        )
+				if (!toggleThisPageInp.checked) {
+					chrome.tabs.executeScript(
+			        	null,
+			          	{file: 'restore.js'}
+			        )
+				}					
 				// set up back
 				arrOfSites = arrOfSites.filter(e => e !== newUrl)
 				chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
@@ -195,10 +197,12 @@ toggleEasyInpThisWebSite.onchange = function(element) {
 				document.getElementById('textOnOffEasyModeThisWEbsite').textContent="off"
 				_gaq.push(['_trackEvent', 'toggleEasyInpThisWebSite', 'on'])
 			} else {
-				chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'restore.js'}
-		        )
+				if (!toggleThisPageInp.checked) {
+					chrome.tabs.executeScript(
+			        	null,
+			          	{file: 'restore.js'}
+			        )
+				}
 				// set up back
 				arrOfSites = arrOfSites.filter(e => e !== newUrl)
 				chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
@@ -234,16 +238,19 @@ toggleThisPageInp.onchange = function(element) {
 		    )
 		    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'on'])
 	    } else {
-		    if (!toggleEverywhereInp.checked &&
-		    	!toggleThisWebSiteInp.checked) {
+		    // if (!toggleEverywhereInp.checked &&
+		    // 	!toggleThisWebSiteInp.checked) {
+		    if (!toggleThisWebSiteInp.checked) {
 		    	chrome.tabs.executeScript(
 			      	null,
 			      	{file: 'restoreEasy.js'}
 			  	)
 		    }
-		    if (!toggleEasyInp.checked &&
-		    	!toggleEverywhereInp.checked &&
-		    	!toggleThisWebSiteInp.checked &&
+		    // if (!toggleEasyInp.checked &&
+		    // 	!toggleEverywhereInp.checked &&
+		    // 	!toggleThisWebSiteInp.checked &&
+		    // 	!toggleEasyInpThisWebSite.checked) {
+		    if (!toggleThisWebSiteInp.checked &&
 		    	!toggleEasyInpThisWebSite.checked) {
 		    	chrome.tabs.executeScript(
 			      	null,
@@ -265,20 +272,20 @@ toggleThisPageInp.onchange = function(element) {
 // inits input states for every popup opening
 function initState() {
 	// hard mode everywhere input state
-	chrome.storage.sync.get("autoWork", function(res) {
-		if (res.autoWork) {
-			document.getElementById("toggleEverywhereInp").checked = true
-			document.getElementById('textOnOff').textContent="off"
-		}
-	})
+	// chrome.storage.sync.get("autoWork", function(res) {
+	// 	if (res.autoWork) {
+	// 		document.getElementById("toggleEverywhereInp").checked = true
+	// 		document.getElementById('textOnOff').textContent="off"
+	// 	}
+	// })
 
-	// easy mode everywhere input state
-	chrome.storage.sync.get("autoWorkEasy", function(res) {
-		if (res.autoWorkEasy) {
-			document.getElementById("toggleEasyInp").checked = true
-			document.getElementById('textOnOffEasyMode').textContent="off"
-		}
-	})
+	// // easy mode everywhere input state
+	// chrome.storage.sync.get("autoWorkEasy", function(res) {
+	// 	if (res.autoWorkEasy) {
+	// 		document.getElementById("toggleEasyInp").checked = true
+	// 		document.getElementById('textOnOffEasyMode').textContent="off"
+	// 	}
+	// })
 	
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		let url = tabs[0].url

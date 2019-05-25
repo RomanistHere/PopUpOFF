@@ -133,7 +133,8 @@ function removeOverflow() {
 		document.documentElement.style.setProperty("position", "relative", "important")
 	}
 
-	if (window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') {
+	if ((window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') ||
+    	(window.getComputedStyle(document.body, null).getPropertyValue('position') == 'absolute')) {
 		document.body.style.setProperty("position", "relative", "important")
 	}
 }
