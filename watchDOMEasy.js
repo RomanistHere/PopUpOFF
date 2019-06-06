@@ -34,9 +34,9 @@ function domWatcherHard() {
 			}
 
 			mutation.forEach(function(mutation) {
-				checkElemForPositionHard(mutation.target)
+				checkElemForPositionEasy(mutation.target)
 				mutation.addedNodes.forEach(function(element) {
-					if (element.nodeName != '#text') checkElemForPositionHard(element)
+					if (element.nodeName != '#text') checkElemForPositionEasy(element)
 				})
 				removeOverflow()
 			})				
@@ -70,26 +70,12 @@ function domWatcherHard() {
 
 domWatcherHard()
 
-function checkElemForPositionHard(element) {
+function checkElemForPositionEasy(element) {
 	if (element instanceof HTMLElement) {
 		// element itself
 		if ((window.getComputedStyle(element, null).getPropertyValue('position') == 'fixed') || 
 	    	(window.getComputedStyle(element, null).getPropertyValue('position') == 'sticky')) {
-
-	    	if ((element.innerHTML.includes('<nav')) || 
-	        	(element.innerHTML.includes('<header')) ||
-	        	(element.innerHTML.includes('search')) ||
-	        	(element.innerHTML.includes('ytmusic')) ||
-	        	(element.tagName == "NAV") ||
-	        	(element.tagName == "HEADER")) {
-	        	// do nothink
-	        } else {
-	        	if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
-		        	// setting uniq data-atr to elems with display block as initial state to restore it later
-		        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-		        }
-	        	element.style.setProperty("display", "none", "important")
-	        }
+			checkAndRemove(element)
 	    }
 		// all childs of element
 		let elems = element.querySelectorAll("*")
@@ -99,23 +85,41 @@ function checkElemForPositionHard(element) {
 		    if ((window.getComputedStyle(elems[i], null).getPropertyValue('position') == 'fixed') || 
 		    	(window.getComputedStyle(elems[i], null).getPropertyValue('position') == 'sticky')) {
 
-		    	if ((elems[i].innerHTML.includes('<nav')) || 
-		        	(elems[i].innerHTML.includes('<header')) ||
-		        	(elems[i].innerHTML.includes('search')) ||
-		        	(elems[i].innerHTML.includes('ytmusic')) ||
-		        	(elems[i].tagName == "NAV") ||
-		        	(elems[i].tagName == "HEADER")) {
-		        	// do nothink
-		        } else {
-		        	if (window.getComputedStyle(elems[i],null).getPropertyValue('display') != 'none') {
-			        	// setting uniq data-atr to elems with display block as initial state to restore it later
-			        	elems[i].setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-			        }
-		        	// elems[i].style.display = "none"
-		        	elems[i].style.setProperty("display", "none", "important")
-		        }
+		    	checkAndRemove(elems[i])
+
 		    }
 		}
+	}
+}
+
+function checkAndRemove(element) {
+	console.log(element)
+	let elementTop = window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/)[0]) :
+						100;
+	let elementHeight = window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/)[0]) :
+						300;
+	console.log(elementTop)
+	console.log(elementHeight)
+
+	if (elementTop > 10) {
+
+		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
+        	// setting uniq data-atr to elems with display block as initial state to restore it later
+        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+        }
+
+		element.style.setProperty("display", "none", "important")
+
+	} else if ((elementHeight + elementTop) > 250) {
+
+		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
+        	// setting uniq data-atr to elems with display block as initial state to restore it later
+        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+        }
+
+		element.style.setProperty("display", "none", "important")
 	}
 }
 

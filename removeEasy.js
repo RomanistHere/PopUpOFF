@@ -13,22 +13,43 @@ function removeFixedElems() {
 	    if ((window.getComputedStyle(elems[i],null).getPropertyValue('position') == 'fixed') || 
 	    	(window.getComputedStyle(elems[i],null).getPropertyValue('position') == 'sticky')) {
 
-	        if ((elems[i].innerHTML.includes('<nav')) || 
-	        	(elems[i].innerHTML.includes('<header')) ||
-	        	(elems[i].innerHTML.includes('search')) ||
-	        	(elems[i].innerHTML.includes('ytmusic')) ||
-	        	(elems[i].tagName == "NAV") ||
-	        	(elems[i].tagName == "HEADER")) {
-	        	// do nothink
-	        } else {
-	        	if (window.getComputedStyle(elems[i],null).getPropertyValue('display') != 'none') {
-		        	// setting uniq data-atr to elems with display block as initial state to restore it later
-		        	elems[i].setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-		        }
-	        	// elems[i].style.display = "none"
-	        	elems[i].style.setProperty("display", "none", "important")
-	        }
+	    	console.log(elems[i])
+	    	console.log(window.getComputedStyle(elems[i],null).getPropertyValue('top'))
+	    	console.log(window.getComputedStyle(elems[i],null).getPropertyValue('height'))
+
+	    	checkAndRemove(elems[i])
 	    }
+	}
+}
+
+function checkAndRemove(element) {
+	// needs to get minus value for top value if it is
+	let elementTop = window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/)[0]) :
+						100;
+	let elementHeight = window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/)[0]) :
+						300;
+	console.log(elementTop)
+	console.log(elementHeight)
+
+	if (elementTop > 10) {
+
+		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
+        	// setting uniq data-atr to elems with display block as initial state to restore it later
+        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+        }
+
+		element.style.setProperty("display", "none", "important")
+
+	} else if ((elementHeight + elementTop) > 250) {
+
+		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
+        	// setting uniq data-atr to elems with display block as initial state to restore it later
+        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+        }
+
+		element.style.setProperty("display", "none", "important")
 	}
 }
 
