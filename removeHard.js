@@ -20,19 +20,18 @@ function removeFixedElems() {
 	}
 
 	// find all fixed elements on page
-	let elems = document.body.getElementsByTagName("*")
-	let len = elems.length
+	const ELEMS = document.body.getElementsByTagName("*")
+	const LEN = ELEMS.length
 
-	for (let i=0; i<len; i++) {
+	for (let i=0; i<LEN; i++) {
 
-	    if ((window.getComputedStyle(elems[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle(elems[i],null).getPropertyValue('position') == 'sticky')) {
-	        if (window.getComputedStyle(elems[i],null).getPropertyValue('display') != 'none') {
+	    if ((window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'fixed') || 
+	    	(window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'sticky')) {
+	        if (window.getComputedStyle(ELEMS[i],null).getPropertyValue('display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
-	        	elems[i].setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+	        	ELEMS[i].setAttribute('data-popupoffExtension', 'hello')
 	        }
-	        // elems[i].style.display = "none"
-	        elems[i].style.setProperty("display", "none", "important")
+	        ELEMS[i].style.setProperty("display", "none", "important")
 	    }
 
 	}

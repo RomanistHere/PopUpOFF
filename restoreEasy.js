@@ -11,21 +11,43 @@ chrome.storage.sync.get("autoWork", function(res) {
 
 // restore elems when turn off extension by uniq data-atr
 function restoreFixedElems() {
-	let elems = document.querySelectorAll('[data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime]')
-	let len = elems.length
+	const ELEMS = document.querySelectorAll('[data-popupoffExtension]')
+	const LEN = ELEMS.length
 
-	for (let i=0; i<len; i++) {
-        
-        if ((elems[i].innerHTML.includes('<nav')) || 
-        	(elems[i].innerHTML.includes('<header')) ||
-        	(elems[i].innerHTML.includes('search')) ||
-        	(elems[i].innerHTML.includes('ytmusic')) ||
-        	(elems[i].tagName == "NAV") ||
-        	(elems[i].tagName == "HEADER")) {
-        	elems[i].style.display = null
-        } else {
+	const ARR_OF_CONTENT_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss']
+	const ARR_OF_TAG_ITEMS = ['<nav', '<header', 'search', 'ytmusic', 'searchbox', 'app-drawer']
 
-        }
+	for (let i=0; i<LEN; i++) {
+		const element = ELEMS[i]    	
+
+	    if (ARR_OF_CONTENT_ITEMS.some(item => element.innerHTML.includes(item))) {
+			
+	    } else {
+	    	element.style.display = null
+	    }
+
+	    //
+
+		const ELEMENT_TOP = window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g) ?
+							Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
+							100;
+		const ELEMENT_HEIGHT = window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g) ?
+							Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
+							300;
+
+		if (ELEMENT_TOP > 10) {
+			element.style.setProperty("display", "none", "important")
+		} else if ((ELEMENT_HEIGHT + ELEMENT_TOP) > 150) {
+			element.style.setProperty("display", "none", "important")
+		}
+
+		//    	
+
+	    if (ARR_OF_TAG_ITEMS.some(item => element.innerHTML.includes(item)) ||
+			(element.tagName == "NAV") ||
+			(element.tagName == "HEADER")) {
+	    	element.style.display = null
+	    }
 	}
 
 	if (dom_observer) {

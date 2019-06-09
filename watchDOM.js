@@ -5,10 +5,14 @@ var dom_observer_new
 
 var infiniteLoopPreventCounter = 0
 var myTimer
+var wasNotStoped = true
 
 function removeDomWatcher() {
 	if (dom_observer) {
 		dom_observer.disconnect()
+		dom_observer = false
+		if (wasNotStoped) setTimeout(domWatcherHard, 3000);
+		wasNotStoped = false
 	}
 
 	if (dom_observer_new) {
@@ -16,7 +20,7 @@ function removeDomWatcher() {
 	}
 }
 
-var resetLoopCounter = function() {
+function resetLoopCounter() {
     infiniteLoopPreventCounter = 0
     myTimer = 0
 }
@@ -24,22 +28,23 @@ var resetLoopCounter = function() {
 function domWatcherHard() {
 	if (!dom_observer) {
 		dom_observer = new MutationObserver(function(mutation) {
-			// prevent inifnite looping
-			if (infiniteLoopPreventCounter > 1000) {
-				removeDomWatcher()
-			}
-			infiniteLoopPreventCounter++
-			if (!myTimer) {
-				myTimer = window.setTimeout(resetLoopCounter, 1000)
-			}
+			for (let i = 0; i < mutation.length; i++){
+				// prevent inifnite looping
+				if (infiniteLoopPreventCounter > 600) {
+					removeDomWatcher()
+					break
+				}
+				infiniteLoopPreventCounter++
+				if (!myTimer) {
+					myTimer = window.setTimeout(resetLoopCounter, 1000)
+				}
 
-			mutation.forEach(function(mutation) {
-				checkElemForPositionHard(mutation.target)
-				mutation.addedNodes.forEach(function(element) {
+				checkElemForPositionHard(mutation[i].target)
+				mutation[i].addedNodes.forEach(function(element) {
 					if (element.nodeName != '#text') checkElemForPositionHard(element)
 				})
 				removeOverflow()
-			})			
+			}			
 		}) 
 	}		
 
@@ -77,23 +82,23 @@ function checkElemForPositionHard(element) {
 	    	(window.getComputedStyle(element, null).getPropertyValue('position') == 'sticky')) {
 	        if (window.getComputedStyle(element, null).getPropertyValue('display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
-	        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+	        	element.setAttribute('data-popupoffExtension', 'hello')
 	        }
 	        element.style.setProperty("display", "none", "important")
 	    }
 	    // all childs of element
-		let elems = element.querySelectorAll("*")
-		let len = elems.length
+		const ELEMS = element.querySelectorAll("*")
+		const LEN = ELEMS.length
 
-		for (let i=0; i<len; i++) {
+		for (let i=0; i<LEN; i++) {
 
-		    if ((window.getComputedStyle(elems[i], null).getPropertyValue('position') == 'fixed') || 
-		    	(window.getComputedStyle(elems[i], null).getPropertyValue('position') == 'sticky')) {
-		        if (window.getComputedStyle(elems[i], null).getPropertyValue('display') != 'none') {
+		    if ((window.getComputedStyle(ELEMS[i], null).getPropertyValue('position') == 'fixed') || 
+		    	(window.getComputedStyle(ELEMS[i], null).getPropertyValue('position') == 'sticky')) {
+		        if (window.getComputedStyle(ELEMS[i], null).getPropertyValue('display') != 'none') {
 		        	// setting uniq data-atr to elems with display block as initial state to restore it later
-		        	elems[i].setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
+		        	ELEMS[i].setAttribute('data-popupoffExtension', 'hello')
 		        }
-		        elems[i].style.setProperty("display", "none", "important")
+		        ELEMS[i].style.setProperty("display", "none", "important")
 		    }
 
 		}

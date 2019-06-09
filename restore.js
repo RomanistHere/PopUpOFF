@@ -17,11 +17,11 @@ chrome.storage.sync.get("autoWorkEasy", function(res) {
 
 // restore elems when turn off extension by uniq data-atr
 function restoreFixedElems() {
-	let elems = document.querySelectorAll('[data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime]')
-	let len = elems.length
+	const ELEMS = document.querySelectorAll('[data-popupoffExtension]')
+	const LEN = ELEMS.length
 
-	for (let i=0; i<len; i++) {
-        elems[i].style.display = null
+	for (let i=0; i<LEN; i++) {
+        ELEMS[i].style.display = null
 	}
 	
 	if (dom_observer) {

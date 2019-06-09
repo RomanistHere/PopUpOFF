@@ -5,51 +5,61 @@ removeFixedElems()
 
 function removeFixedElems() {
 	// find all fixed elements on page
-	let elems = document.body.getElementsByTagName("*")
-	let len = elems.length
+	const ELEMS = document.body.getElementsByTagName("*")
+	const LEN = ELEMS.length
 
-	for (let i = 0; i < len; i++) {
+	for (let i = 0; i < LEN; i++) {
 
-	    if ((window.getComputedStyle(elems[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle(elems[i],null).getPropertyValue('position') == 'sticky')) {
+	    if ((window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'fixed') || 
+	    	(window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'sticky')) {
+	    	if (window.getComputedStyle(ELEMS[i], null).getPropertyValue('display') != 'none') {
+	        	// setting uniq data-atr to elems with display block as initial state to restore it later
+	        	ELEMS[i].setAttribute('data-popupoffExtension', 'hello')
+	        }
 
-	    	console.log(elems[i])
-	    	console.log(window.getComputedStyle(elems[i],null).getPropertyValue('top'))
-	    	console.log(window.getComputedStyle(elems[i],null).getPropertyValue('height'))
-
-	    	checkAndRemove(elems[i])
+	    	positionCheck(ELEMS[i])
+	    	contentCheck(ELEMS[i])
+	    	semanticCheck(ELEMS[i])
 	    }
 	}
 }
 
-function checkAndRemove(element) {
+function contentCheck(element) {
+	const ARR_OF_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss']
+
+    if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item))) {
+		element.style.setProperty("display", "none", "important")
+    }
+}
+
+function semanticCheck(element) {
+
+    const ARR_OF_ITEMS = ['<nav', '<header', 'search', 'ytmusic', 'searchbox', 'app-drawer']
+
+    if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item)) ||
+		(element.tagName == "NAV") ||
+		(element.tagName == "HEADER")) {
+    	element.style.display = null
+    }
+}
+
+function positionCheck(element) {
 	// needs to get minus value for top value if it is
-	let elementTop = window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/) ?
-						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/)[0]) :
+	const ELEMENT_TOP = window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 						100;
-	let elementHeight = window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/) ?
-						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/)[0]) :
+	const ELEMENT_HEIGHT = window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 						300;
-	console.log(elementTop)
-	console.log(elementHeight)
 
-	if (elementTop > 10) {
-
-		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
-        	// setting uniq data-atr to elems with display block as initial state to restore it later
-        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-        }
+	if (ELEMENT_TOP > 10) {
 
 		element.style.setProperty("display", "none", "important")
 
-	} else if ((elementHeight + elementTop) > 250) {
-
-		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
-        	// setting uniq data-atr to elems with display block as initial state to restore it later
-        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-        }
+	} else if ((ELEMENT_HEIGHT + ELEMENT_TOP) > 150) {
 
 		element.style.setProperty("display", "none", "important")
+		
 	}
 }
 

@@ -5,10 +5,14 @@ var dom_observer_new
 
 var infiniteLoopPreventCounter = 0
 var myTimer
+var wasNotStoped = true
 
 function removeDomWatcher() {
 	if (dom_observer) {
 		dom_observer.disconnect()
+		dom_observer = false
+		if (wasNotStoped) setTimeout(domWatcherEasy, 3000);
+		wasNotStoped = false
 	}
 
 	if (dom_observer_new) {
@@ -16,30 +20,31 @@ function removeDomWatcher() {
 	}
 }
 
-var resetLoopCounter = function() {
+function resetLoopCounter() {
     infiniteLoopPreventCounter = 0
     myTimer = 0
 }
 
-function domWatcherHard() {
+function domWatcherEasy() {
 	if (!dom_observer) {
 		dom_observer = new MutationObserver(function(mutation) {
-			// prevent inifnite looping
-			if (infiniteLoopPreventCounter > 200) {
-				removeDomWatcher()
-			}
-			infiniteLoopPreventCounter++
-			if (!myTimer) {
-				myTimer = window.setTimeout(resetLoopCounter, 1000)
-			}
+			for (let i = 0; i < mutation.length; i++){
+				// prevent inifnite looping
+				if (infiniteLoopPreventCounter > 400) {
+					removeDomWatcher()
+					break
+				}
+				infiniteLoopPreventCounter++
+				if (!myTimer) {
+					myTimer = window.setTimeout(resetLoopCounter, 1000)
+				}
 
-			mutation.forEach(function(mutation) {
-				checkElemForPositionEasy(mutation.target)
-				mutation.addedNodes.forEach(function(element) {
+				checkElemForPositionEasy(mutation[i].target)
+				mutation[i].addedNodes.forEach(function(element) {
 					if (element.nodeName != '#text') checkElemForPositionEasy(element)
 				})
 				removeOverflow()
-			})				
+			}
 		})
 	}
 
@@ -68,58 +73,76 @@ function domWatcherHard() {
 	}
 }
 
-domWatcherHard()
+domWatcherEasy()
 
 function checkElemForPositionEasy(element) {
 	if (element instanceof HTMLElement) {
 		// element itself
 		if ((window.getComputedStyle(element, null).getPropertyValue('position') == 'fixed') || 
 	    	(window.getComputedStyle(element, null).getPropertyValue('position') == 'sticky')) {
-			checkAndRemove(element)
+			if (window.getComputedStyle(element, null).getPropertyValue('display') != 'none') {
+	        	// setting uniq data-atr to elems with display block as initial state to restore it later
+	        	element.setAttribute('data-popupoffExtension', 'hello')
+	        }
+			positionCheck(element)
+	    	contentCheck(element)
+	    	semanticCheck(element)
 	    }
 		// all childs of element
-		let elems = element.querySelectorAll("*")
-		let len = elems.length
+		const ELEMS = element.querySelectorAll("*")
+		const LEN = ELEMS.length
 
-		for (let i=0; i<len; i++) {
-		    if ((window.getComputedStyle(elems[i], null).getPropertyValue('position') == 'fixed') || 
-		    	(window.getComputedStyle(elems[i], null).getPropertyValue('position') == 'sticky')) {
-
-		    	checkAndRemove(elems[i])
+		for (let i=0; i<LEN; i++) {
+		    if ((window.getComputedStyle(ELEMS[i], null).getPropertyValue('position') == 'fixed') || 
+		    	(window.getComputedStyle(ELEMS[i], null).getPropertyValue('position') == 'sticky')) {
+		    	if (window.getComputedStyle(ELEMS[i], null).getPropertyValue('display') != 'none') {
+		        	// setting uniq data-atr to elems with display block as initial state to restore it later
+		        	ELEMS[i].setAttribute('data-popupoffExtension', 'hello')
+		        }
+		    	positionCheck(ELEMS[i])
+		    	contentCheck(ELEMS[i])
+		    	semanticCheck(ELEMS[i])
 
 		    }
 		}
 	}
 }
 
-function checkAndRemove(element) {
-	console.log(element)
-	let elementTop = window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/) ?
-						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/\d+/)[0]) :
+function semanticCheck(element) {
+    const ARR_OF_ITEMS = ['<nav', '<header', 'search', 'ytmusic', 'searchbox', 'app-drawer']
+
+    if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item)) ||
+		(element.tagName == "NAV") ||
+		(element.tagName == "HEADER")) {
+    	element.style.display = null
+    }
+}
+
+function contentCheck(element) {
+	const ARR_OF_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss']
+
+    if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item))) {
+		element.style.setProperty("display", "none", "important")
+    }
+}
+
+function positionCheck(element) {
+	// needs to get minus value for top value if it is
+	const ELEMENT_TOP = window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 						100;
-	let elementHeight = window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/) ?
-						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/\d+/)[0]) :
+	const ELEMENT_HEIGHT = window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g) ?
+						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 						300;
-	console.log(elementTop)
-	console.log(elementHeight)
 
-	if (elementTop > 10) {
-
-		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
-        	// setting uniq data-atr to elems with display block as initial state to restore it later
-        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-        }
+	if (ELEMENT_TOP > 10) {
 
 		element.style.setProperty("display", "none", "important")
 
-	} else if ((elementHeight + elementTop) > 250) {
-
-		if (window.getComputedStyle(element,null).getPropertyValue('display') != 'none') {
-        	// setting uniq data-atr to elems with display block as initial state to restore it later
-        	element.setAttribute('data-fixedElementWhoWasRemoveButCouldBeRestoredOneTime', 'UFoundMeHelloThere')
-        }
+	} else if ((ELEMENT_HEIGHT + ELEMENT_TOP) > 150) {
 
 		element.style.setProperty("display", "none", "important")
+
 	}
 }
 

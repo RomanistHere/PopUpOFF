@@ -33,72 +33,96 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
    })
 });
 
+// chrome.webNavigation.onCompleted.addListener(function(callback) {
+// 	console.log('onCompleded')
+// 	console.log(callback)
+// })
+
+// chrome.webNavigation.onHistoryStateUpdated.addListener(function(callback) {
+// 	console.log('onHistoryStateUpdated')
+// 	console.log(callback)
+// })
+
+// chrome.webNavigation.onCommitted.addListener(callback => {
+// 	console.log('onCommitted')
+// 	console.log(callback)	
+// })
+
+// chrome.webNavigation.onDOMContentLoaded.addListener(callback => {
+// 	console.log('onDOMContentLoaded ')
+// 	console.log(callback)	
+// })
+
 // handle tab update
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
-	let url = tab.url
-	if (url.includes("chrome://")) {
-		chrome.browserAction.disable(tabId)
-	} else {
-		// check for active modes		
-		// chrome.storage.sync.get("autoWork", function(res) {
-		// 	if (res.autoWork) {
-		//     	chrome.tabs.executeScript(
-		//         	tabId,
-		//           	{file: 'removeHard.js'}
-		//         )
-		//     	chrome.tabs.executeScript(
-		//         	tabId,
-		//           	{file: 'watchDOM.js'}
-		//         )
-		//     }
-		// })		
-		// chrome.storage.sync.get("autoWorkEasy", function(res) {
-		// 	if (res.autoWorkEasy) {
-		//     	chrome.tabs.executeScript(
-		//         	tabId,
-		//           	{file: 'removeEasy.js'}
-		//         )
-		//     	chrome.tabs.executeScript(
-		//         	tabId,
-		//           	{file: 'watchDOMEasy.js'}
-		//         )
-		//     }
-		// })
-		chrome.storage.sync.get("thisWebsiteWork", function(res) {
-		    let newUrl = url.substring(
-			    url.lastIndexOf("//") + 2, 
-			    url.indexOf("/", 8)
-			)
+	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
+		let url = tab.url
+		if (url.includes("chrome://")) {
+			chrome.browserAction.disable(tabId)
+		} else {
+			// check for active modes		
+			// chrome.storage.sync.get("autoWork", function(res) {
+			// 	if (res.autoWork) {
+			//     	chrome.tabs.executeScript(
+			//         	tabId,
+			//           	{file: 'removeHard.js'}
+			//         )
+			//     	chrome.tabs.executeScript(
+			//         	tabId,
+			//           	{file: 'watchDOM.js'}
+			//         )
+			//     }
+			// })		
+			// chrome.storage.sync.get("autoWorkEasy", function(res) {
+			// 	if (res.autoWorkEasy) {
+			//     	chrome.tabs.executeScript(
+			//         	tabId,
+			//           	{file: 'removeEasy.js'}
+			//         )
+			//     	chrome.tabs.executeScript(
+			//         	tabId,
+			//           	{file: 'watchDOMEasy.js'}
+			//         )
+			//     }
+			// })
+			chrome.storage.sync.get("thisWebsiteWork", function(res) {
+			    let newUrl = url.substring(
+				    url.lastIndexOf("//") + 2, 
+				    url.indexOf("/", 8)
+				)
 
-			let arrOfSites = res.thisWebsiteWork
-			if (arrOfSites.includes(newUrl)) {
-				chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'removeHard.js'}
-		        )
-		    	chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'watchDOM.js'}
-		        )
-		    }
-		})
-		chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
-		    let newUrl = url.substring(
-			    url.lastIndexOf("//") + 2, 
-			    url.indexOf("/", 8)
-			)
+				let arrOfSites = res.thisWebsiteWork
+				if (arrOfSites.includes(newUrl)) {
+					chrome.tabs.executeScript(
+			        	tabId,
+			          	{file: 'removeHard.js'}
+			        )
+			    	chrome.tabs.executeScript(
+			        	tabId,
+			          	{file: 'watchDOM.js'}
+			        )
+			    }
+			})
+			chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
+			    let newUrl = url.substring(
+				    url.lastIndexOf("//") + 2, 
+				    url.indexOf("/", 8)
+				)
 
-			let arrOfSites = res.thisWebsiteWorkEasy
-			if (arrOfSites.includes(newUrl)) {
-				chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'removeEasy.js'}
-		        )
-		    	chrome.tabs.executeScript(
-		        	tabId,
-		          	{file: 'watchDOMEasy.js'}
-		        )
-		    }
-		})
+				let arrOfSites = res.thisWebsiteWorkEasy
+				if (arrOfSites.includes(newUrl)) {
+					chrome.tabs.executeScript(
+			        	tabId,
+			          	{file: 'removeEasy.js'}
+			        )
+			    	chrome.tabs.executeScript(
+			        	tabId,
+			          	{file: 'watchDOMEasy.js'}
+			        )
+			    }
+			})
+		}
 	}
+	// console.log(changeInfo)
+	
 })

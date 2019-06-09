@@ -188,7 +188,7 @@ toggleEasyInpThisWebSite.onchange = function(element) {
 		        )
 		    	chrome.tabs.executeScript(
 		        	null,
-		          	{file: 'watchDOM.js'}
+		          	{file: 'watchDOMEasy.js'}
 		        )
 				// set up back
 				arrOfSites.push(newUrl)
@@ -288,6 +288,7 @@ function initState() {
 	// })
 	
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		let isFirstModeAct = false;
 		let url = tabs[0].url
 	    let newUrl = tabs[0].url.substring(
 		    url.lastIndexOf("//") + 2, 
@@ -297,16 +298,21 @@ function initState() {
 		chrome.storage.sync.get("thisWebsiteWork", function(res) {		
 			let blockedSitesArr = res.thisWebsiteWork
 
+			console.log(blockedSitesArr)
+
 			if (blockedSitesArr.includes(newUrl)) {
 				document.getElementById("toggleThisWebSiteInp").checked = true
 				document.getElementById('textOnOffSite').textContent="off"
+				isFirstModeAct = true;
 			} 
 		})
 		// easy mode this website input state
 		chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
 			let blockedSitesArr = res.thisWebsiteWorkEasy
 
-			if (blockedSitesArr.includes(newUrl)) {
+			console.log(blockedSitesArr)
+
+			if (blockedSitesArr.includes(newUrl) && !isFirstModeAct) {
 				document.getElementById("toggleEasyInpThisWebSite").checked = true
 				document.getElementById('textOnOffEasyModeThisWEbsite').textContent="off"
 			} 
