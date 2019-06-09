@@ -118,8 +118,11 @@ toggleThisWebSiteInp.onchange = function(element) {
 					toggleEasyInpThisWebSite.checked = false
 					document.getElementById('textOnOffEasyModeThisWEbsite').textContent="on"
 			        // setting up
-					arrOfSites = arrOfSites.filter(e => e !== newUrl)
-					chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
+			        chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
+			        	arrOfSites = res.thisWebsiteWorkEasy
+						arrOfSites = arrOfSites.filter(e => e !== newUrl)
+						chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
+					})
 				}
 
 				chrome.tabs.executeScript(
@@ -175,8 +178,11 @@ toggleEasyInpThisWebSite.onchange = function(element) {
 			          	{file: 'restoreEasy.js'}
 			        )
 					// set up back
-					arrOfSites = arrOfSites.filter(e => e !== newUrl)
-					chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
+					chrome.storage.sync.get("thisWebsiteWork", function(res) {
+						arrOfSites = res.thisWebsiteWork
+						arrOfSites = arrOfSites.filter(e => e !== newUrl)
+						chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
+					})
 					// visual
 					toggleThisWebSiteInp.checked = false
 					document.getElementById('textOnOffSite').textContent="on"
