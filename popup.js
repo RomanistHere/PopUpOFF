@@ -298,8 +298,6 @@ function initState() {
 		chrome.storage.sync.get("thisWebsiteWork", function(res) {		
 			let blockedSitesArr = res.thisWebsiteWork
 
-			console.log(blockedSitesArr)
-
 			if (blockedSitesArr.includes(newUrl)) {
 				document.getElementById("toggleThisWebSiteInp").checked = true
 				document.getElementById('textOnOffSite').textContent="off"
@@ -309,8 +307,6 @@ function initState() {
 		// easy mode this website input state
 		chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
 			let blockedSitesArr = res.thisWebsiteWorkEasy
-
-			console.log(blockedSitesArr)
 
 			if (blockedSitesArr.includes(newUrl) && !isFirstModeAct) {
 				document.getElementById("toggleEasyInpThisWebSite").checked = true
