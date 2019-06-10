@@ -1,8 +1,8 @@
 {
   "name": "PopUpOFF - Popup and overlay blocker",
   "short_name": "PopUpOFF",
-  "version": "1.0.5",
-  "description": "Removes popups, overlays, cookie notifications and restrictions another tools can not. Makes reading experience better.",
+  "version": "1.1.0",
+  "description": "Removes and prevents popups, overlays, cookie notifications and restrictions, other tools do not. Enjoy the original look of the internet.",
   "permissions": [
     "activeTab",  
     "storage",
