@@ -123,6 +123,10 @@ toggleThisWebSiteInp.onchange = function(element) {
 						arrOfSites = arrOfSites.filter(e => e !== newUrl)
 						chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
 					})
+					chrome.tabs.executeScript(
+			        	null,
+			          	{file: 'removeHard.js'}
+			        )
 				}
 
 				chrome.tabs.executeScript(
