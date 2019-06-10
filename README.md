@@ -4,10 +4,10 @@
 # Mechanics
 Main mechanic of this extension is to find all elements in DOM, check its style for position: fixed or sticky, if its positive and displayed on page right now (not display:none), remove it. I'm adding for these elements special data-attribute, so user can reset most of changes by just turning mode off. Do not need to reload page, as it is for most of ad blockers right now. I see my user experience better. </br></br>
 Easy mode checks fixed elements for including tags like header or nav, so if fixed element is nav, or containing nav, it will not be blocked. </br></br>
-Hard mode removes absolute elements as well. During test I faced websites where popups is just absolute-positioned elements in top of page, so my extension didnt work for them:(</br></br>
+Hard mode removes absolute elements as well. During development I faced websites where popups is just absolute-positioned elements in top of page, so my extension didnt work for them:(</br></br>
 It removes overflow from body and html tags by setting "overflow: auto !important" in every mode.</br></br>
 These things are done after user enable any mode, or after page load, if any of mode for this page are working right now. But it is not enough, some of sites adding popups or bars after user loaded page, part of it after user scroll to given point or number of seconds. So I have to check it. Lucky, there is MutationObserver API. You dont expect it work so good. But it is really nice. Even with browser perfomance. </br></br>
-One thing I did not take into account, If website using same mechanics for ulpoading content (I dont really imagine why would anyone do it) it will be looping hard. So it is first thing i will provide in next update. </br></br>
+One thing I did not take into account, If website using same mechanics for ulpoading content (I dont really imagine why would anyone do it) it will be looping hard. So it is first thing i will provide in next update. - Fixed at 1.0.3</br></br>
 There is nothing I can add to this description about technical part of mine project. I will work on it if someone will need it. I cant stand searching internet right now though, so it was worth it. </br></br>
 If you have something to say to me, offer, complaint or just thank you, write to me right here: RomanistHere@gmail.com
 # Story time
