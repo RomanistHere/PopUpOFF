@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html {
+          background: #111;
+          background-color: #222831
+      }
+
+      body {
+          background: #111;
+          background-color: #222831;
+          width: 400px;
+          margin: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          line-height: 1.59;
+          font-weight: 300
+      }
+
+      .toggle {
+          display: block;
+          user-select: none
+      }
+
+      .toggle--checkbox {
+          display: none
+      }
+
+      .toggle--btn {
+          display: block;
+          font-size: 1.4em;
+          transition: all 350ms ease-in
+      }
+
+      .toggle--btn:hover {
+          cursor: pointer
+      }
+
+      .toggle--btn,
+      .toggle--btn:after,
+      .toggle--btn:before,
+      .toggle--checkbox,
+      .toggle--checkbox:after,
+      .toggle--checkbox:before {
+          transition: all 250ms ease-in
+      }
+
+      .toggle--btn:after,
+      .toggle--btn:before,
+      .toggle--checkbox:after,
+      .toggle--checkbox:before {
+          content: '';
+          display: block
+      }
+
+      .toggle--push .toggle--btn {
+          position: relative;
+          width: 40px;
+          height: 40px;
+          background-color: #f9f8f6;
+          border-radius: 50%;
+          box-shadow: 0 5px 10px 0 #333, 0 15px 20px 0 #ccc
+      }
+
+      .toggle--push .toggle--btn,
+      .toggle--push .toggle--btn:after,
+      .toggle--push .toggle--btn:before {
+          transition-duration: 150ms
+      }
+
+      .toggle--push .toggle--btn:before {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 22.72727px;
+          height: 22.72727px;
+          border-radius: 50%
+      }
+
+      .toggle--push .toggle--btn:after {
+          position: absolute;
+          left: 50%;
+          top: 35%;
+          transform: translate(-50%, -50%);
+          width: 4px;
+          height: 12px;
+          background-color: #ccc;
+          box-shadow: 0 0 0 2.5px #f9f8f6
+      }
+
+      .toggle--push .toggle--btn:hover:before {
+          box-shadow: inset 0 0 0 5px #b3b3b3, inset 0 0 0 14px #f9f8f6
+      }
+
+      .toggle--push .toggle--btn:hover:after {
+          background-color: #b3b3b3
+      }
+
+      .toggle--push .toggle--checkbox:checked+.toggle--btn {
+          box-shadow: 0 2px 5px 0 grey, 0 15px 20px 0 transparent
+      }
+
+      .toggle--push--glow .toggle--btn {
+          background-color: #ccc;
+          box-shadow: 0 5px 10px 0 #333, 0 0 0 3px #444, 0 0 8px 2px transparent, 0 0 0 6px #919191
+      }
+
+      .toggle--push--glow .toggle--btn:before {
+          box-shadow: inset 0 0 0 5px #aaa, inset 0 0 0 14px #ccc
+      }
+
+      .toggle--push--glow .toggle--btn:after {
+          background-color: #aaa;
+          box-shadow: 0 0 0 2.5px #ccc
+      }
+
+      .string:hover .toggle--btn:before {
+          box-shadow: inset 0 0 0 5px #777, inset 0 0 0 14px #ccc
+      }
+
+      .string:hover .toggle--btn:after {
+          background-color: #777
+      }
+
+      .toggle--push--glow .toggle--checkbox:checked+.toggle--btn {
+          box-shadow: 0 5px 10px 0 #333, 0 0 0 3px #444, 0 0 8px 2px transparent, 0 0 0 6px #919191;
+          box-shadow: 0 5px 10px 0 #333, 0 0 0 3px #444, 0 0 8px 2px transparent, 0 0 0 6px #efbb35
+      }
+
+      .toggle--push--glow .toggle--checkbox:checked+.toggle--btn:before {
+          box-shadow: inset 0 0 0 5px #efbb35, inset 0 0 0 14px #ccc
+      }
+
+      .toggle--push--glow .toggle--checkbox:checked+.toggle--btn:after {
+          background-color: #efbb35
+      }
+
+      .string {
+          display: flex;
+          align-items: center;
+          padding: 0 0 0 30px;
+          margin-top: 30px
+      }
+
+      .string:first-child {
+          margin-top: 30px
+      }
+
+      .desc {
+          margin: 0;
+          padding: 8px 0 8px 20px;
+          font-size: 16px;
+          color: #f9ffee;
+          cursor: pointer;
+          transition: all ease .4s
+      }
+
+      .desc:hover,
+      .toggle:hover+.desc {
+          color: #efbb35
+      }
+
+      .link {
+          background-color: #fff;
+          text-align: center;
+          justify-content: center;
+          padding: 0
+      }
+
+      .insturctions {
+          color: #111;
+          font-weight: 400;
+          padding: 6px 0;
+          width: 100%;
+          display: block;
+          transition: all ease .4s
+      }
+
+      .insturctions:hover {
+          color: #efbb35
+      }
+
+      .options_text{
+        color: #f9ffee;
+        font-size: 16px;
+      }
+
+      .options__header{
+        text-align: center;
+
+        color: #efbb35;
+        font-size: 18px;
+
+        padding-top: 20px;
+      }
+
+      .options__desc{
+        padding: 0 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="options__header options_text">
+      Developer's supervision
+    </header>
+    <p class="options__desc options_text">
+      There is list of websites where PopUpOFF is not working by default. These websites do not show popups but use same mechanic to display information to user. If you enable it there accidentally, you could hide some important info from yourself.
+    </p>
+    <p class="options__desc options_text">
+      Disabling this "parent control" is highly not recommended. If you do it, responsibility  for further using would be only on you.
+    </p>
+    <div class="string">
+      <div class="toggle toggle--push toggle--push--glow">
+        <input type="checkbox" id="toggleThisPageInp" class="toggle--checkbox" checked>
+        <label class="toggle--btn" for="toggleThisPageInp" data-label-on="on"  data-label-off="off"></label>
+      </div>
+      <label for="toggleThisPageInp" class="desc">
+        Disable supervision
+      </label>
+    </div>
+    <div class="string link">
+      <a class="list_of_sites" href="#">See the list of websites</a>
+    </div>
+    <script src="options.js"></script>
+  </body>
+</html>
