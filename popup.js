@@ -102,6 +102,7 @@
 let toggleThisWebSiteInp = document.getElementById('toggleThisWebSiteInp')
 
 toggleThisWebSiteInp.onchange = function(element) {
+	showMessage()
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.storage.sync.get("thisWebsiteWork", function(res) {
 			let url = tabs[0].url
@@ -337,6 +338,17 @@ function initState() {
 }
 
 initState()
+
+// message with reload
+function showMessage() {
+	document.querySelector('.message').classList.add('message-visible')
+	document.querySelector('.message__link').onclick = function() {
+	    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+	        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+	        document.querySelector('.message').classList.remove('message-visible')
+	    })
+	}
+}
 
 
 // ga

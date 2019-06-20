@@ -184,6 +184,37 @@
       .insturctions:hover {
           color: #efbb35
       }
+      
+      .message {
+          position: absolute;
+          bottom: 0;
+          left: 10%;
+          width: 80%;
+          height: 46px;
+          transition: all ease 1s;
+          transform: translateY(100%)
+      }
+      .message__link {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+          color: #f9ffee;
+          font-size: 16px;
+          text-decoration: none;
+          transition: all ease .4s;
+          background-color: #222831;
+          border: 1px solid #efbb35;
+          border-radius: 6px
+      }
+      .message__link:hover {
+          color: #efbb35;
+          border-color: #f9ffee
+      }
+      .message-visible {
+          transform: translateY(-8px)
+      }
     </style>
   </head>
   <body>
@@ -234,6 +265,9 @@
     </div> -->
     <div class="string link">
       <a class="insturctions" target="_blank" href="https://romanisthere.github.io/PopUpOFF-Website/#how_to_use">Instructions</a>
+    </div>
+    <div class="message">
+      <a href="#" class="message__link">Why I can't use it here?</a>
     </div>
     <script src="popup.js"></script>
   </body>
