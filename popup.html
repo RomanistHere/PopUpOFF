@@ -3,12 +3,14 @@
   <head>
     <style>
       html {
-          background: #111;
           background-color: #222831
       }
 
+      *::selection{
+        color: brown;
+      }
+
       body {
-          background: #111;
           background-color: #222831;
           width: 300px;
           margin: 0;
@@ -208,9 +210,16 @@
           border: 1px solid #efbb35;
           border-radius: 6px
       }
+      .message-color{
+        color: #efbb35;
+        padding-left: 3px;
+      }
       .message__link:hover {
           color: #efbb35;
           border-color: #f9ffee
+      }
+      .message__link:hover .message-color{
+        color: #f9ffee;
       }
       .message-visible {
           transform: translateY(-8px)
@@ -267,7 +276,7 @@
       <a class="insturctions" target="_blank" href="https://romanisthere.github.io/PopUpOFF-Website/#how_to_use">Instructions</a>
     </div>
     <div class="message">
-      <a href="#" class="message__link">Why I can't use it here?</a>
+      <a href="#" class="message__link">You can't use it here. <span class="message-color">Change</span></a>
     </div>
     <script src="popup.js"></script>
   </body>

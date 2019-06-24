@@ -3,15 +3,20 @@
   <head>
     <style>
       html {
-          background: #111;
-          background-color: #222831
+          background-color: #222831;
+          height: 470px;
+          display: flex;
+          align-items: center;
+      }
+
+      *::selection{
+        color: brown;
       }
 
       body {
-          background: #111;
           background-color: #222831;
-          width: 400px;
-          margin: 0;
+          width: 500px;
+          margin: 0 auto;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           line-height: 1.59;
           font-weight: 300
@@ -139,7 +144,7 @@
       .string {
           display: flex;
           align-items: center;
-          padding: 0 0 0 30px;
+          padding: 0 0 14px 30px;
           margin-top: 30px
       }
 
@@ -192,11 +197,15 @@
         color: #efbb35;
         font-size: 18px;
 
-        padding-top: 20px;
+        padding-top: 10px;
       }
 
       .options__desc{
         padding: 0 22px;
+      }
+
+      .options_text-col{
+        color: #efbb35;
       }
     </style>
   </head>
@@ -205,23 +214,26 @@
       Developer's supervision
     </header>
     <p class="options__desc options_text">
-      There is list of websites where PopUpOFF is not working by default. These websites do not show popups but use same mechanic to display information to user. If you enable it there accidentally, you could hide some important info from yourself.
+      There is list of websites where PopUpOFF is not working by default. These websites do not show popups but use same mechanic to display information to user. If you enable it there accidentally, you could hide some important information from yourself.
     </p>
     <p class="options__desc options_text">
-      Disabling this "parent control" is highly not recommended. If you do it, responsibility  for further using would be only on you.
+      Disabling this "parent control" is highly not recommended. If you do it, responsibility for further using would be only on you.
     </p>
     <div class="string">
       <div class="toggle toggle--push toggle--push--glow">
-        <input type="checkbox" id="toggleThisPageInp" class="toggle--checkbox" checked>
-        <label class="toggle--btn" for="toggleThisPageInp" data-label-on="on"  data-label-off="off"></label>
+        <input type="checkbox" id="supervisionToggle" class="toggle--checkbox">
+        <label class="toggle--btn" for="supervisionToggle" data-label-on="on"  data-label-off="off"></label>
       </div>
-      <label for="toggleThisPageInp" class="desc">
-        Disable supervision
+      <label for="supervisionToggle" class="desc">
+        <span class="supervisionText">Disable</span> supervision
       </label>
     </div>
-    <div class="string link">
+    <!-- <div class="string link">
       <a class="list_of_sites" href="#">See the list of websites</a>
-    </div>
+    </div> -->
+    <p class="options__desc options_text">
+      List of disabled websites: <span class="options_text-col">YouTube Music, YouTube, LinkedIn, Twitter, Facebook, Google, Reddit, Instagram, Baidu, Amazon, Pinterest, VK</span>
+    </p>
     <script src="options.js"></script>
   </body>
 </html>

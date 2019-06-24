@@ -13,6 +13,9 @@ chrome.runtime.onInstalled.addListener(function(details){
 		// on for this website easy mode set
 		chrome.storage.sync.set({"thisWebsiteWorkEasy": []})
 
+		// 1.1.1 - add supervision
+		chrome.storage.sync.set({"supervision": true})
+
 		// open website
 		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/"})
 
@@ -20,6 +23,8 @@ chrome.runtime.onInstalled.addListener(function(details){
     	// 1.0.4 everywhere modes disabled temporairly
         chrome.storage.sync.set({"autoWork": false})
         chrome.storage.sync.set({"autoWorkEasy": false})
+        // 1.1.1
+        chrome.storage.sync.set({"supervision": true})
     }
 })
 

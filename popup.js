@@ -98,67 +98,88 @@
 //     })
 // }
 
+const ARR_OF_FORB_SITES = [
+	'music.youtube.com',
+	'www.youtube.com',
+	'www.linkedin.com',
+	'twitter.com',
+	'www.facebook.com',
+	'www.google.com',
+	'www.reddit.com',
+	'www.instagram.com',
+	'www.baidu.com',
+	'www.amazon.com',
+	'vk.com',
+	'www.pinterest.com',
+]
+var IS_SUPERVISION_ACTIVE
+
 // hard mode this site
 let toggleThisWebSiteInp = document.getElementById('toggleThisWebSiteInp')
 
 toggleThisWebSiteInp.onchange = function(element) {
-	showMessage()
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.storage.sync.get("thisWebsiteWork", function(res) {
-			let url = tabs[0].url
-		    let newUrl = tabs[0].url.substring(
-			    url.lastIndexOf("//") + 2, 
-			    url.indexOf("/", 8)
-			)
-			let arrOfSites = res.thisWebsiteWork
+		let url = tabs[0].url
+	    let newUrl = tabs[0].url.substring(
+		    url.lastIndexOf("//") + 2, 
+		    url.indexOf("/", 8)
+		)
+		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
+			toggleThisWebSiteInp.checked = false
+			showMessage()
+			_gaq.push(['_trackEvent', 'forb_site', newUrl])
+		} else {
+			chrome.storage.sync.get("thisWebsiteWork", function(res) {		
+				let arrOfSites = res.thisWebsiteWork
 
-			if (toggleThisWebSiteInp.checked) {
-				// if paired mode active
-				if (toggleEasyInpThisWebSite.checked) {
-					// visual
-					toggleEasyInpThisWebSite.checked = false
-					document.getElementById('textOnOffEasyModeThisWEbsite').textContent="on"
-			        // setting up
-			        chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
-			        	arrOfSites = res.thisWebsiteWorkEasy
-						arrOfSites = arrOfSites.filter(e => e !== newUrl)
-						chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
-					})
+				if (toggleThisWebSiteInp.checked) {
+					// if paired mode active
+					if (toggleEasyInpThisWebSite.checked) {
+						// visual
+						toggleEasyInpThisWebSite.checked = false
+						document.getElementById('textOnOffEasyModeThisWEbsite').textContent="on"
+				        // setting up
+				        chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
+				        	arrOfSites = res.thisWebsiteWorkEasy
+							arrOfSites = arrOfSites.filter(e => e !== newUrl)
+							chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
+						})
+						chrome.tabs.executeScript(
+				        	null,
+				          	{file: 'removeHard.js'}
+				        )
+					}
+
 					chrome.tabs.executeScript(
 			        	null,
 			          	{file: 'removeHard.js'}
 			        )
-				}
-
-				chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'removeHard.js'}
-		        )
-		    	chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'watchDOM.js'}
-		        )
-				// set up back
-				arrOfSites.push(newUrl)
-		        chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})					
-				// visual
-				document.getElementById('textOnOffSite').textContent="off"
-				_gaq.push(['_trackEvent', 'toggleThisWebSiteInp', 'on'])
-			} else {
-				if (!toggleThisPageInp.checked) {
-					chrome.tabs.executeScript(
+			    	chrome.tabs.executeScript(
 			        	null,
-			          	{file: 'restore.js'}
+			          	{file: 'watchDOM.js'}
 			        )
-				}					
-				// set up back
-				arrOfSites = arrOfSites.filter(e => e !== newUrl)
-				chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
-				// visual
-				document.getElementById('textOnOffSite').textContent="on"
-				_gaq.push(['_trackEvent', 'toggleThisWebSiteInp', 'off'])
-			}
-		})
+					// set up back
+					arrOfSites.push(newUrl)
+			        chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})					
+					// visual
+					document.getElementById('textOnOffSite').textContent="off"
+					_gaq.push(['_trackEvent', 'toggleThisWebSiteInp', 'on'])
+				} else {
+					if (!toggleThisPageInp.checked) {
+						chrome.tabs.executeScript(
+				        	null,
+				          	{file: 'restore.js'}
+				        )
+					}					
+					// set up back
+					arrOfSites = arrOfSites.filter(e => e !== newUrl)
+					chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
+					// visual
+					document.getElementById('textOnOffSite').textContent="on"
+					_gaq.push(['_trackEvent', 'toggleThisWebSiteInp', 'off'])
+				}
+			})
+		}			
 	})
 }
 
@@ -167,61 +188,68 @@ let toggleEasyInpThisWebSite = document.getElementById('toggleEasyInpThisWebSite
 
 toggleEasyInpThisWebSite.onchange = function(element) {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
-			let url = tabs[0].url
-		    let newUrl = tabs[0].url.substring(
-			    url.lastIndexOf("//") + 2, 
-			    url.indexOf("/", 8)
-			)
-			let arrOfSites = res.thisWebsiteWorkEasy
+		let url = tabs[0].url
+	    let newUrl = tabs[0].url.substring(
+		    url.lastIndexOf("//") + 2, 
+		    url.indexOf("/", 8)
+		)
+		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
+			toggleEasyInpThisWebSite.checked = false
+			showMessage()
+			_gaq.push(['_trackEvent', 'forb_site', newUrl])
+		} else {
+			chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
+			
+				let arrOfSites = res.thisWebsiteWorkEasy
 
-			if (toggleEasyInpThisWebSite.checked) {
-				// if paired mode active
-				if (toggleThisWebSiteInp.checked) {
+				if (toggleEasyInpThisWebSite.checked) {
+					// if paired mode active
+					if (toggleThisWebSiteInp.checked) {
+						chrome.tabs.executeScript(
+				        	null,
+				          	{file: 'restoreEasy.js'}
+				        )
+						// set up back
+						chrome.storage.sync.get("thisWebsiteWork", function(res) {
+							arrOfSites = res.thisWebsiteWork
+							arrOfSites = arrOfSites.filter(e => e !== newUrl)
+							chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
+						})
+						// visual
+						toggleThisWebSiteInp.checked = false
+						document.getElementById('textOnOffSite').textContent="on"
+					}
+
 					chrome.tabs.executeScript(
 			        	null,
-			          	{file: 'restoreEasy.js'}
+			          	{file: 'removeEasy.js'}
+			        )
+			    	chrome.tabs.executeScript(
+			        	null,
+			          	{file: 'watchDOMEasy.js'}
 			        )
 					// set up back
-					chrome.storage.sync.get("thisWebsiteWork", function(res) {
-						arrOfSites = res.thisWebsiteWork
-						arrOfSites = arrOfSites.filter(e => e !== newUrl)
-						chrome.storage.sync.set({"thisWebsiteWork": arrOfSites})
-					})
+					arrOfSites.push(newUrl)
+			        chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})					
 					// visual
-					toggleThisWebSiteInp.checked = false
-					document.getElementById('textOnOffSite').textContent="on"
+					document.getElementById('textOnOffEasyModeThisWEbsite').textContent="off"
+					_gaq.push(['_trackEvent', 'toggleEasyInpThisWebSite', 'on'])
+				} else {
+					if (!toggleThisPageInp.checked) {
+						chrome.tabs.executeScript(
+				        	null,
+				          	{file: 'restore.js'}
+				        )
+					}
+					// set up back
+					arrOfSites = arrOfSites.filter(e => e !== newUrl)
+					chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
+					// visual
+					document.getElementById('textOnOffEasyModeThisWEbsite').textContent="on"
+					_gaq.push(['_trackEvent', 'toggleEasyInpThisWebSite', 'off'])
 				}
-
-				chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'removeEasy.js'}
-		        )
-		    	chrome.tabs.executeScript(
-		        	null,
-		          	{file: 'watchDOMEasy.js'}
-		        )
-				// set up back
-				arrOfSites.push(newUrl)
-		        chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})					
-				// visual
-				document.getElementById('textOnOffEasyModeThisWEbsite').textContent="off"
-				_gaq.push(['_trackEvent', 'toggleEasyInpThisWebSite', 'on'])
-			} else {
-				if (!toggleThisPageInp.checked) {
-					chrome.tabs.executeScript(
-			        	null,
-			          	{file: 'restore.js'}
-			        )
-				}
-				// set up back
-				arrOfSites = arrOfSites.filter(e => e !== newUrl)
-				chrome.storage.sync.set({"thisWebsiteWorkEasy": arrOfSites})
-				// visual
-				document.getElementById('textOnOffEasyModeThisWEbsite').textContent="on"
-				_gaq.push(['_trackEvent', 'toggleEasyInpThisWebSite', 'off'])
-			}
-		})
+			})
+		}
 	})
 }
 
@@ -230,53 +258,64 @@ let toggleThisPageInp = document.getElementById('toggleThisPageInp')
 
 toggleThisPageInp.onchange = function(element) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-	    if (toggleThisPageInp.checked) {
-	    	chrome.tabs.executeScript(
-		      	null,
-		      	{file: 'removeAll.js'}
-		  	)
-		  	chrome.tabs.executeScript(
-	        	null,
-	          	{file: 'watchDOM.js'}
-	        )
-	        // sending message to content.js to store is input checked or not to show it when popup open
-		    chrome.tabs.sendMessage(
-		        tabs[0].id,
-		        {
-		        	method: "setStatusThisPage", 
-		        	thisPageOn: true
-		        }
-		    )
-		    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'on'])
-	    } else {
-		    // if (!toggleEverywhereInp.checked &&
-		    // 	!toggleThisWebSiteInp.checked) {
-		    if (!toggleThisWebSiteInp.checked) {
+    	let url = tabs[0].url
+	    let newUrl = tabs[0].url.substring(
+		    url.lastIndexOf("//") + 2, 
+		    url.indexOf("/", 8)
+		)
+		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
+			toggleThisPageInp.checked = false
+			showMessage()
+			_gaq.push(['_trackEvent', 'forb_site', newUrl])
+		} else {
+			if (toggleThisPageInp.checked) {
 		    	chrome.tabs.executeScript(
 			      	null,
-			      	{file: 'restoreEasy.js'}
+			      	{file: 'removeAll.js'}
 			  	)
+			  	chrome.tabs.executeScript(
+		        	null,
+		          	{file: 'watchDOM.js'}
+		        )
+		        // sending message to content.js to store is input checked or not to show it when popup open
+			    chrome.tabs.sendMessage(
+			        tabs[0].id,
+			        {
+			        	method: "setStatusThisPage", 
+			        	thisPageOn: true
+			        }
+			    )
+			    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'on'])
+		    } else {
+			    // if (!toggleEverywhereInp.checked &&
+			    // 	!toggleThisWebSiteInp.checked) {
+			    if (!toggleThisWebSiteInp.checked) {
+			    	chrome.tabs.executeScript(
+				      	null,
+				      	{file: 'restoreEasy.js'}
+				  	)
+			    }
+			    // if (!toggleEasyInp.checked &&
+			    // 	!toggleEverywhereInp.checked &&
+			    // 	!toggleThisWebSiteInp.checked &&
+			    // 	!toggleEasyInpThisWebSite.checked) {
+			    if (!toggleThisWebSiteInp.checked &&
+			    	!toggleEasyInpThisWebSite.checked) {
+			    	chrome.tabs.executeScript(
+				      	null,
+				      	{file: 'restore.js'}
+				  	)
+			    }
+			    chrome.tabs.sendMessage(
+			        tabs[0].id,
+			        {
+			        	method: "setStatusThisPage", 
+			        	thisPageOn: false
+			        }
+			    )
+			    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'off'])
 		    }
-		    // if (!toggleEasyInp.checked &&
-		    // 	!toggleEverywhereInp.checked &&
-		    // 	!toggleThisWebSiteInp.checked &&
-		    // 	!toggleEasyInpThisWebSite.checked) {
-		    if (!toggleThisWebSiteInp.checked &&
-		    	!toggleEasyInpThisWebSite.checked) {
-		    	chrome.tabs.executeScript(
-			      	null,
-			      	{file: 'restore.js'}
-			  	)
-		    }
-		    chrome.tabs.sendMessage(
-		        tabs[0].id,
-		        {
-		        	method: "setStatusThisPage", 
-		        	thisPageOn: false
-		        }
-		    )
-		    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'off'])
-	    }
+		}
     })
 }
 
@@ -297,7 +336,13 @@ function initState() {
 	// 		document.getElementById('textOnOffEasyMode').textContent="off"
 	// 	}
 	// })
-	
+
+	chrome.storage.sync.get("supervision", function(res) {
+		if (res.supervision) IS_SUPERVISION_ACTIVE = true
+		else IS_SUPERVISION_ACTIVE = false
+		console.log(IS_SUPERVISION_ACTIVE)
+	})
+
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		let isFirstModeAct = false;
 		let url = tabs[0].url
@@ -344,9 +389,12 @@ function showMessage() {
 	document.querySelector('.message').classList.add('message-visible')
 	document.querySelector('.message__link').onclick = function() {
 	    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-	        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+	        chrome.tabs.create({url: 'chrome://extensions/?options=mdjjielidgghdmfjnadfgfcdhdcjbolo'})
 	        document.querySelector('.message').classList.remove('message-visible')
 	    })
+	    document.getElementsByClassName('insturctions')[0].addEventListener('click', function(){
+			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
+		})
 	}
 }
 
