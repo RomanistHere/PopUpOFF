@@ -1,5 +1,20 @@
 'use strict';
 
+const ARR_OF_FORB_SITES = [
+	'music.youtube.com',
+	'www.youtube.com',
+	'www.linkedin.com',
+	'twitter.com',
+	'www.facebook.com',
+	'www.google.com',
+	'www.reddit.com',
+	'www.instagram.com',
+	'www.baidu.com',
+	'www.amazon.com',
+	'vk.com',
+	'www.pinterest.com',
+]
+
 // handle install
 chrome.runtime.onInstalled.addListener(function(details){
 	//call a function to handle a first install
@@ -25,6 +40,16 @@ chrome.runtime.onInstalled.addListener(function(details){
         chrome.storage.sync.set({"autoWorkEasy": false})
         // 1.1.1
         chrome.storage.sync.set({"supervision": true})
+    	chrome.storage.sync.get("thisWebsiteWork", function(res){
+        	const ARR_OF_SITES = res.thisWebsiteWork
+        	const UPD_ARR_OF_SITES = ARR_OF_SITES.filter( el => !ARR_OF_FORB_SITES.includes( el ) )
+        	chrome.storage.sync.set({"thisWebsiteWork": UPD_ARR_OF_SITES})
+        })
+        chrome.storage.sync.get("thisWebsiteWorkEasy", function(res){
+        	const ARR_OF_SITES = res.thisWebsiteWorkEasy
+        	const UPD_ARR_OF_SITES = ARR_OF_SITES.filter( el => !ARR_OF_FORB_SITES.includes( el ) )
+        	chrome.storage.sync.set({"thisWebsiteWorkEasy": UPD_ARR_OF_SITES})
+        })
     }
 })
 
