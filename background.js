@@ -30,8 +30,9 @@ chrome.runtime.onInstalled.addListener(function(details){
 		// on for this website easy mode set
 		chrome.storage.sync.set({"thisWebsiteWorkEasy": []})
 
-		// 1.1.1 - add supervision
+		// 1.1.1 - add supervision and tutorial
 		chrome.storage.sync.set({"supervision": true})
+		chrome.storage.sync.set({"tutorial": true})
 
 		// open website
 		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/"})
@@ -42,6 +43,8 @@ chrome.runtime.onInstalled.addListener(function(details){
         chrome.storage.sync.set({"autoWorkEasy": false})
         // 1.1.1
         chrome.storage.sync.set({"supervision": true})
+		chrome.storage.sync.set({"tutorial": true})
+		// if some users activated mode at forbidden website, remove it from list
     	chrome.storage.sync.get("thisWebsiteWork", function(res){
         	const ARR_OF_SITES = res.thisWebsiteWork
         	const UPD_ARR_OF_SITES = ARR_OF_SITES.filter( el => !ARR_OF_FORB_SITES.includes( el ) )

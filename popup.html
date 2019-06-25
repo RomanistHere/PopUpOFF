@@ -3,7 +3,7 @@
   <head>
     <style>
       html {
-          background-color: #222831
+          background-color: #222831;
       }
 
       *::selection{
@@ -281,6 +281,178 @@
     <div class="message message_reload">
       <a href="#" class="message_reload__link message__link">Reload page</a>
     </div>
+    <div class="tutorial tutorial-trs_del">
+      <h3 class="tutorial__title tutorial-color tutorial-trs_del">Hello. I am going to show you a little tutorial. Would you like to see it?</h3>
+      <div class="tutorial__links tutorial-trs_del">
+        <a href="#" class="tutorial__agree tutorial_link tutorial-trs">Yes</a>
+        <a href="#" class="tutorial__skip tutorial_link tutorial-trs">Skip</a>
+      </div>
+      <div class="tutorial__layout_top tutorial__layout tutorial-trs">
+        <p class="tutorial__step_1_text tutorial__text tutorial-trs">Hard mode removes all stuck to screen elements.</p>
+        <p class="tutorial__step_2_text tutorial__text tutorial-trs">Easy mode removes leaves headers/navigation bars.</p>
+      </div>
+      <div class="tutorial__layout_bot tutorial__layout tutorial-trs">
+        <a href="#" class="tutorial__next tutorial_link tutorial-trs">Got it</a>
+      </div>
+    </div>
     <script src="popup.js"></script>
   </body>
+  <style>
+    /*//dev*/
+/*    html{
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      display: -o-flex;
+      display: flex;
+      -ms-align-items: center;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      background-color: #000;
+    }
+    body{
+      height: 280px;
+      position: relative;
+    }
+    .message{
+      display: none;
+    }*/
+    /*//dev finish*/
+    .tutorial-trs{
+      transition: all ease .6s;
+    }
+    .tutorial-trs_del{
+      transition: all ease 1s .3s;      
+    }
+    .tutorial{
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+
+      background-color: #222831;
+
+      font-size: 16px;
+    }
+    .tutorial-transp{
+      background-color: transparent;
+    }
+    .tutorial-hid{
+      opacity: 0;
+      z-index: -1;
+    }
+    .tutorial__title{
+      margin: 0;
+      padding: 50px 40px;
+
+      text-align: center;
+    }
+    .tutorial-color{
+      color: #efbb35;
+      font-weight: 300;   
+    }
+    .tutorial__links{
+      display: flex;
+      justify-content: space-around;
+    }
+    .tutorial_link{
+      color: #f9ffee;
+      text-decoration: none;
+
+      padding: 10px 20px;
+      display: block;
+    }
+    .tutorial__text{
+      font-weight: 300;
+      color: #f9ffee;
+
+      margin: 0;
+      text-align: center;
+
+      transition: opacity ease .6s;
+    }
+    .tutorial__agree:hover{
+      color: #efbb35;      
+    }
+    .tutorial__skip:hover{
+      color: brown;
+    }
+    .tutorial__next:hover{
+      color: #efbb35;   
+    }
+    .tutorial__layout{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 80px;
+      height: 80px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      opacity: 0;
+      z-index: -1;
+
+      background-color: #222831;
+    }
+    .tutorial__layout_bot{
+      top: 160px;
+    }
+    .tutorial__step_2_text{
+      opacity: 0;
+      z-index: -1;
+
+      width: 0;
+    }
+    /*step1*/    
+    .tutorial-step_1 .tutorial__title{
+      opacity: 0;
+      z-index: -1;
+    }
+    .tutorial-step_1 .tutorial__links{
+      opacity: 0;
+      z-index: -1;
+    }
+    .tutorial-step_1 .tutorial__layout{
+      opacity: 1;
+      z-index: 1;
+    }
+    /*step2*/
+    .tutorial-step_2 .tutorial__layout_top{
+      top: 0;
+    }
+    .tutorial-step_2 .tutorial__step_1_text{
+      display: none;
+    }
+    .tutorial-step_2 .tutorial__step_2_text{
+      opacity: 1;
+      z-index: 1;
+      width: 100%;
+    }
+  </style>
+<!--   <script>
+function initTutorial() {
+  document.querySelector('.tutorial__agree').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-transp')
+    document.querySelector('.tutorial').classList.add('tutorial-step_1')
+
+    // document.querySelectorAll('.tutorial__layout').forEach(el => el.classList.add('active'))
+    return false
+  }
+  document.querySelector('.tutorial__skip').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-hid')
+    // chrome.storage.sync.set({"tutorial": false})
+    return false
+  }
+  document.querySelector('.tutorial__next').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-step_2')
+    return false
+  }
+}
+
+initTutorial()
+  </script> -->
 </html>

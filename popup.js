@@ -411,6 +411,26 @@ function showMessage(className) {
 	}		
 }
 
+function initTutorial() {
+  document.querySelector('.tutorial__agree').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-transp')
+    document.querySelector('.tutorial').classList.add('tutorial-step_1')
+
+    // document.querySelectorAll('.tutorial__layout').forEach(el => el.classList.add('active'))
+    return false
+  }
+  document.querySelector('.tutorial__skip').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-hid')
+    // chrome.storage.sync.set({"tutorial": false})
+    return false
+  }
+  document.querySelector('.tutorial__next').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-step_2')
+    return false
+  }
+}
+
+initTutorial()
 
 // ga
 var _gaq = _gaq || [];
