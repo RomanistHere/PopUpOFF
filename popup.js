@@ -111,6 +111,8 @@ const ARR_OF_FORB_SITES = [
 	'www.amazon.com',
 	'vk.com',
 	'www.pinterest.com',
+	'trello.com',
+	'calendar.google.com',
 ]
 var IS_SUPERVISION_ACTIVE
 
@@ -126,7 +128,7 @@ toggleThisWebSiteInp.onchange = function(element) {
 		)
 		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 			toggleThisWebSiteInp.checked = false
-			showMessage()
+			showMessage('.message_forb')
 			_gaq.push(['_trackEvent', 'forb_site', newUrl])
 		} else {
 			chrome.storage.sync.get("thisWebsiteWork", function(res) {		
@@ -195,7 +197,7 @@ toggleEasyInpThisWebSite.onchange = function(element) {
 		)
 		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 			toggleEasyInpThisWebSite.checked = false
-			showMessage()
+			showMessage('.message_forb')
 			_gaq.push(['_trackEvent', 'forb_site', newUrl])
 		} else {
 			chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
@@ -265,7 +267,7 @@ toggleThisPageInp.onchange = function(element) {
 		)
 		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 			toggleThisPageInp.checked = false
-			showMessage()
+			showMessage('.message_forb')
 			_gaq.push(['_trackEvent', 'forb_site', newUrl])
 		} else {
 			if (toggleThisPageInp.checked) {
@@ -306,6 +308,7 @@ toggleThisPageInp.onchange = function(element) {
 				      	{file: 'restore.js'}
 				  	)
 			    }
+			    showMessage('.message_reload')
 			    chrome.tabs.sendMessage(
 			        tabs[0].id,
 			        {
@@ -340,7 +343,6 @@ function initState() {
 	chrome.storage.sync.get("supervision", function(res) {
 		if (res.supervision) IS_SUPERVISION_ACTIVE = true
 		else IS_SUPERVISION_ACTIVE = false
-		console.log(IS_SUPERVISION_ACTIVE)
 	})
 
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -374,6 +376,7 @@ function initState() {
 	        tabs[0].id,
 	        {method: "getStatusThisPage"},
 	        function (response) {
+	        	console.log(response)
 	        	if (response) {
 			  		document.getElementById("toggleThisPageInp").checked = true
 			  	}
@@ -385,17 +388,27 @@ function initState() {
 initState()
 
 // message with reload
-function showMessage() {
-	document.querySelector('.message').classList.add('message-visible')
-	document.querySelector('.message__link').onclick = function() {
-	    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-	        chrome.tabs.create({url: 'chrome://extensions/?options=mdjjielidgghdmfjnadfgfcdhdcjbolo'})
-	        document.querySelector('.message').classList.remove('message-visible')
-	    })
-	    document.getElementsByClassName('insturctions')[0].addEventListener('click', function(){
-			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
-		})
-	}
+function showMessage(className) {
+	document.querySelector(className).classList.add('message-visible')
+	if (className == '.message_forb') {
+		document.querySelector('.message__link').onclick = function() {
+		    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		        // chrome.tabs.create({url: 'chrome://extensions/?options=' + chrome.runtime.id})
+		        chrome.runtime.openOptionsPage()
+		        document.querySelector(className).classList.remove('message-visible')
+		    })
+		    document.getElementsByClassName('insturctions')[0].addEventListener('click', function(){
+				_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
+			})
+		}
+	} else {
+		document.querySelector('.message_reload__link').onclick = function() {
+		    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+		        document.querySelector(className).classList.remove('message-visible')
+		    })
+		}
+	}		
 }
 
 

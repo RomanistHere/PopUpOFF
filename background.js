@@ -13,6 +13,8 @@ const ARR_OF_FORB_SITES = [
 	'www.amazon.com',
 	'vk.com',
 	'www.pinterest.com',
+	'trello.com',
+	'calendar.google.com',
 ]
 
 // handle install

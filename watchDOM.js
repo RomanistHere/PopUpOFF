@@ -30,7 +30,7 @@ function domWatcherHard() {
 		dom_observer = new MutationObserver(function(mutation) {
 			for (let i = 0; i < mutation.length; i++){
 				// prevent inifnite looping
-				if (infiniteLoopPreventCounter > 600) {
+				if (infiniteLoopPreventCounter > 800) {
 					removeDomWatcher()
 					break
 				}

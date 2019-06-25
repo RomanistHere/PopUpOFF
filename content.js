@@ -10,4 +10,5 @@ chrome.runtime.onMessage.addListener(function (msg, sender, response) {
 	if (msg.method === "setStatusThisPage") {
 		thisPageOn = msg.thisPageOn
 	}
+	return true
 })

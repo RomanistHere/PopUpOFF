@@ -1,6 +1,6 @@
 'use strict';
 
-let supervisionToggle = document.getElementById("supervisionToggle");
+let supervisionToggle = document.getElementById("supervisionToggle")
 
 chrome.storage.sync.get("supervision", function(res) {
 	if (res.supervision) {
