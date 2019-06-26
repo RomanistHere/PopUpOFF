@@ -424,13 +424,39 @@ function initTutorial() {
     // chrome.storage.sync.set({"tutorial": false})
     return false
   }
+  document.querySelector('.tutorial_link-finish').onclick = function() {
+    document.querySelector('.tutorial').classList.add('tutorial-hid')
+    // chrome.storage.sync.set({"tutorial": false})
+    return false
+  }
+  // sorry for this
   document.querySelector('.tutorial__next').onclick = function() {
     document.querySelector('.tutorial').classList.add('tutorial-step_2')
+
+    document.querySelector('.tutorial__next').onclick = function() {
+      document.querySelector('.tutorial').classList.add('tutorial-step_3')
+
+      document.querySelector('.tutorial__next').onclick = function() {
+        document.querySelector('.tutorial').classList.add('tutorial-step_4')
+
+        document.querySelector('.tutorial__next').onclick = function() {
+          document.querySelector('.tutorial').classList.remove('tutorial-transp')
+          document.querySelector('.tutorial').classList.add('tutorial-finish')
+          return false
+        }
+
+        return false
+      }
+
+      return false
+    }
+
     return false
   }
 }
 
 initTutorial()
+
 
 // ga
 var _gaq = _gaq || [];
