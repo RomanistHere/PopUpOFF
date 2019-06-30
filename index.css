@@ -34,6 +34,10 @@ body {
   cursor: pointer
 }
 
+.PopUpOFF-forb_site .toggle--btn:hover {
+  cursor: default;
+}
+
 .toggle--btn,
 .toggle--btn:after,
 .toggle--btn:before,
