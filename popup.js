@@ -340,13 +340,8 @@ function initState() {
 	// 	}
 	// })
 
-	chrome.storage.sync.get("supervision", function(res) {
-		if (res.supervision) IS_SUPERVISION_ACTIVE = true
-		else IS_SUPERVISION_ACTIVE = false
-	})
-
 	chrome.storage.sync.get("tutorial", function(res) {
-		console.log(res.tutorial)
+		// if tutorial haven't passed run it
 		if (res.tutorial) initTutorial()
 	})
 
@@ -357,6 +352,17 @@ function initState() {
 		    url.lastIndexOf("//") + 2, 
 		    url.indexOf("/", 8)
 		)
+
+		chrome.storage.sync.get("supervision", function(res) {
+			if (res.supervision) {
+				// variable to check if site forbidden on click
+				IS_SUPERVISION_ACTIVE = true
+				if (ARR_OF_FORB_SITES.includes(newUrl)) {
+					// set frozen state(no hovers) on popup if it opened at forbidden site
+					document.querySelector('.PopUpOFF').classList.add('PopUpOFF-forb_site')
+				}
+			} else IS_SUPERVISION_ACTIVE = false
+		})
 		// hard mode this website input state
 		chrome.storage.sync.get("thisWebsiteWork", function(res) {		
 			let blockedSitesArr = res.thisWebsiteWork
@@ -381,7 +387,6 @@ function initState() {
 	        tabs[0].id,
 	        {method: "getStatusThisPage"},
 	        function (response) {
-	        	console.log(response)
 	        	if (response) {
 			  		document.getElementById("toggleThisPageInp").checked = true
 			  	}
@@ -392,19 +397,15 @@ function initState() {
 
 initState()
 
-// message with reload
 function showMessage(className) {
 	document.querySelector(className).classList.add('message-visible')
 	if (className == '.message_forb') {
-		document.querySelector('.message__link').onclick = function() {
+		document.querySelector('.message_forb__link').onclick = function() {
 		    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		        // chrome.tabs.create({url: 'chrome://extensions/?options=' + chrome.runtime.id})
 		        chrome.runtime.openOptionsPage()
 		        document.querySelector(className).classList.remove('message-visible')
 		    })
-		    document.getElementsByClassName('insturctions')[0].addEventListener('click', function(){
-				_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
-			})
+			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
 		}
 	} else {
 		document.querySelector('.message_reload__link').onclick = function() {
@@ -430,10 +431,12 @@ function initTutorial() {
 	}
 	document.querySelector('.tutorial__skip').onclick = function() {
 	    passTutorial()
+	    _gaq.push(['_trackEvent', 'tutorial', 'skip'])
 	    return false
 	}
 	document.querySelector('.tutorial_link-finish').onclick = function() {
 	    passTutorial()
+	    _gaq.push(['_trackEvent', 'tutorial', 'pass'])
 	    return false
 	}
 
@@ -476,8 +479,10 @@ function initTutorial() {
 	    chrome.tabs.update({
 	        url: emailUrl
 	    })
+	    _gaq.push(['_trackEvent', 'tutorial', 'contact'])
 	    return false
 	}
+	_gaq.push(['_trackEvent', 'tutorial', 'init'])
 }
 
 
