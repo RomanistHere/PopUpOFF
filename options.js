@@ -6,7 +6,7 @@ chrome.storage.sync.get("supervision", function(res) {
 	if (res.supervision) {
 		supervisionToggle.checked = true
 	} else {
-		document.querySelector('.supervisionText').textContent = 'Enable'
+		document.querySelector('.supervisionText').textContent = 'ON'
 		supervisionToggle.checked = false
 	}
 })
@@ -14,9 +14,27 @@ chrome.storage.sync.get("supervision", function(res) {
 supervisionToggle.onchange = function(element) {
 	if (supervisionToggle.checked) {
 		chrome.storage.sync.set({"supervision": true})
-		document.querySelector('.supervisionText').textContent = 'Disable'
+		document.querySelector('.supervisionText').textContent = 'OFF'
 	} else {
 		chrome.storage.sync.set({"supervision": false})
-		document.querySelector('.supervisionText').textContent = 'Enable'
+		document.querySelector('.supervisionText').textContent = 'ON'
+	}
+}
+
+let tutorialToggle = document.getElementById("tutorialToggle")
+
+chrome.storage.sync.get("tutorial", function(res) {
+	if (res.tutorial) {
+		tutorialToggle.checked = true
+	} else {
+		tutorialToggle.checked = false
+	}
+})
+
+tutorialToggle.onchange = function(element) {
+	if (tutorialToggle.checked) {
+		chrome.storage.sync.set({"tutorial": true})
+	} else {
+		chrome.storage.sync.set({"tutorial": false})
 	}
 }

@@ -345,6 +345,11 @@ function initState() {
 		else IS_SUPERVISION_ACTIVE = false
 	})
 
+	chrome.storage.sync.get("tutorial", function(res) {
+		console.log(res.tutorial)
+		if (res.tutorial) initTutorial()
+	})
+
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		let isFirstModeAct = false;
 		let url = tabs[0].url
@@ -412,50 +417,68 @@ function showMessage(className) {
 }
 
 function initTutorial() {
-  document.querySelector('.tutorial__agree').onclick = function() {
-    document.querySelector('.tutorial').classList.add('tutorial-transp')
-    document.querySelector('.tutorial').classList.add('tutorial-step_1')
+	let $tutorialClass = document.querySelector('.tutorial')
+	let $tutorialNextLinkClass = document.querySelector('.tutorial__next')
 
-    // document.querySelectorAll('.tutorial__layout').forEach(el => el.classList.add('active'))
-    return false
-  }
-  document.querySelector('.tutorial__skip').onclick = function() {
-    document.querySelector('.tutorial').classList.add('tutorial-hid')
-    // chrome.storage.sync.set({"tutorial": false})
-    return false
-  }
-  document.querySelector('.tutorial_link-finish').onclick = function() {
-    document.querySelector('.tutorial').classList.add('tutorial-hid')
-    // chrome.storage.sync.set({"tutorial": false})
-    return false
-  }
-  // sorry for this
-  document.querySelector('.tutorial__next').onclick = function() {
-    document.querySelector('.tutorial').classList.add('tutorial-step_2')
+	document.querySelector('.insturctions').textContent="Tutorial"
+	$tutorialClass.classList.remove('tutorial-non')
 
-    document.querySelector('.tutorial__next').onclick = function() {
-      document.querySelector('.tutorial').classList.add('tutorial-step_3')
+	document.querySelector('.tutorial__agree').onclick = function() {
+		$tutorialClass.classList.add('tutorial-transp')
+		$tutorialClass.classList.add('tutorial-step_1')
+	    return false
+	}
+	document.querySelector('.tutorial__skip').onclick = function() {
+	    passTutorial()
+	    return false
+	}
+	document.querySelector('.tutorial_link-finish').onclick = function() {
+	    passTutorial()
+	    return false
+	}
 
-      document.querySelector('.tutorial__next').onclick = function() {
-        document.querySelector('.tutorial').classList.add('tutorial-step_4')
+	function passTutorial() {
+		$tutorialClass.classList.add('tutorial-hid')
+		document.querySelector('.insturctions').textContent="Instructions"
+		setTimeout(function() {
+			$tutorialClass.classList.add('tutorial-non')
+		}, 1000)
+		chrome.storage.sync.set({"tutorial": false})
+	}
 
-        document.querySelector('.tutorial__next').onclick = function() {
-          document.querySelector('.tutorial').classList.remove('tutorial-transp')
-          document.querySelector('.tutorial').classList.add('tutorial-finish')
-          return false
-        }
+    // sorry for this
+	$tutorialNextLinkClass.onclick = function() {
+	  	$tutorialClass.classList.add('tutorial-step_2')
 
-        return false
-      }
+	  	$tutorialNextLinkClass.onclick = function() {
+	  		$tutorialClass.classList.add('tutorial-step_3')
 
-      return false
-    }
+	  		$tutorialNextLinkClass.onclick = function() {
+	  			$tutorialClass.classList.add('tutorial-step_4')
 
-    return false
-  }
+	  			$tutorialNextLinkClass.onclick = function() {
+	  				$tutorialClass.classList.remove('tutorial-transp')
+	  				$tutorialClass.classList.add('tutorial-finish')
+	  				return false
+	  			}
+
+	  			return false
+	  		}
+
+	  		return false
+	  	}
+
+	  	return false
+	}
+
+	document.querySelector('.tutorial__contact').onclick = function() {
+		var emailUrl = 'mailto:romanisthere@gmail.com'
+	    chrome.tabs.update({
+	        url: emailUrl
+	    })
+	    return false
+	}
 }
-
-initTutorial()
 
 
 // ga
