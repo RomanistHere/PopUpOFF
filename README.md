@@ -31,6 +31,30 @@ As far as I tracking through analytic, what modes my users use, I decided to add
 It's open source, so you can see what data I track. What mode you use, and what "forbidden" site you want to block down. Why??? So no personal data here. I will remove it all once I get all data I need to create very nice extension.</br></br>
 #### Future
 I want to implement automatic mode, based on user's list of blocked websites. So will be no reason to open extension and click some weird-named modes. But we need a lot of people here, so this data base will be uploading properly. But it's really far away right now.</br></br>
+#### Changelog:
+1.1.1
+- add tutorial
+- add developer's supervision - list of websites where user can't use extension by default settings
+- add options page with opportunity to disable supervision and repeat tutorial
+- add messages in popup - reload button and link to options page
+
+1.1.0
+- rework of easy mode. 3 steps check - position -> content -> semantic
+- prevent script from executing if there are problems with memory
+- improve performance
+- fixed bug: after enable "easy" mode activated "hard" one
+- fixed bug: wrong adress writing to storage
+
+1.0.4
+- remove "everywhere" mode due feedback
+- element's check is tightened
+
+1.0.3
+- improve performance
+- fix minor bugs
+
+1.0.2
+- release version - do not ask why</br></br>
 
 There is nothing I can add to this description about technical part of mine project. I will work on it if someone will need it. I can't stand searching internet without my tool right now, though, it was worth it. </br></br>
 If you have something to say to me, offer, complaint or just thank you, write to me right here: RomanistHere@gmail.com
