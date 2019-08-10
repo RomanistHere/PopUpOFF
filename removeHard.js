@@ -20,18 +20,24 @@ function removeFixedElems() {
 	}
 
 	// find all fixed elements on page
-	const ELEMS = document.body.getElementsByTagName("*")
-	const LEN = ELEMS.length
+	const $elems = document.body.getElementsByTagName("*")
+	const LEN = $elems.length
 
 	for (let i=0; i<LEN; i++) {
 
-	    if ((window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'sticky')) {
-	        if (window.getComputedStyle(ELEMS[i],null).getPropertyValue('display') != 'none') {
+	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'fixed') || 
+	    	(window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'sticky')) {
+	        if (window.getComputedStyle($elems[i],null).getPropertyValue('display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
-	        	ELEMS[i].setAttribute('data-popupoffExtension', 'hello')
+	        	$elems[i].setAttribute('data-popupoffExtension', 'hello')
 	        }
-	        ELEMS[i].style.setProperty("display", "none", "important")
+	        $elems[i].style.setProperty("display", "none", "important")
+	    }
+
+	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('filter') != 'none') ||
+	    	(window.getComputedStyle($elems[i],null).getPropertyValue('-webkit-filter') != 'none')) {
+	    	$elems[i].style.setProperty("filter", "none", "important")
+	    	$elems[i].style.setProperty("-webkit-filter", "none", "important")
 	    }
 
 	}

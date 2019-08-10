@@ -5,21 +5,25 @@ removeFixedElems()
 
 function removeFixedElems() {
 	// find all fixed elements on page
-	const ELEMS = document.body.getElementsByTagName("*")
-	const LEN = ELEMS.length
+	const $elems = document.body.getElementsByTagName("*")
+	const LEN = $elems.length
 
 	for (let i = 0; i < LEN; i++) {
 
-	    if ((window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle(ELEMS[i],null).getPropertyValue('position') == 'sticky')) {
-	    	if (window.getComputedStyle(ELEMS[i], null).getPropertyValue('display') != 'none') {
+	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'fixed') || 
+	    	(window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'sticky')) {
+	    	if (window.getComputedStyle($elems[i], null).getPropertyValue('display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
-	        	ELEMS[i].setAttribute('data-popupoffExtension', 'hello')
+	        	$elems[i].setAttribute('data-popupoffExtension', 'hello')
 	        }
-
-	    	positionCheck(ELEMS[i])
-	    	contentCheck(ELEMS[i])
-	    	semanticCheck(ELEMS[i])
+	    	positionCheck($elems[i])
+	    	contentCheck($elems[i])
+	    	semanticCheck($elems[i])
+	    }
+	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('filter') != 'none') ||
+	    	(window.getComputedStyle($elems[i],null).getPropertyValue('-webkit-filter') != 'none')) {
+	    	$elems[i].style.setProperty("filter", "none", "important")
+	    	$elems[i].style.setProperty("-webkit-filter", "none", "important")
 	    }
 	}
 }
@@ -47,19 +51,15 @@ function positionCheck(element) {
 	// needs to get minus value for top value if it is
 	const ELEMENT_TOP = window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g) ?
 						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
-						100;
+						100
 	const ELEMENT_HEIGHT = window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g) ?
 						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
-						300;
+						300
 
 	if (ELEMENT_TOP > 10) {
-
 		element.style.setProperty("display", "none", "important")
-
 	} else if ((ELEMENT_HEIGHT + ELEMENT_TOP) > 150) {
-
-		element.style.setProperty("display", "none", "important")
-		
+		element.style.setProperty("display", "none", "important")		
 	}
 }
 

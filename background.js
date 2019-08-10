@@ -30,103 +30,42 @@ chrome.runtime.onInstalled.addListener(function(details){
 		// on for this website easy mode set
 		chrome.storage.sync.set({"thisWebsiteWorkEasy": []})
 
-		// 1.1.1 - add supervision and tutorial
+		// since 1.1.1 - add supervision and tutorial
 		chrome.storage.sync.set({"supervision": true})
 		chrome.storage.sync.set({"tutorial": true})
 
 		// open website
-		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/"})
+		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/#greetings"})
 
     } else if(details.reason == "update"){
-    	// 1.0.4 everywhere modes disabled temporairly
-        chrome.storage.sync.set({"autoWork": false})
-        chrome.storage.sync.set({"autoWorkEasy": false})
-        // 1.1.1
-        chrome.storage.sync.set({"supervision": true})
-		chrome.storage.sync.set({"tutorial": true})
-		// if some users activated mode at forbidden website, remove it from list
-    	chrome.storage.sync.get("thisWebsiteWork", function(res){
-        	const ARR_OF_SITES = res.thisWebsiteWork
-        	const UPD_ARR_OF_SITES = ARR_OF_SITES.filter( el => !ARR_OF_FORB_SITES.includes( el ) )
-        	chrome.storage.sync.set({"thisWebsiteWork": UPD_ARR_OF_SITES})
-        })
-        chrome.storage.sync.get("thisWebsiteWorkEasy", function(res){
-        	const ARR_OF_SITES = res.thisWebsiteWorkEasy
-        	const UPD_ARR_OF_SITES = ARR_OF_SITES.filter( el => !ARR_OF_FORB_SITES.includes( el ) )
-        	chrome.storage.sync.set({"thisWebsiteWorkEasy": UPD_ARR_OF_SITES})
-        })
+
     }
 })
 
 // handle tab switch
 chrome.tabs.onActivated.addListener(function(activeInfo) {
 	chrome.tabs.getSelected(null,function(tab) {
-	    let url = tab.url
+	    const url = tab.url
 	    if (url.includes("chrome://")) {
 			chrome.browserAction.disable(activeInfo.tabId)
 		}
    })
 });
 
-// chrome.webNavigation.onCompleted.addListener(function(callback) {
-// 	console.log('onCompleded')
-// 	console.log(callback)
-// })
-
-// chrome.webNavigation.onHistoryStateUpdated.addListener(function(callback) {
-// 	console.log('onHistoryStateUpdated')
-// 	console.log(callback)
-// })
-
-// chrome.webNavigation.onCommitted.addListener(callback => {
-// 	console.log('onCommitted')
-// 	console.log(callback)	
-// })
-
-// chrome.webNavigation.onDOMContentLoaded.addListener(callback => {
-// 	console.log('onDOMContentLoaded ')
-// 	console.log(callback)	
-// })
-
 // handle tab update
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
-		let url = tab.url
+		const url = tab.url
 		if (url.includes("chrome://")) {
 			chrome.browserAction.disable(tabId)
 		} else {
-			// check for active modes		
-			// chrome.storage.sync.get("autoWork", function(res) {
-			// 	if (res.autoWork) {
-			//     	chrome.tabs.executeScript(
-			//         	tabId,
-			//           	{file: 'removeHard.js'}
-			//         )
-			//     	chrome.tabs.executeScript(
-			//         	tabId,
-			//           	{file: 'watchDOM.js'}
-			//         )
-			//     }
-			// })		
-			// chrome.storage.sync.get("autoWorkEasy", function(res) {
-			// 	if (res.autoWorkEasy) {
-			//     	chrome.tabs.executeScript(
-			//         	tabId,
-			//           	{file: 'removeEasy.js'}
-			//         )
-			//     	chrome.tabs.executeScript(
-			//         	tabId,
-			//           	{file: 'watchDOMEasy.js'}
-			//         )
-			//     }
-			// })
 			chrome.storage.sync.get("thisWebsiteWork", function(res) {
-			    let newUrl = url.substring(
+			    const newUrl = url.substring(
 				    url.lastIndexOf("//") + 2, 
 				    url.indexOf("/", 8)
 				)
 
-				let arrOfSites = res.thisWebsiteWork
+				const arrOfSites = res.thisWebsiteWork
 				if (arrOfSites.includes(newUrl)) {
 					chrome.tabs.executeScript(
 			        	tabId,
@@ -139,12 +78,12 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 			    }
 			})
 			chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
-			    let newUrl = url.substring(
+			    const newUrl = url.substring(
 				    url.lastIndexOf("//") + 2, 
 				    url.indexOf("/", 8)
 				)
 
-				let arrOfSites = res.thisWebsiteWorkEasy
+				const arrOfSites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(newUrl)) {
 					chrome.tabs.executeScript(
 			        	tabId,
