@@ -32,6 +32,9 @@ It's open source, so you can see what data I track. What mode you use, and what 
 #### Future
 I want to implement automatic mode, based on user's list of blocked websites. So will be no reason to open extension and click some weird-named modes. But we need a lot of people here, so this data base will be uploading properly. But it's really far away right now.</br></br>
 #### Changelog:
+1.1.2
+- add blur detection and removing to each mode
+
 1.1.1
 - add tutorial
 - add developer's supervision - list of websites where user can't use extension by default settings
