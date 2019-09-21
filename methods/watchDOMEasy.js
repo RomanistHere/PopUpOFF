@@ -1,5 +1,3 @@
-'use strict';
-
 var dom_observer
 var dom_observer_new 
 

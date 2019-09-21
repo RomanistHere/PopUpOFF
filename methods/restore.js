@@ -1,5 +1,3 @@
-'use strict';
-
 chrome.storage.sync.get("autoWorkEasy", function(res) {
 	// check if we gonna remove or restore elems
 	if (res.autoWorkEasy) {

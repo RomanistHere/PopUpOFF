@@ -1,5 +1,3 @@
-'use strict';
-
 function removeFixedElems() {
 	if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y')) {
 		document.documentElement.style.setProperty("overflow-y", "unset", "important")
