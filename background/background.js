@@ -1,30 +1,7 @@
-'use strict';
-
-const ARR_OF_FORB_SITES = [
-	'music.youtube.com',
-	'www.youtube.com',
-	'www.linkedin.com',
-	'twitter.com',
-	'www.facebook.com',
-	'www.google.com',
-	'www.reddit.com',
-	'www.instagram.com',
-	'www.baidu.com',
-	'www.amazon.com',
-	'vk.com',
-	'www.pinterest.com',
-	'trello.com',
-	'calendar.google.com',
-]
-
 // handle install
 chrome.runtime.onInstalled.addListener(function(details){
 	//call a function to handle a first install
     if(details.reason == "install"){
-        // always on mode set
-		chrome.storage.sync.set({"autoWork": false})
-        // always on easy mode set
-		chrome.storage.sync.set({"autoWorkEasy": false})
 		// on for this website mode set
 		chrome.storage.sync.set({"thisWebsiteWork": []})
 		// on for this website easy mode set
@@ -69,11 +46,11 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 				if (arrOfSites.includes(newUrl)) {
 					chrome.tabs.executeScript(
 			        	tabId,
-			          	{file: 'removeHard.js'}
+			          	{file: 'methods/removeHard.js'}
 			        )
 			    	chrome.tabs.executeScript(
 			        	tabId,
-			          	{file: 'watchDOM.js'}
+			          	{file: 'methods/watchDOM.js'}
 			        )
 			    }
 			})
@@ -87,11 +64,11 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 				if (arrOfSites.includes(newUrl)) {
 					chrome.tabs.executeScript(
 			        	tabId,
-			          	{file: 'removeEasy.js'}
+			          	{file: 'methods/removeEasy.js'}
 			        )
 			    	chrome.tabs.executeScript(
 			        	tabId,
-			          	{file: 'watchDOMEasy.js'}
+			          	{file: 'methods/watchDOMEasy.js'}
 			        )
 			    }
 			})
