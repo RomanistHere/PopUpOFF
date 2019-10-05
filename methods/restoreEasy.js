@@ -16,7 +16,7 @@ function restoreFixedElems() {
 	const ARR_OF_TAG_ITEMS = ['<nav', '<header', 'search', 'ytmusic', 'searchbox', 'app-drawer']
 
 	for (let i=0; i<LEN; i++) {
-		const element = ELEMS[i]    	
+		const element = ELEMS[i]
 
 	    if (ARR_OF_CONTENT_ITEMS.some(item => element.innerHTML.includes(item))) {
 			

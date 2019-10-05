@@ -1,16 +1,16 @@
-removeOverflow()
-removeFixedElems()
+var getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
+var setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
 
-function removeFixedElems() {
+var removeFixedElems = () => {
 	// find all fixed elements on page
 	const $elems = document.body.getElementsByTagName("*")
 	const LEN = $elems.length
 
 	for (let i = 0; i < LEN; i++) {
 
-	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'sticky')) {
-	    	if (window.getComputedStyle($elems[i], null).getPropertyValue('display') != 'none') {
+	    if ((getStyle($elems[i], 'position') == 'fixed') || 
+	    	(getStyle($elems[i], 'position') == 'sticky')) {
+	    	if (getStyle($elems[i], 'display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
 	        	$elems[i].setAttribute('data-popupoffExtension', 'hello')
 	        }
@@ -18,23 +18,23 @@ function removeFixedElems() {
 	    	contentCheck($elems[i])
 	    	semanticCheck($elems[i])
 	    }
-	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('filter') != 'none') ||
-	    	(window.getComputedStyle($elems[i],null).getPropertyValue('-webkit-filter') != 'none')) {
-	    	$elems[i].style.setProperty("filter", "none", "important")
-	    	$elems[i].style.setProperty("-webkit-filter", "none", "important")
+	    if ((getStyle($elems[i], 'filter') != 'none') ||
+	    	(getStyle($elems[i], '-webkit-filter') != 'none')) {
+	    	setPropImp($elems[i], "filter", "none")
+	    	setPropImp($elems[i], "-webkit-filter", "none")
 	    }
 	}
 }
 
-function contentCheck(element) {
+var contentCheck = (element) => {
 	const ARR_OF_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss']
 
     if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item))) {
-		element.style.setProperty("display", "none", "important")
+		setPropImp(element, "display", "none")
     }
 }
 
-function semanticCheck(element) {
+var semanticCheck = (element) => {
 
     const ARR_OF_ITEMS = ['<nav', '<header', 'search', 'ytmusic', 'searchbox', 'app-drawer']
 
@@ -45,38 +45,44 @@ function semanticCheck(element) {
     }
 }
 
-function positionCheck(element) {
+var positionCheck = (element) => {
 	// needs to get minus value for top value if it is
-	const ELEMENT_TOP = window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g) ?
-						Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
+	const ELEMENT_TOP = getStyle(element, 'top').match(/[+-]?\d+(?:\.\d+)?/g) ?
+						Number(getStyle(element, 'top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 						100
-	const ELEMENT_HEIGHT = window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g) ?
-						Number(window.getComputedStyle(element,null).getPropertyValue('height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
+	const ELEMENT_HEIGHT = getStyle(element, 'height').match(/[+-]?\d+(?:\.\d+)?/g) ?
+						Number(getStyle(element, 'height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 						300
 
 	if (ELEMENT_TOP > 10) {
-		element.style.setProperty("display", "none", "important")
+		setPropImp(element, "display", "none")
 	} else if ((ELEMENT_HEIGHT + ELEMENT_TOP) > 150) {
-		element.style.setProperty("display", "none", "important")		
+		setPropImp(element, "display", "none")
 	}
 }
 
-function removeOverflow() {
-    if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.documentElement.style.setProperty("overflow-y", "unset", "important")
+var removeOverflow = () => {
+	const doc = document.documentElement
+	const body = document.body
+
+    if (getStyle(doc, 'overflow-y') == 'hidden') {
+		setPropImp(doc, "overflow-y", "unset")
 	}
 
-	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.body.style.setProperty("overflow-y", "unset", "important")
+	if (getStyle(body, 'overflow-y') == 'hidden') {
+		setPropImp(body, "overflow-y", "unset")
 	}
 
-    if ((window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') ||
-    	(window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'absolute')) {
-		document.documentElement.style.setProperty("position", "relative", "important")
+    if ((getStyle(doc, 'position') == 'fixed') ||
+    	(getStyle(doc, 'position') == 'absolute')) {
+		setPropImp(doc, "position", "relative")
 	}
 
-	if ((window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') ||
-    	(window.getComputedStyle(document.body, null).getPropertyValue('position') == 'absolute')) {
-		document.body.style.setProperty("position", "relative", "important")
+	if ((getStyle(body, 'position') == 'fixed') ||
+    	(getStyle(body, 'position') == 'absolute')) {
+		setPropImp(body, "position", "relative")
 	}
 }
+
+removeOverflow()
+removeFixedElems()

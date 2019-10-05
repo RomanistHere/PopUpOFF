@@ -5,7 +5,7 @@ var infiniteLoopPreventCounter = 0
 var myTimer
 var wasNotStoped = true
 
-function removeDomWatcher() {
+var removeDomWatcher = () => {
 	if (dom_observer) {
 		dom_observer.disconnect()
 		dom_observer = false
@@ -18,14 +18,14 @@ function removeDomWatcher() {
 	}
 }
 
-function resetLoopCounter() {
+var resetLoopCounter = () => {
     infiniteLoopPreventCounter = 0
     myTimer = 0
 }
 
-function domWatcherHard() {
+var domWatcherHard = () => {
 	if (!dom_observer) {
-		dom_observer = new MutationObserver(function(mutation) {
+		dom_observer = new MutationObserver((mutation) => {
 			for (let i = 0; i < mutation.length; i++){
 				// prevent inifnite looping
 				if (infiniteLoopPreventCounter > 800) {
@@ -38,7 +38,7 @@ function domWatcherHard() {
 				}
 
 				checkElemForPositionHard(mutation[i].target)
-				mutation[i].addedNodes.forEach(function(element) {
+				mutation[i].addedNodes.forEach((element) => {
 					if (element.nodeName != '#text') checkElemForPositionHard(element)
 				})
 				removeOverflow()
@@ -47,8 +47,8 @@ function domWatcherHard() {
 	}		
 
 	if (!dom_observer_new) {
-		dom_observer_new = new MutationObserver(function(mutation) {
-			mutation.forEach(function(mutation) {
+		dom_observer_new = new MutationObserver((mutation) => {
+			mutation.forEach((mutation) => {
 				removeOverflow()
 			})
 		})
@@ -73,64 +73,59 @@ function domWatcherHard() {
 
 domWatcherHard()
 
-function checkElemForPositionHard($element) {
+var getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
+var setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
+
+var checkElem = ($element) => {
+	if ((getStyle($element, 'position') == 'fixed') || 
+    	(getStyle($element, 'position') == 'sticky')) {
+        if (getStyle($element, 'display') != 'none') {
+        	// setting uniq data-atr to elems with display block as initial state to restore it later
+        	$element.setAttribute('data-popupoffExtension', 'hello')
+        }
+        setPropImp($element, "display", "none")
+    }
+
+    if ((getStyle($element, 'filter') != 'none') ||
+    	(getStyle($element, '-webkit-filter') != 'none')) {
+    	setPropImp($element, "filter", "none")
+    	setPropImp($element, "-webkit-filter", "none")
+    }
+}
+
+var checkElemForPositionHard = ($element) => {
 	if ($element instanceof HTMLElement) {
 		// element itself
-		if ((window.getComputedStyle($element, null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle($element, null).getPropertyValue('position') == 'sticky')) {
-	        if (window.getComputedStyle($element, null).getPropertyValue('display') != 'none') {
-	        	// setting uniq data-atr to elems with display block as initial state to restore it later
-	        	$element.setAttribute('data-popupoffExtension', 'hello')
-	        }
-	        $element.style.setProperty("display", "none", "important")
-	    }
-
-	    if ((window.getComputedStyle($element,null).getPropertyValue('filter') != 'none') ||
-	    	(window.getComputedStyle($element,null).getPropertyValue('-webkit-filter') != 'none')) {
-	    	$element.style.setProperty("filter", "none", "important")
-	    	$element.style.setProperty("-webkit-filter", "none", "important")
-	    }
+		checkElem($element)
 	    // all childs of element
 		const $elems = $element.querySelectorAll("*")
 		const LEN = $elems.length
 
-		for (let i=0; i<LEN; i++) {
-
-		    if ((window.getComputedStyle($elems[i], null).getPropertyValue('position') == 'fixed') || 
-		    	(window.getComputedStyle($elems[i], null).getPropertyValue('position') == 'sticky')) {
-		        if (window.getComputedStyle($elems[i], null).getPropertyValue('display') != 'none') {
-		        	// setting uniq data-atr to elems with display block as initial state to restore it later
-		        	$elems[i].setAttribute('data-popupoffExtension', 'hello')
-		        }
-		        $elems[i].style.setProperty("display", "none", "important")
-		    }
-
-		    if ((window.getComputedStyle($elems[i],null).getPropertyValue('filter') != 'none') ||
-		    	(window.getComputedStyle($elems[i],null).getPropertyValue('-webkit-filter') != 'none')) {
-		    	$elems[i].style.setProperty("filter", "none", "important")
-		    	$elems[i].style.setProperty("-webkit-filter", "none", "important")
-		    }
-
+		for (let i = 0; i < LEN; i++) {
+		    checkElem($elems[i])
 		}
 	}		
 }
 
-function removeOverflow() {
-    if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.documentElement.style.setProperty("overflow-y", "unset", "important")
+var removeOverflow = () => {
+	const doc = document.documentElement
+	const body = document.body
+
+    if (getStyle(doc, 'overflow-y') == 'hidden') {
+		setPropImp(doc, "overflow-y", "unset")
 	}
 
-	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y') == 'hidden') {
-		document.body.style.setProperty("overflow-y", "unset", "important")
+	if (getStyle(body, 'overflow-y') == 'hidden') {
+		setPropImp(body, "overflow-y", "unset")
 	}
 
-    if ((window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') ||
-    	(window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'absolute')) {
-		document.documentElement.style.setProperty("position", "relative", "important")
+    if ((getStyle(doc, 'position') == 'fixed') ||
+    	(getStyle(doc, 'position') == 'absolute')) {
+		setPropImp(doc, "position", "relative")
 	}
 
-	if ((window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') ||
-    	(window.getComputedStyle(document.body, null).getPropertyValue('position') == 'absolute')) {
-		document.body.style.setProperty("position", "relative", "important")
+	if ((getStyle(body, 'position') == 'fixed') ||
+    	(getStyle(body, 'position') == 'absolute')) {
+		setPropImp(body, "position", "relative")
 	}
 }

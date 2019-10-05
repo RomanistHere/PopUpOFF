@@ -14,7 +14,32 @@ const ARR_OF_FORB_SITES = [
 	'trello.com',
 	'calendar.google.com',
 ]
+// words for block when easy mode
+const ARR_OF_CONTENT_ITEMS = [
+	'policy', 
+	'cookie', 
+	'subscription', 
+	'subscribe', 
+	'off', 
+	'sale', 
+	'notification', 
+	'notifications', 
+	'updates', 
+	'privacy', 
+	'miss'
+]
+// tags not to block when easy mode
+const ARR_OF_TAG_ITEMS = [
+	'<nav', 
+	'<header', 
+	'search', 
+	'ytmusic', 
+	'searchbox', 
+	'app-drawer'
+]
 
 export {
-	ARR_OF_FORB_SITES
+	ARR_OF_FORB_SITES,
+	ARR_OF_CONTENT_ITEMS,
+	ARR_OF_TAG_ITEMS,
 }

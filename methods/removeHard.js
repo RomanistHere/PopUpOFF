@@ -1,41 +1,47 @@
 function removeFixedElems() {
-	if (window.getComputedStyle(document.documentElement, null).getPropertyValue('overflow-y')) {
-		document.documentElement.style.setProperty("overflow-y", "unset", "important")
+	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
+	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
+
+	const doc = document.documentElement
+	const body = document.body
+
+	if (getStyle(doc, 'overflow-y')) {
+		setPropImp(doc, "overflow-y", "unset")
 	}
 
-	if (window.getComputedStyle(document.body, null).getPropertyValue('overflow-y')) {
-		document.body.style.setProperty("overflow-y", "unset", "important")
+	if (getStyle(body, 'overflow-y')) {
+		setPropImp(body, "overflow-y", "unset")
 	}
 
-    if ((window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'fixed') ||
-    	(window.getComputedStyle(document.documentElement, null).getPropertyValue('position') == 'absolute')) {
-		document.documentElement.style.setProperty("position", "relative", "important")
+    if ((getStyle(doc, 'position') == 'fixed') ||
+    	(getStyle(doc, 'position') == 'absolute')) {
+		setPropImp(doc, "position", "relative")
 	}
 
-	if ((window.getComputedStyle(document.body, null).getPropertyValue('position') == 'fixed') ||
-    	(window.getComputedStyle(document.body, null).getPropertyValue('position') == 'absolute')) {
-		document.body.style.setProperty("position", "relative", "important")
+	if ((getStyle(body, 'position') == 'fixed') ||
+    	(getStyle(body, 'position') == 'absolute')) {
+		setPropImp(body, "position", "relative")
 	}
 
 	// find all fixed elements on page
-	const $elems = document.body.getElementsByTagName("*")
-	const LEN = $elems.length
+	const $elems = body.getElementsByTagName("*")
 
-	for (let i=0; i<LEN; i++) {
-
-	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'sticky')) {
-	        if (window.getComputedStyle($elems[i],null).getPropertyValue('display') != 'none') {
+	for (let i = 0; i < $elems.length; i++) {
+		
+	    if ((getStyle($elems[i], 'position') == 'fixed') || 
+	    	(getStyle($elems[i], 'position') == 'sticky')) {
+	        if (getStyle($elems[i], 'display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
 	        	$elems[i].setAttribute('data-popupoffExtension', 'hello')
 	        }
-	        $elems[i].style.setProperty("display", "none", "important")
+	        setPropImp($elems[i], "display", "none")
+	        setTimeout(() => setPropImp($elems[i], "display", "none"), 10);
 	    }
 
-	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('filter') != 'none') ||
-	    	(window.getComputedStyle($elems[i],null).getPropertyValue('-webkit-filter') != 'none')) {
-	    	$elems[i].style.setProperty("filter", "none", "important")
-	    	$elems[i].style.setProperty("-webkit-filter", "none", "important")
+	    if ((getStyle($elems[i], 'filter') != 'none') ||
+	    	(getStyle($elems[i], '-webkit-filter') != 'none')) {
+	    	setPropImp($elems[i], "filter", "none")
+	    	setPropImp($elems[i], "-webkit-filter", "none")
 	    }
 
 	}

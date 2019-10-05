@@ -1,29 +1,35 @@
 function removeFixedElems() {
-	document.documentElement.style.setProperty("overflow-y", "unset", "important")
-	document.body.style.setProperty("overflow-y", "unset", "important")
+	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
+	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
 
-	document.documentElement.style.setProperty("position", "relative", "important")
-	document.body.style.setProperty("position", "relative", "important")
+	const doc = document.documentElement
+	const body = document.body
+
+	setPropImp(doc, "overflow-y", "unset")
+	setPropImp(body, "overflow-y", "unset")
+
+	setPropImp(doc, "position", "relative")
+	setPropImp(body, "position", "relative")
 
 	// find all fixed elements on page
-	const $elems = document.body.getElementsByTagName("*")
+	const $elems = body.getElementsByTagName("*")
 	const LEN = $elems.length
 
 	for (let i = 0; i < LEN; i++) {
 
-	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'fixed') || 
-	    	(window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'sticky')) {
+	    if ((getStyle($elems[i], 'position') == 'fixed') || 
+	    	(getStyle($elems[i], 'position') == 'sticky')) {
         	// setting uniq data-atr to elems with display block as initial state to restore it later
         	$elems[i].setAttribute('data-popupoffExtension', 'hello')
-	        $elems[i].style.setProperty("display", "none", "important")
+	        setPropImp($elems[i], "display", "none")
 	    }
-	    if ((window.getComputedStyle($elems[i],null).getPropertyValue('filter') != 'none') ||
-	    	(window.getComputedStyle($elems[i],null).getPropertyValue('-webkit-filter') != 'none')) {
-	    	$elems[i].style.setProperty("filter", "none", "important")
-	    	$elems[i].style.setProperty("-webkit-filter", "none", "important")
+	    if ((getStyle($elems[i], 'filter') != 'none') ||
+	    	(getStyle($elems[i], '-webkit-filter') != 'none')) {
+	    	setPropImp($elems[i], "filter", "none")
+	    	setPropImp($elems[i], "-webkit-filter", "none")
 	    }
-	    if (window.getComputedStyle($elems[i],null).getPropertyValue('position') == 'absolute') {
-	    	$elems[i].style.setProperty("display", "none", "important")
+	    if (getStyle($elems[i], 'position') == 'absolute') {
+	    	setPropImp($elems[i], "display", "none")
 	    }
 	}
 }

@@ -2,7 +2,7 @@
 const querySelector = (selector) => document.querySelector(selector)
 const isChecked = (node) => node.checked
 // Get root url of website
-const getPureURL = (tabObj) => tabObj.url.substring(tabObj.url.lastIndexOf("//") + 2, tabObj.url.indexOf("/", 8))
+const getPureURL = ({ url }) => url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8))
 // DOM manipulating
 const addClass = (node, className) => node.classList.add(className)
 const removeClass = (node, className) => node.classList.remove(className)
@@ -25,6 +25,7 @@ export {
 	removeClass,
 	storageSet,
 	storageGet,
+	executeScript,
 	executeScriptHere,
 	getPureURL,
 }

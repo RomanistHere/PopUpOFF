@@ -1,23 +1,35 @@
+import { 
+	executeScript,
+	storageSet,
+	storageGet,
+	getPureURL
+} from '../constants/functions.js'
+
 // handle install
 chrome.runtime.onInstalled.addListener((details) => {
     if(details.reason == "install") {
 		// check is extension already in use at other device
-		chrome.storage.sync.get("thisWebsiteWork", (response) => {
+		storageGet("thisWebsiteWork", (response) => {
 			if (!response.thisWebsiteWork) {
 				// set up start
-				chrome.storage.sync.set({ "thisWebsiteWork": [] })
-				chrome.storage.sync.set({ "thisWebsiteWorkEasy": [] })
+				storageSet({
+					"thisWebsiteWork": [],
+					"thisWebsiteWorkEasy": [],
+					"supervision": true,
+					"tutorial": true,
+				})
 
 				chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/#greetings"})
-
-				// since 1.1.1 - add supervision and tutorial
-				chrome.storage.sync.set({"supervision": true})
-				chrome.storage.sync.set({"tutorial": true})
 			}
 		})
 
     } else if(details.reason == "update") {
-
+  //   	storageGet("thisWebsiteWork", (response) => {
+		// 	console.log(response)
+		// })
+  //   	storageGet("thisWebsiteWorkEasy", (response) => {
+		// 	console.log(response)
+		// })
     }
 })
 
@@ -35,43 +47,25 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
 		const url = tab.url
+
 		if (url.includes("chrome://")) {
 			chrome.browserAction.disable(tabId)
 		} else {
-			chrome.storage.sync.get("thisWebsiteWork", (res) => {
-			    const newUrl = url.substring(
-				    url.lastIndexOf("//") + 2, 
-				    url.indexOf("/", 8)
-				)
+			const pureUrl = getPureURL({ url })
 
+			storageGet("thisWebsiteWork", (res) => {
 				const arrOfSites = res.thisWebsiteWork
-				if (arrOfSites.includes(newUrl)) {
-					chrome.tabs.executeScript(
-			        	tabId,
-			          	{file: 'methods/removeHard.js'}
-			        )
-			    	chrome.tabs.executeScript(
-			        	tabId,
-			          	{file: 'methods/watchDOM.js'}
-			        )
+				if (arrOfSites.includes(pureUrl)) {
+					executeScript(tabId)('removeHard')
+			    	executeScript(tabId)('watchDOM')
 			    }
 			})
-			chrome.storage.sync.get("thisWebsiteWorkEasy", (res) => {
-			    const newUrl = url.substring(
-				    url.lastIndexOf("//") + 2, 
-				    url.indexOf("/", 8)
-				)
 
+			storageGet("thisWebsiteWorkEasy", (res) => {
 				const arrOfSites = res.thisWebsiteWorkEasy
-				if (arrOfSites.includes(newUrl)) {
-					chrome.tabs.executeScript(
-			        	tabId,
-			          	{file: 'methods/removeEasy.js'}
-			        )
-			    	chrome.tabs.executeScript(
-			        	tabId,
-			          	{file: 'methods/watchDOMEasy.js'}
-			        )
+				if (arrOfSites.includes(pureUrl)) {
+					executeScript(tabId)('removeEasy')
+			    	executeScript(tabId)('watchDOMEasy')
 			    }
 			})
 		}
