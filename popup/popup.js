@@ -273,7 +273,6 @@ function initTutorial() {
 	querySelector('.tutorial__contact').onclick = function() {
 		const emailUrl = 'mailto:romanisthere@gmail.com'
 	    chrome.tabs.update({ url: emailUrl })
-	    _gaq.push(['_trackEvent', 'tutorial', 'contact'])
 	    return false
 	}
 	_gaq.push(['_trackEvent', 'tutorial', 'init'])

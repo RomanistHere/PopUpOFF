@@ -1,27 +1,29 @@
 // handle install
-chrome.runtime.onInstalled.addListener(function(details){
-	//call a function to handle a first install
-    if(details.reason == "install"){
-		// on for this website mode set
-		chrome.storage.sync.set({"thisWebsiteWork": []})
-		// on for this website easy mode set
-		chrome.storage.sync.set({"thisWebsiteWorkEasy": []})
+chrome.runtime.onInstalled.addListener((details) => {
+    if(details.reason == "install") {
+		// check is extension already in use at other device
+		chrome.storage.sync.get("thisWebsiteWork", (response) => {
+			if (!response.thisWebsiteWork) {
+				// set up start
+				chrome.storage.sync.set({ "thisWebsiteWork": [] })
+				chrome.storage.sync.set({ "thisWebsiteWorkEasy": [] })
 
-		// since 1.1.1 - add supervision and tutorial
-		chrome.storage.sync.set({"supervision": true})
-		chrome.storage.sync.set({"tutorial": true})
+				chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/#greetings"})
 
-		// open website
-		chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/#greetings"})
+				// since 1.1.1 - add supervision and tutorial
+				chrome.storage.sync.set({"supervision": true})
+				chrome.storage.sync.set({"tutorial": true})
+			}
+		})
 
-    } else if(details.reason == "update"){
+    } else if(details.reason == "update") {
 
     }
 })
 
 // handle tab switch
-chrome.tabs.onActivated.addListener(function(activeInfo) {
-	chrome.tabs.getSelected(null,function(tab) {
+chrome.tabs.onActivated.addListener((activeInfo) => {
+	chrome.tabs.getSelected(null, (tab) => {
 	    const url = tab.url
 	    if (url.includes("chrome://")) {
 			chrome.browserAction.disable(activeInfo.tabId)
@@ -30,13 +32,13 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 });
 
 // handle tab update
-chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
 		const url = tab.url
 		if (url.includes("chrome://")) {
 			chrome.browserAction.disable(tabId)
 		} else {
-			chrome.storage.sync.get("thisWebsiteWork", function(res) {
+			chrome.storage.sync.get("thisWebsiteWork", (res) => {
 			    const newUrl = url.substring(
 				    url.lastIndexOf("//") + 2, 
 				    url.indexOf("/", 8)
@@ -54,7 +56,7 @@ chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
 			        )
 			    }
 			})
-			chrome.storage.sync.get("thisWebsiteWorkEasy", function(res) {
+			chrome.storage.sync.get("thisWebsiteWorkEasy", (res) => {
 			    const newUrl = url.substring(
 				    url.lastIndexOf("//") + 2, 
 				    url.indexOf("/", 8)
