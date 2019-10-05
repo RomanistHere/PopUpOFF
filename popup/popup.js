@@ -12,9 +12,97 @@ import {
 
 let IS_SUPERVISION_ACTIVE
 
+const toggleThisWebSiteInp = querySelector('#toggleThisWebSiteInp')
+const toggleEasyInpThisWebSite = querySelector('#toggleEasyInpThisWebSite')
+
+const initTutorial = () => {
+	const $tutorialClass = querySelector('.tutorial')
+	const $tutorialNextLinkClass = querySelector('.tutorial__next')
+
+	const passTutorial = () => {
+		addClass($tutorialClass, 'tutorial-hid')
+		querySelector('.insturctions').textContent="Instructions"
+		setTimeout(() => {
+			addClass($tutorialClass, 'tutorial-non')
+		}, 1000)
+		storageSet({"tutorial": false})
+	}
+
+	querySelector('.insturctions').textContent="Tutorial"
+	removeClass($tutorialClass, 'tutorial-non')
+
+	querySelector('.tutorial__agree').onclick = () => {
+		addClass($tutorialClass, 'tutorial-transp')
+		addClass($tutorialClass, 'tutorial-step_1')
+	    return false
+	}
+	querySelector('.tutorial__skip').onclick = () => {
+	    passTutorial()
+	    _gaq.push(['_trackEvent', 'tutorial', 'skip'])
+	    return false
+	}
+	querySelector('.tutorial_link-finish').onclick = () => {
+	    passTutorial()
+	    _gaq.push(['_trackEvent', 'tutorial', 'pass'])
+	    return false
+	}
+
+    // waiting for refactor
+	$tutorialNextLinkClass.onclick = () => {
+	  	addClass($tutorialClass, 'tutorial-step_2')
+
+	  	$tutorialNextLinkClass.onclick = () => {
+	  		addClass($tutorialClass, 'tutorial-step_3')
+
+	  		$tutorialNextLinkClass.onclick = () => {
+	  			addClass($tutorialClass, 'tutorial-step_4')
+
+	  			$tutorialNextLinkClass.onclick = () => {
+	  				removeClass($tutorialClass, 'tutorial-transp')
+	  				addClass($tutorialClass, 'tutorial-finish')
+	  				return false
+	  			}
+
+	  			return false
+	  		}
+
+	  		return false
+	  	}
+
+	  	return false
+	}
+
+	querySelector('.tutorial__contact').onclick = () => {
+		const emailUrl = 'mailto:romanisthere@gmail.com'
+	    chrome.tabs.update({ url: emailUrl })
+	    return false
+	}
+	_gaq.push(['_trackEvent', 'tutorial', 'init'])
+}
+
+const showMessage = (className) => {
+	addClass(querySelector(className), 'message-visible')
+	if (className == '.message_forb') {
+		querySelector('.message_forb__link').onclick = () => {
+		    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+		        chrome.runtime.openOptionsPage()
+		        removeClass(querySelector(className), 'message-visible')
+		    })
+			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
+		}
+	} else {
+		querySelector('.message_reload__link').onclick = () => {
+		    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+		        removeClass(querySelector(className), 'message-visible')
+		    })
+		}
+	}		
+}
+
 const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selector2, easy) => {
-	chInput.onchange = function(element) {
-		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+	chInput.onchange = (element) => {
+		chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 			// grab pure url
 		    const newUrl = getPureURL(tabs[0])
 			// check if we're not available to use mode here
@@ -23,7 +111,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 				showMessage('.message_forb')
 				_gaq.push(['_trackEvent', 'forb_site', newUrl])
 			} else {
-				storageGet(curMode, function(res) {
+				storageGet(curMode, (res) => {
 					// arr of urls where mode is activated now
 					const curArrOfSites = res[curMode]
 					// if we toggled on
@@ -32,7 +120,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						if (isChecked(toggleThisWebSiteInp)) {
 					        if (easy) executeScriptHere('restoreEasy') 
 							// set up back
-							storageGet(otherMode, function(res) {
+							storageGet(otherMode, (res) => {
 								const curEasyArr = res[otherMode]
 								const newEasyArr = curEasyArr.filter(e => e !== newUrl)
 								storageSet({[otherMode]: newEasyArr})
@@ -67,10 +155,6 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 	}
 }
 
-
-const toggleThisWebSiteInp = querySelector('#toggleThisWebSiteInp')
-const toggleEasyInpThisWebSite = querySelector('#toggleEasyInpThisWebSite')
-
 // hard mode this site
 initToggler(
 	toggleThisWebSiteInp,
@@ -96,8 +180,8 @@ initToggler(
 // I JUST WANT TO READ
 const toggleThisPageInp = querySelector('#toggleThisPageInp')
 
-toggleThisPageInp.onchange = function(element) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+toggleThisPageInp.onchange = (element) => {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 	    const newUrl = getPureURL(tabs[0])
 		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 			toggleThisPageInp.checked = false
@@ -139,17 +223,17 @@ toggleThisPageInp.onchange = function(element) {
 }
 
 // inits input states for every popup opening
-function initState() {
-	storageGet("tutorial", function(res) {
+const initState = () => {
+	storageGet("tutorial", (res) => {
 		// if tutorial haven't passed run it
 		if (res.tutorial) initTutorial()
 	})
 
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		let isFirstModeAct = false
 	    const newUrl = getPureURL(tabs[0])
 
-		storageGet("supervision", function(res) {
+		storageGet("supervision", (res) => {
 			if (res.supervision) {
 				// variable to check if site forbidden on click
 				IS_SUPERVISION_ACTIVE = true
@@ -160,7 +244,7 @@ function initState() {
 			} else IS_SUPERVISION_ACTIVE = false
 		})
 		// hard mode this website input state
-		storageGet("thisWebsiteWork", function(res) {		
+		storageGet("thisWebsiteWork", (res) => {		
 			const blockedSitesArr = res.thisWebsiteWork
 
 			if (blockedSitesArr.includes(newUrl)) {
@@ -170,7 +254,7 @@ function initState() {
 			} 
 		})
 		// easy mode this website input state
-		storageGet("thisWebsiteWorkEasy", function(res) {
+		storageGet("thisWebsiteWorkEasy", (res) => {
 			const blockedSitesArr = res.thisWebsiteWorkEasy
 
 			if (blockedSitesArr.includes(newUrl) && !isFirstModeAct) {
@@ -182,7 +266,7 @@ function initState() {
 		chrome.tabs.sendMessage(
 	        tabs[0].id,
 	        {method: "getStatusThisPage"},
-	        function (response) {
+	        (response) => {
 	        	if (response) {
 			  		querySelector("#toggleThisPageInp").checked = true
 			  	}
@@ -192,91 +276,6 @@ function initState() {
 }
 
 initState()
-
-function showMessage(className) {
-	addClass(querySelector(className), 'message-visible')
-	if (className == '.message_forb') {
-		querySelector('.message_forb__link').onclick = function() {
-		    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		        chrome.runtime.openOptionsPage()
-		        removeClass(querySelector(className), 'message-visible')
-		    })
-			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
-		}
-	} else {
-		querySelector('.message_reload__link').onclick = function() {
-		    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
-		        removeClass(querySelector(className), 'message-visible')
-		    })
-		}
-	}		
-}
-
-function initTutorial() {
-	const $tutorialClass = querySelector('.tutorial')
-	const $tutorialNextLinkClass = querySelector('.tutorial__next')
-
-	const passTutorial = () => {
-		addClass($tutorialClass, 'tutorial-hid')
-		querySelector('.insturctions').textContent="Instructions"
-		setTimeout(() => {
-			addClass($tutorialClass, 'tutorial-non')
-		}, 1000)
-		storageSet({"tutorial": false})
-	}
-
-	querySelector('.insturctions').textContent="Tutorial"
-	removeClass($tutorialClass, 'tutorial-non')
-
-	querySelector('.tutorial__agree').onclick = function() {
-		addClass($tutorialClass, 'tutorial-transp')
-		addClass($tutorialClass, 'tutorial-step_1')
-	    return false
-	}
-	querySelector('.tutorial__skip').onclick = function() {
-	    passTutorial()
-	    _gaq.push(['_trackEvent', 'tutorial', 'skip'])
-	    return false
-	}
-	querySelector('.tutorial_link-finish').onclick = function() {
-	    passTutorial()
-	    _gaq.push(['_trackEvent', 'tutorial', 'pass'])
-	    return false
-	}
-
-    // waiting for refactor
-	$tutorialNextLinkClass.onclick = function() {
-	  	addClass($tutorialClass, 'tutorial-step_2')
-
-	  	$tutorialNextLinkClass.onclick = function() {
-	  		addClass($tutorialClass, 'tutorial-step_3')
-
-	  		$tutorialNextLinkClass.onclick = function() {
-	  			addClass($tutorialClass, 'tutorial-step_4')
-
-	  			$tutorialNextLinkClass.onclick = function() {
-	  				removeClass($tutorialClass, 'tutorial-transp')
-	  				addClass($tutorialClass, 'tutorial-finish')
-	  				return false
-	  			}
-
-	  			return false
-	  		}
-
-	  		return false
-	  	}
-
-	  	return false
-	}
-
-	querySelector('.tutorial__contact').onclick = function() {
-		const emailUrl = 'mailto:romanisthere@gmail.com'
-	    chrome.tabs.update({ url: emailUrl })
-	    return false
-	}
-	_gaq.push(['_trackEvent', 'tutorial', 'init'])
-}
 
 
 // ga
@@ -293,6 +292,6 @@ _gaq.push(['_trackPageview']);
   s.parentNode.insertBefore(ga, s);
 })();
 
-document.getElementsByClassName('insturctions')[0].addEventListener('click', function(){
+document.getElementsByClassName('insturctions')[0].addEventListener('click', () => {
 	_gaq.push(['_trackEvent', 'instructions', 'clicked'])
 })

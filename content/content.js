@@ -1,7 +1,7 @@
 // local variable for state of current page (do not work after reload)
 var	thisPageOn = false
 
-chrome.runtime.onMessage.addListener(function (msg, sender, response) {
+chrome.runtime.onMessage.addListener((msg, sender, response) => {
 	if (msg.method === "getStatusThisPage") {
 		response(thisPageOn)
 	}
@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, response) {
 	return true
 })
 
-document.onkeydown = function(e) {
+document.onkeydown = (e) => {
 	if (e.altKey && e.which == 88) {
 		e.preventDefault()
 		console.log("Hey!")
