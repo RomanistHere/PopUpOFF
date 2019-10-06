@@ -29,7 +29,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     }
 })
 
-// handle tab switch
+// handle tab switch(focus)
 chrome.tabs.onActivated.addListener((activeInfo) => {
 	chrome.tabs.getSelected(null, (tab) => {
 	    const url = tab.url
@@ -37,9 +37,9 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 			chrome.browserAction.disable(activeInfo.tabId)
 		}
     })
-});
+})
 
-// handle tab update
+// handle tab update(open, reload)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
 		const url = tab.url
@@ -68,6 +68,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	}	
 })
 
+// messages handling. Currently responsible for "alt + x" key comb
 chrome.runtime.onMessage.addListener(
   	function(request, sender, sendResponse) {
   		if (sender.tab) {
@@ -87,4 +88,4 @@ chrome.runtime.onMessage.addListener(
 				})
   			}
   		}
-});
+})

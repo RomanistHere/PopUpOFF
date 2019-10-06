@@ -1,27 +1,33 @@
-let supervisionToggle = document.getElementById("supervisionToggle")
+import { 
+	storageSet,
+	storageGet,
+	querySelector,
+} from '../constants/functions.js'
 
-chrome.storage.sync.get("supervision", function(res) {
+const supervisionToggle = querySelector("#supervisionToggle")
+
+storageGet("supervision", (res) => {
 	if (res.supervision) {
 		supervisionToggle.checked = true
 	} else {
-		document.querySelector('.supervisionText').textContent = 'ON'
+		querySelector('.supervisionText').textContent = 'ON'
 		supervisionToggle.checked = false
 	}
 })
 
-supervisionToggle.onchange = function(element) {
+supervisionToggle.onchange = (element) => {
 	if (supervisionToggle.checked) {
-		chrome.storage.sync.set({"supervision": true})
-		document.querySelector('.supervisionText').textContent = 'OFF'
+		storageSet({"supervision": true})
+		querySelector('.supervisionText').textContent = 'OFF'
 	} else {
-		chrome.storage.sync.set({"supervision": false})
-		document.querySelector('.supervisionText').textContent = 'ON'
+		storageSet({"supervision": false})
+		querySelector('.supervisionText').textContent = 'ON'
 	}
 }
 
-let tutorialToggle = document.getElementById("tutorialToggle")
+const tutorialToggle = querySelector("#tutorialToggle")
 
-chrome.storage.sync.get("tutorial", function(res) {
+storageGet("tutorial", (res) => {
 	if (res.tutorial) {
 		tutorialToggle.checked = true
 	} else {
@@ -29,10 +35,10 @@ chrome.storage.sync.get("tutorial", function(res) {
 	}
 })
 
-tutorialToggle.onchange = function(element) {
+tutorialToggle.onchange = (element) => {
 	if (tutorialToggle.checked) {
-		chrome.storage.sync.set({"tutorial": true})
+		storageSet({"tutorial": true})
 	} else {
-		chrome.storage.sync.set({"tutorial": false})
+		storageSet({"tutorial": false})
 	}
 }
