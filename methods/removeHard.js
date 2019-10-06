@@ -35,7 +35,7 @@ function removeFixedElems() {
 	        	$elems[i].setAttribute('data-popupoffExtension', 'hello')
 	        }
 	        setPropImp($elems[i], "display", "none")
-	        setTimeout(() => setPropImp($elems[i], "display", "none"), 10);
+	        setTimeout(() => $elems[i] ? setPropImp($elems[i], "display", "none") : false, 10)
 	    }
 
 	    if ((getStyle($elems[i], 'filter') != 'none') ||

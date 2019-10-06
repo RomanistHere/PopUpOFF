@@ -1,4 +1,4 @@
-import { ARR_OF_FORB_SITES } from '../constants/data.js'
+import { ARR_OF_FORB_SITES, emailUrl } from '../constants/data.js'
 import { 
 	querySelector,
 	isChecked,
@@ -8,6 +8,8 @@ import {
 	storageGet,
 	executeScriptHere,
 	getPureURL,
+	setBadgeText,
+	resetBadgeText,
 } from '../constants/functions.js'
 
 let IS_SUPERVISION_ACTIVE
@@ -73,7 +75,6 @@ const initTutorial = () => {
 	}
 
 	querySelector('.tutorial__contact').onclick = () => {
-		const emailUrl = 'mailto:romanisthere@gmail.com'
 	    chrome.tabs.update({ url: emailUrl })
 	    return false
 	}
@@ -105,6 +106,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 		chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 			// grab pure url
 		    const newUrl = getPureURL(tabs[0])
+		    const tabID = tabs[0].id
 			// check if we're not available to use mode here
 			if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 				chInput.checked = false
@@ -129,6 +131,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 							otherInput.checked = false
 							querySelector(selector1).textContent="on"
 						}
+						easy ? setBadgeText('E')(tabID) : setBadgeText('H')(tabID)
 						// execute methods
 						executeScriptHere(easy ? 'removeEasy' : 'removeHard')
 						executeScriptHere(easy ? 'watchDOMEasy' : 'watchDOM')
@@ -141,6 +144,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 					} else {
 						if (!isChecked(toggleThisPageInp)) {
 					        executeScriptHere('restore')
+					        resetBadgeText(tabID)
 						}
 						// set up back
 						const newArrOfSites = curArrOfSites.filter(e => e !== newUrl)

@@ -2,7 +2,8 @@ import {
 	executeScript,
 	storageSet,
 	storageGet,
-	getPureURL
+	getPureURL,
+	setBadgeText
 } from '../constants/functions.js'
 
 // handle install
@@ -35,7 +36,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 	    if (url.includes("chrome://")) {
 			chrome.browserAction.disable(activeInfo.tabId)
 		}
-   })
+    })
 });
 
 // handle tab update
@@ -48,13 +49,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		} else {
 			const pureUrl = getPureURL({ url })
 			storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
+				console.log(res)
 				const arrOfSites = res.thisWebsiteWork
 				const arrOfEasySites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(pureUrl)) {
+			    	setBadgeText("H")(tabId)
+
 					executeScript(tabId)('removeHard')
 			    	executeScript(tabId)('watchDOM')
-			    }
-				if (arrOfEasySites.includes(pureUrl)) {
+			    } else if (arrOfEasySites.includes(pureUrl)) {
+			    	setBadgeText("E")(tabId)
+
 					executeScript(tabId)('removeEasy')
 			    	executeScript(tabId)('watchDOMEasy')
 			    }
@@ -71,10 +76,13 @@ chrome.runtime.onMessage.addListener(
   				storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
 					const arrOfSites = res.thisWebsiteWork
 					if (!arrOfSites.includes(pureUrl)) {
+				        setBadgeText("H")(sender.tab.id)
+			    		
 				    	const newArrOfSites = [...arrOfSites, pureUrl]
+				        storageSet({ "thisWebsiteWork": newArrOfSites })
+
 				        executeScript(sender.tab.id)('removeHard')
 			    		executeScript(sender.tab.id)('watchDOM')
-				        storageSet({ "thisWebsiteWork": newArrOfSites })
 				    }
 				})
   			}

@@ -9,7 +9,17 @@ const removeClass = (node, className) => node.classList.remove(className)
 // Chrome store
 const storageSet = (changes) => chrome.storage.sync.set(changes)
 const storageGet = (request, f) => chrome.storage.sync.get(request, f)
-
+// Browser actions. Badge - text at right bottom corner of extension's icon 
+const setBadgeText = (text) => 
+	(tabID) => {
+		chrome.browserAction.setBadgeText({
+			text: text ? text : "",
+			tabId: tabID ? tabID : null
+		})
+		chrome.browserAction.setBadgeBackgroundColor({ color: "#222831" })
+	}
+const resetBadgeText = setBadgeText('')
+// Curried execute script
 const executeScript = (tabId) => 
 	(methodName) => 
 		chrome.tabs.executeScript(
@@ -28,4 +38,6 @@ export {
 	executeScript,
 	executeScriptHere,
 	getPureURL,
+	setBadgeText,
+	resetBadgeText,
 }
