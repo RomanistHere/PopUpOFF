@@ -134,7 +134,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						executeScriptHere(easy ? 'watchDOMEasy' : 'watchDOM')
 						// set up back
 						const newArrOfSites = [...curArrOfSites, newUrl]
-				        storageSet({[curMode]: newArrOfSites})					
+				        storageSet({[curMode]: newArrOfSites})
 						// visual
 						querySelector(selector2).textContent="off"
 						_gaq.push(['_trackEvent', chInput, 'on'])

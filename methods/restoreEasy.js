@@ -1,14 +1,5 @@
-chrome.storage.sync.get("autoWork", function(res) {
-	// check if we gonna remove or restore elems
-	if (res.autoWork) {
-
-	} else {
-		restoreFixedElems()
-	}
-})
-
 // restore elems when turn off extension by uniq data-atr
-function restoreFixedElems() {
+var restoreFixedElems = () => {
 	const ELEMS = document.querySelectorAll('[data-popupoffExtension]')
 	const LEN = ELEMS.length
 
@@ -57,4 +48,11 @@ function restoreFixedElems() {
 	}
 }
 
-	
+chrome.storage.sync.get("autoWork", (res) => {
+	// check if we gonna remove or restore elems
+	if (res.autoWork) {
+
+	} else {
+		restoreFixedElems()
+	}
+})

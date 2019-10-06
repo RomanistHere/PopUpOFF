@@ -9,8 +9,8 @@ import {
 chrome.runtime.onInstalled.addListener((details) => {
     if(details.reason == "install") {
 		// check is extension already in use at other device
-		storageGet("thisWebsiteWork", (response) => {
-			if (!response.thisWebsiteWork) {
+		storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (response) => {
+			if (!response.thisWebsiteWork || !response.thisWebsiteWorkEasy) {
 				// set up start
 				storageSet({
 					"thisWebsiteWork": [],
@@ -24,12 +24,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 		})
 
     } else if(details.reason == "update") {
-  //   	storageGet("thisWebsiteWork", (response) => {
-		// 	console.log(response)
-		// })
-  //   	storageGet("thisWebsiteWorkEasy", (response) => {
-		// 	console.log(response)
-		// })
+    	
     }
 })
 
@@ -52,18 +47,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 			chrome.browserAction.disable(tabId)
 		} else {
 			const pureUrl = getPureURL({ url })
-
-			storageGet("thisWebsiteWork", (res) => {
+			storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
 				const arrOfSites = res.thisWebsiteWork
+				const arrOfEasySites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(pureUrl)) {
 					executeScript(tabId)('removeHard')
 			    	executeScript(tabId)('watchDOM')
 			    }
-			})
-
-			storageGet("thisWebsiteWorkEasy", (res) => {
-				const arrOfSites = res.thisWebsiteWorkEasy
-				if (arrOfSites.includes(pureUrl)) {
+				if (arrOfEasySites.includes(pureUrl)) {
 					executeScript(tabId)('removeEasy')
 			    	executeScript(tabId)('watchDOMEasy')
 			    }
@@ -71,3 +62,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		}
 	}	
 })
+
+chrome.runtime.onMessage.addListener(
+  	function(request, sender, sendResponse) {
+  		if (sender.tab) {
+  			const pureUrl = getPureURL(sender)
+  			if (request.hardMode) {
+  				storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
+					const arrOfSites = res.thisWebsiteWork
+					if (!arrOfSites.includes(pureUrl)) {
+				    	const newArrOfSites = [...arrOfSites, pureUrl]
+				        executeScript(sender.tab.id)('removeHard')
+			    		executeScript(sender.tab.id)('watchDOM')
+				        storageSet({ "thisWebsiteWork": newArrOfSites })
+				    }
+				})
+  			}
+  		}
+});

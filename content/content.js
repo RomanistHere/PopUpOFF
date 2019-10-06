@@ -11,14 +11,14 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
 	return true
 })
 
-document.onkeydown = (e) => {
+var keyDownCallBack = (e) => {
 	if (e.altKey && e.which == 88) {
 		e.preventDefault()
-		console.log("Hey!")
+		chrome.runtime.sendMessage({ hardMode: true })
 	}
 }
 
-function debounce(func, wait, immediate) {
+var debounce = (func, wait, immediate) => {
 	var timeout
 	return function() {
 		var context = this, args = arguments
@@ -33,4 +33,4 @@ function debounce(func, wait, immediate) {
 	}
 }
 
-// function trig
+document.onkeydown = debounce(keyDownCallBack, 100)
