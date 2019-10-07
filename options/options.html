@@ -2,22 +2,7 @@
 <html>
   <head>
     <link rel="stylesheet" href="../css/index.css">
-    <style>
-      html {
-          height: 540px;
-          display: flex;
-          align-items: center;
-      }
-      body {
-          width: 600px;
-      }
-      .string{
-        margin-top: 18px;
-      }
-      .string:nth-last-child(2){
-        margin-bottom: 29px;
-      }
-    </style>
+    <link rel="stylesheet" href="../css/options.css">
   </head>
   <body>
     <h2 class="options__header options_text">
@@ -56,6 +41,15 @@
     <h2 class="options__header options_text">
       Keyboard shortcut
     </h2>
+    <p class="options__desc options_text">
+      Currently you can not change shortcut itself. <span class="options_text-col">It is "Alt + x".</span> But you can choose what mode it will turn on.
+    </p>
+    <div class="options__slider slider">
+      <span class="slider__text options_text slider__left slider__easy">Easy</span>
+      <span class="slider__text slider__text-active options_text slider__center slider__dis">Disabled</span>
+      <span class="slider__text options_text slider__right slider__hard">Hard</span>
+      <input class="slider__input" type="range" min="1" max="3" value="2">
+    </div>
     <script type="module" src="options.js"></script>
   </body>
 </html>

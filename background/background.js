@@ -1,3 +1,4 @@
+import { ARR_OF_FORB_SITES } from '../constants/data.js'
 import { 
 	executeScript,
 	storageSet,
@@ -49,7 +50,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		} else {
 			const pureUrl = getPureURL({ url })
 			storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
-				console.log(res)
+				// console.log(res)
 				const arrOfSites = res.thisWebsiteWork
 				const arrOfEasySites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(pureUrl)) {
@@ -74,17 +75,23 @@ chrome.runtime.onMessage.addListener(
   		if (sender.tab) {
   			const pureUrl = getPureURL(sender)
   			if (request.hardMode) {
-  				storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
-					const arrOfSites = res.thisWebsiteWork
-					if (!arrOfSites.includes(pureUrl)) {
-				        setBadgeText("H")(sender.tab.id)
-			    		
-				    	const newArrOfSites = [...arrOfSites, pureUrl]
-				        storageSet({ "thisWebsiteWork": newArrOfSites })
+				storageGet("supervision", (res) => {
+					if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
+						// do nothing
+					} else {
+						storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
+							const arrOfSites = res.thisWebsiteWork
+							if (!arrOfSites.includes(pureUrl)) {
+						        setBadgeText("H")(sender.tab.id)
+					    		
+						    	const newArrOfSites = [...arrOfSites, pureUrl]
+						        storageSet({ "thisWebsiteWork": newArrOfSites })
 
-				        executeScript(sender.tab.id)('removeHard')
-			    		executeScript(sender.tab.id)('watchDOM')
-				    }
+						        executeScript(sender.tab.id)('removeHard')
+					    		executeScript(sender.tab.id)('watchDOM')
+						    }
+						})
+					}
 				})
   			}
   		}

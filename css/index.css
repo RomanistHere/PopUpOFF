@@ -441,26 +441,3 @@ body {
 .insturctions:hover {
   color: #efbb35
 }
-/*options page*/
-.options_text{
-  color: #f9ffee;
-  font-size: 16px;
-}
-
-.options__header{
-  text-align: center;
-
-  color: #efbb35;
-  font-size: 18px;
-  font-weight: 300;
-
-  padding-top: 10px;
-}
-
-.options__desc{
-  padding: 0 22px;
-}
-
-.options_text-col{
-  color: #efbb35;
-}
