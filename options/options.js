@@ -19,10 +19,10 @@ storageGet("supervision", (res) => {
 
 supervisionToggle.onchange = (element) => {
 	if (supervisionToggle.checked) {
-		storageSet({"supervision": true})
+		storageSet({ "supervision": true })
 		querySelector('.supervisionText').textContent = 'OFF'
 	} else {
-		storageSet({"supervision": false})
+		storageSet({ "supervision": false })
 		querySelector('.supervisionText').textContent = 'ON'
 	}
 }
@@ -39,9 +39,9 @@ storageGet("tutorial", (res) => {
 
 tutorialToggle.onchange = (element) => {
 	if (tutorialToggle.checked) {
-		storageSet({"tutorial": true})
+		storageSet({ "tutorial": true })
 	} else {
-		storageSet({"tutorial": false})
+		storageSet({ "tutorial": false })
 	}
 }
 
@@ -51,16 +51,41 @@ const sliderTextRight = querySelector('.slider__right')
 const sliderTextCenter = querySelector('.slider__center')
 const sliderTextArr = document.querySelectorAll('.slider__text')
 
+sliderTextArr.forEach(item => item.addEventListener('click', (e) => {
+	slider.value = e.target.dataset.value
+	slider.dispatchEvent(new Event('input'))
+}))
+
 slider.oninput = (e) => {
   if(e.target.value == 2) {
+  	// vizual
     removeClass(slider, 'slider__input-active')
-    sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
     addClass(sliderTextCenter, 'slider__text-active')
-  } else {
     sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
+
+    storageSet({ "shortCutMode": false })
+  } else {
     addClass(slider, 'slider__input-active')
-    e.target.value == 1 ? 
-      addClass(sliderTextLeft, 'slider__text-active') :
-      addClass(sliderTextRight, 'slider__text-active')
+    sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
+
+    if (e.target.value == 1) {
+    	addClass(sliderTextLeft, 'slider__text-active')
+    	storageSet({ "shortCutMode": "thisWebsiteWorkEasy" })
+    } else {
+    	addClass(sliderTextRight, 'slider__text-active')
+    	storageSet({ "shortCutMode": "thisWebsiteWork" })
+    }
   }
 }
+
+storageGet("shortCutMode", (res) => {
+	if (!res.shortCutMode) {
+		slider.value = 2
+	} else {
+		addClass(slider, 'slider__input-active')
+    	sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
+
+    	slider.value = (res.shortCutMode == 'thisWebsiteWorkEasy') ? 1 : 3
+    	addClass((res.shortCutMode == 'thisWebsiteWorkEasy') ? sliderTextLeft : sliderTextRight, 'slider__text-active')
+	}
+})

@@ -52,10 +52,18 @@ body{
   position: absolute;
 
   transition: all ease .5s;
+
+  cursor: pointer;
 }
 
-.slider__text-active{
+.slider__text:hover{
   color: #efbb35;
+}
+
+.slider__text-active,
+.slider__text-active:hover{
+  color: #6bb756;
+  cursor: default;
 }
 
 .slider__input{

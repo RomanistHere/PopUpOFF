@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 		})
 
     } else if(details.reason == "update") {
-    	
+    	storageSet({ "shortCutMode": false })
     }
 })
 
@@ -50,7 +50,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		} else {
 			const pureUrl = getPureURL({ url })
 			storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
-				// console.log(res)
+				console.log(res)
 				const arrOfSites = res.thisWebsiteWork
 				const arrOfEasySites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(pureUrl)) {
@@ -70,29 +70,34 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 })
 
 // messages handling. Currently responsible for "alt + x" key comb
-chrome.runtime.onMessage.addListener(
-  	function(request, sender, sendResponse) {
-  		if (sender.tab) {
-  			const pureUrl = getPureURL(sender)
-  			if (request.hardMode) {
-				storageGet("supervision", (res) => {
-					if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
-						// do nothing
-					} else {
-						storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
-							const arrOfSites = res.thisWebsiteWork
-							if (!arrOfSites.includes(pureUrl)) {
-						        setBadgeText("H")(sender.tab.id)
-					    		
-						    	const newArrOfSites = [...arrOfSites, pureUrl]
-						        storageSet({ "thisWebsiteWork": newArrOfSites })
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	console.log(sender)
+	if (sender.tab) {
+		const tabId = sender.tab.id
+		const pureUrl = getPureURL(sender)
+		if (request.hardMode) {
+			storageGet(["supervision", "shortCutMode"], (res) => {
+				const mode = res.shortCutMode
+				console.log(mode)
+				if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
+					// do nothing
+				} else if (mode) {
+					storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
+						// need to check both arrays
+						console.log(res)
+						const arrOfSites = res[mode]
+						if (!arrOfSites.includes(pureUrl)) {
+					        setBadgeText("H")(tabId)
+				    		
+					    	const newArrOfSites = [...arrOfSites, pureUrl]
+					        storageSet({ [mode]: newArrOfSites })
 
-						        executeScript(sender.tab.id)('removeHard')
-					    		executeScript(sender.tab.id)('watchDOM')
-						    }
-						})
-					}
-				})
-  			}
-  		}
+					        executeScript(tabId)('removeHard')
+				    		executeScript(tabId)('watchDOM')
+					    }
+					})
+				}
+			})
+		}
+	}
 })

@@ -42,12 +42,12 @@
       Keyboard shortcut
     </h2>
     <p class="options__desc options_text">
-      Currently you can not change shortcut itself. <span class="options_text-col">It is "Alt + x".</span> But you can choose what mode it will turn on.
+      Currently you can not change shortcut itself. <span class="options_text-col">It is "Alt + x".</span> But you can choose what mode it activates.
     </p>
     <div class="options__slider slider">
-      <span class="slider__text options_text slider__left slider__easy">Easy</span>
-      <span class="slider__text slider__text-active options_text slider__center slider__dis">Disabled</span>
-      <span class="slider__text options_text slider__right slider__hard">Hard</span>
+      <span data-value="1" class="slider__text options_text slider__left slider__easy">Easy</span>
+      <span data-value="2" class="slider__text slider__text-active options_text slider__center slider__dis">Disable</span>
+      <span data-value="3" class="slider__text options_text slider__right slider__hard">Hard</span>
       <input class="slider__input" type="range" min="1" max="3" value="2">
     </div>
     <script type="module" src="options.js"></script>
