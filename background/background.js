@@ -9,24 +9,24 @@ import {
 
 // handle install
 chrome.runtime.onInstalled.addListener((details) => {
-    if(details.reason == "install") {
+    if(details.reason == 'install') {
 		// check is extension already in use at other device
-		storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (response) => {
+		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (response) => {
 			if (!response.thisWebsiteWork || !response.thisWebsiteWorkEasy) {
 				// set up start
 				storageSet({
-					"thisWebsiteWork": [],
-					"thisWebsiteWorkEasy": [],
-					"supervision": true,
-					"tutorial": true,
+					'thisWebsiteWork': [],
+					'thisWebsiteWorkEasy': [],
+					'supervision': true,
+					'tutorial': true,
 				})
 
-				chrome.tabs.create({url: "https://romanisthere.github.io/PopUpOFF-Website/#greetings"})
+				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/#greetings'})
 			}
 		})
 
-    } else if(details.reason == "update") {
-    	storageSet({ "shortCutMode": false })
+    } else if(details.reason == 'update') {
+    	storageSet({ 'shortCutMode': false })
     }
 })
 
@@ -34,7 +34,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.tabs.onActivated.addListener((activeInfo) => {
 	chrome.tabs.getSelected(null, (tab) => {
 	    const url = tab.url
-	    if (url.includes("chrome://")) {
+	    if (url.includes('chrome://')) {
 			chrome.browserAction.disable(activeInfo.tabId)
 		}
     })
@@ -45,21 +45,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
 		const url = tab.url
 
-		if (url.includes("chrome://")) {
+		if (url.includes('chrome://')) {
 			chrome.browserAction.disable(tabId)
 		} else {
 			const pureUrl = getPureURL({ url })
-			storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
+			storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
 				console.log(res)
 				const arrOfSites = res.thisWebsiteWork
 				const arrOfEasySites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(pureUrl)) {
-			    	setBadgeText("H")(tabId)
+			    	setBadgeText('H')(tabId)
 
 					executeScript(tabId)('removeHard')
 			    	executeScript(tabId)('watchDOM')
 			    } else if (arrOfEasySites.includes(pureUrl)) {
-			    	setBadgeText("E")(tabId)
+			    	setBadgeText('E')(tabId)
 
 					executeScript(tabId)('removeEasy')
 			    	executeScript(tabId)('watchDOMEasy')
@@ -69,31 +69,39 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	}	
 })
 
-// messages handling. Currently responsible for "alt + x" key comb
+// messages handling. Currently responsible for 'alt + x' key comb
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	console.log(sender)
 	if (sender.tab) {
 		const tabId = sender.tab.id
 		const pureUrl = getPureURL(sender)
 		if (request.hardMode) {
-			storageGet(["supervision", "shortCutMode"], (res) => {
+			storageGet(['supervision', 'shortCutMode'], (res) => {
 				const mode = res.shortCutMode
 				console.log(mode)
 				if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
 					// do nothing
 				} else if (mode) {
-					storageGet(["thisWebsiteWork", "thisWebsiteWorkEasy"], (res) => {
+					storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
 						// need to check both arrays
 						console.log(res)
-						const arrOfSites = res[mode]
+						const isHard = (mode == 'thisWebsiteWork') ? true : false
+						const arrOfSites = res[isHard ? 'thisWebsiteWork' : 'thisWebsiteWorkEasy']
+						const oppArrOfSites = res[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']
+
 						if (!arrOfSites.includes(pureUrl)) {
-					        setBadgeText("H")(tabId)
+					        setBadgeText(isHard ? 'H' : 'E')(tabId)
 				    		
 					    	const newArrOfSites = [...arrOfSites, pureUrl]
 					        storageSet({ [mode]: newArrOfSites })
 
-					        executeScript(tabId)('removeHard')
-				    		executeScript(tabId)('watchDOM')
+					        executeScript(tabId)(isHard ? 'removeHard' : 'removeEasy')
+				    		executeScript(tabId)(isHard ? 'watchDOM' : 'watchDOMEasy')
+				    		if (oppArrOfSites.includes(pureUrl)) {
+				    			// check if website is in opposite mode array
+				    			const newOppArrOfSites = oppArrOfSites.filter(e => e !== pureUrl)
+				    			storageSet({[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']: newOppArrOfSites})
+				    		}
 					    }
 					})
 				}
