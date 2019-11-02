@@ -19,14 +19,20 @@ chrome.runtime.onInstalled.addListener((details) => {
 					'thisWebsiteWorkEasy': [],
 					'supervision': true,
 					'tutorial': true,
+					'shortCutMode': false,
 				})
 
 				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/#greetings'})
 			}
 		})
-
     } else if(details.reason == 'update') {
+    	// update to 1.1.3 only
     	storageSet({ 'shortCutMode': false })
+    	storageGet('tutorial', (response) => {
+    		if (!response.tutorial) {
+    			storageSet({ showUpdMess: true })
+    		}
+    	})
     }
 })
 
@@ -71,20 +77,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // messages handling. Currently responsible for 'alt + x' key comb
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	console.log(sender)
 	if (sender.tab) {
 		const tabId = sender.tab.id
 		const pureUrl = getPureURL(sender)
 		if (request.hardMode) {
 			storageGet(['supervision', 'shortCutMode'], (res) => {
 				const mode = res.shortCutMode
-				console.log(mode)
 				if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
 					// do nothing
 				} else if (mode) {
 					storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
 						// need to check both arrays
-						console.log(res)
 						const isHard = (mode == 'thisWebsiteWork') ? true : false
 						const arrOfSites = res[isHard ? 'thisWebsiteWork' : 'thisWebsiteWorkEasy']
 						const oppArrOfSites = res[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']
