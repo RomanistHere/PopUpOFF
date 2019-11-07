@@ -213,6 +213,7 @@ body {
   transition: all ease 1s;
   transform: translateY(100%)
 }
+
 .message__link {
   display: flex;
   justify-content: center;
@@ -227,20 +228,28 @@ body {
   border: 1px solid #efbb35;
   border-radius: 6px
 }
+
 .message-color{
   color: #efbb35;
+
   padding-left: 3px;
+
+  transition: all ease 1s;
 }
+
 .message__link:hover {
   color: #efbb35;
   border-color: #f9ffee
 }
+
 .message__link:hover .message-color{
   color: #f9ffee;
 }
+
 .message-visible {
   transform: translateY(-8px)
 }
+
 .tutorial-trs{
   transition: all ease .6s;
 }
@@ -294,6 +303,17 @@ body {
   padding: 10px 20px;
   display: block;
 }
+.tutorial_to_options{
+  display: inline;
+
+  padding: 0;
+
+  color: #efbb35;
+  transition: all ease 1s;
+}
+.tutorial__no_marg_top{
+  margin-top: 0;
+}
 .tutorial__text{
   font-weight: 300;
   color: #f9ffee;
@@ -332,7 +352,8 @@ body {
 .tutorial__next{
   color: #efbb35;
 }
-.tutorial__next:hover{
+.tutorial__next:hover,
+.tutorial_to_options:hover{
   color: #f9ffee;
 }
 .tutorial_link-finish{

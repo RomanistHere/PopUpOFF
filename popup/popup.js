@@ -48,6 +48,11 @@ const initTutorial = () => {
 	    _gaq.push(['_trackEvent', 'tutorial', 'pass'])
 	    return false
 	}
+	querySelector('.tutorial_to_options').onclick = () => {
+		chrome.runtime.openOptionsPage()
+		passTutorial()
+		return false
+	}
 
     // waiting for refactor
 	$tutorialNextLinkClass.onclick = () => {
@@ -74,10 +79,10 @@ const initTutorial = () => {
 	  	return false
 	}
 
-	querySelector('.tutorial__contact').onclick = () => {
-	    chrome.tabs.update({ url: emailUrl })
-	    return false
-	}
+	// querySelector('.tutorial__contact').onclick = () => {
+	//     chrome.tabs.update({ url: emailUrl })
+	//     return false
+	// }
 	_gaq.push(['_trackEvent', 'tutorial', 'init'])
 }
 
@@ -85,20 +90,24 @@ const showMessage = (className) => {
 	addClass(querySelector(className), 'message-visible')
 	if (className == '.message_forb') {
 		querySelector('.message_forb__link').onclick = () => {
-		    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-		        chrome.runtime.openOptionsPage()
-		        removeClass(querySelector(className), 'message-visible')
-		    })
+	        chrome.runtime.openOptionsPage()
+	        removeClass(querySelector(className), 'message-visible')
 			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
+			return false
 		}
-	} else {
+	} else if (className == '.message_reload') {
 		querySelector('.message_reload__link').onclick = () => {
 		    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
 		        removeClass(querySelector(className), 'message-visible')
 		    })
+		    return false
 		}
-	}		
+	} else if (className == '.message_upd') {
+		querySelector('.message_upd__link').onclick = () => {
+			storageSet({ "showUpdMess": false })
+		}
+	}
 }
 
 const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selector2, easy) => {
@@ -228,9 +237,10 @@ toggleThisPageInp.onchange = (element) => {
 
 // inits input states for every popup opening
 const initState = () => {
-	storageGet("tutorial", (res) => {
+	storageGet(["tutorial", "showUpdMess"], (res) => {
 		// if tutorial haven't passed run it
 		if (res.tutorial) initTutorial()
+		if (res.showUpdMess) setTimeout(() => { showMessage('.message_upd') }, 100)
 	})
 
 	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
