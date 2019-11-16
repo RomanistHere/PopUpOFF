@@ -11,6 +11,10 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
 	return true
 })
 
+document.addEventListener('openOptPage', (e) => {
+	chrome.runtime.sendMessage({ openOptPage: true })
+})
+
 var keyDownCallBack = (e) => {
 	if (e.altKey && e.which == 88) {
 		e.preventDefault()

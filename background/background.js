@@ -109,6 +109,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 					})
 				}
 			})
+		} else if (request.openOptPage) {
+			chrome.runtime.openOptionsPage()
 		}
 	}
+	console.log(sender, request)
 })
