@@ -1,0 +1,1 @@
+var restoreFixedElems=()=>{const e=document.querySelectorAll("[data-popupoffExtension]"),o=e.length;for(let r=0;r<o;r++)e[r].style.display=null;dom_observer&&dom_observer.disconnect(),dom_observer_new&&dom_observer_new.disconnect()};chrome.storage.sync.get("autoWorkEasy",e=>{e.autoWorkEasy||chrome.storage.sync.get("autoWork",e=>{e.autoWork||restoreFixedElems()})});

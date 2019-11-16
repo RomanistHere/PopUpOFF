@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/options.css">
+  </head>
+  <body>
+    <h2 class="options__header options_text">
+      Developer's supervision
+    </h2>
+    <p class="options__desc options_text">
+      There is a list of websites where PopUpOFF is not working by default. These websites do not show popups but use same mechanic to display information to user. If you enable it there accidentally, you could hide some important information from yourself.
+    </p>
+    <p class="options__desc options_text">
+      Disabling this "parent control" is highly not recommended. If you do it, responsibility for further using would be only on you.
+    </p>
+    <div class="string">
+      <div class="toggle toggle--push toggle--push--glow">
+        <input type="checkbox" id="supervisionToggle" class="toggle--checkbox">
+        <label class="toggle--btn" for="supervisionToggle" data-label-on="on"  data-label-off="off"></label>
+      </div>
+      <label for="supervisionToggle" class="desc">
+        Turn supervision <span class="supervisionText">OFF</span> 
+      </label>
+    </div>
+    <p class="options__desc options_text">
+      List of disabled websites: <span class="options_text-col">YouTube Music, YouTube, LinkedIn, Twitter, Facebook, Google, Reddit, Instagram, Baidu, Amazon, Pinterest, VK, Trello, Google Calendar</span>
+    </p>
+    <h2 class="options__header options_text">
+      Tutorial
+    </h2>
+    <div class="string">
+      <div class="toggle toggle--push toggle--push--glow">
+        <input type="checkbox" id="tutorialToggle" class="toggle--checkbox">
+        <label class="toggle--btn" for="tutorialToggle" data-label-on="on"  data-label-off="off"></label>
+      </div>
+      <label for="tutorialToggle" class="desc">
+        Show tutorial next time you open PopUpOFF
+      </label>
+    </div>
+    <h2 class="options__header options_text">
+      Keyboard shortcut
+    </h2>
+    <p class="options__desc options_text">
+      Currently you can not change shortcut itself. It is <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span> (Hi Apple). But you can choose what mode it activates.
+    </p>
+    <div class="options__slider slider">
+      <span data-value="1" class="slider__text options_text slider__left slider__easy">Easy</span>
+      <span data-value="2" class="slider__text options_text slider__center slider__dis">Disable</span>
+      <span data-value="3" class="slider__text options_text slider__right slider__hard">Hard</span>
+      <input class="slider__input" type="range" min="1" max="3" value="2">
+    </div>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
