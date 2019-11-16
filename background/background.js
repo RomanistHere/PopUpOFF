@@ -113,5 +113,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			chrome.runtime.openOptionsPage()
 		}
 	}
-	console.log(sender, request)
 })
