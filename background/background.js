@@ -56,7 +56,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		} else {
 			const pureUrl = getPureURL({ url })
 			storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
-				console.log(res)
 				const arrOfSites = res.thisWebsiteWork
 				const arrOfEasySites = res.thisWebsiteWorkEasy
 				if (arrOfSites.includes(pureUrl)) {
