@@ -32,6 +32,12 @@ It's open source, so you can see what data I track. What mode you use, and what 
 #### Future
 I want to implement automatic mode, based on user's list of blocked websites. So will be no reason to open extension and click some weird-named modes. But we need a lot of people here, so this data base will be uploading properly. But it's really far away right now.</br></br>
 #### Changelog:
+1.1.3
+- add icon displaying active mode
+- add keyboard shortcut "Alt + x"(Cmd + shift + x for Mac) activating choosen within options page mode
+- refactor code, improve performance, restructure
+- fix bug with multiply browsers used for a single account
+
 1.1.2
 - add blur detection and removing to each mode
 
