@@ -26,13 +26,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 			}
 		})
     } else if(details.reason == 'update') {
-    	// update to 1.1.3 only
-    	storageSet({ 'shortCutMode': false })
-    	storageGet('tutorial', (response) => {
-    		if (!response.tutorial) {
-    			storageSet({ showUpdMess: true })
-    		}
-    	})
+    	
     }
 })
 
@@ -63,11 +57,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 					executeScript(tabId)('removeHard')
 			    	executeScript(tabId)('watchDOM')
+			    	executeScript(tabId)('showAll')
 			    } else if (arrOfEasySites.includes(pureUrl)) {
 			    	setBadgeText('E')(tabId)
 
 					executeScript(tabId)('removeEasy')
 			    	executeScript(tabId)('watchDOMEasy')
+			    	executeScript(tabId)('showAll')
 			    }
 			})
 		}
@@ -99,6 +95,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 					        executeScript(tabId)(isHard ? 'removeHard' : 'removeEasy')
 				    		executeScript(tabId)(isHard ? 'watchDOM' : 'watchDOMEasy')
+				    		executeScript(tabId)('showAll')
 				    		if (oppArrOfSites.includes(pureUrl)) {
 				    			// check if website is in opposite mode array
 				    			const newOppArrOfSites = oppArrOfSites.filter(e => e !== pureUrl)

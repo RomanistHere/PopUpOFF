@@ -1,4 +1,4 @@
-function removeFixedElems() {
+var removeFixedElems = () => {
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
 

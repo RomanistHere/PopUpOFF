@@ -144,6 +144,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						// execute methods
 						executeScriptHere(easy ? 'removeEasy' : 'removeHard')
 						executeScriptHere(easy ? 'watchDOMEasy' : 'watchDOM')
+						executeScriptHere('showAll')
 						// set up back
 						const newArrOfSites = [...curArrOfSites, newUrl]
 				        storageSet({[curMode]: newArrOfSites})
