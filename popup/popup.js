@@ -104,6 +104,7 @@ const showMessage = (className) => {
 		    return false
 		}
 	} else if (className == '.message_upd') {
+		// to remove in 1.1.5 and in html
 		querySelector('.message_upd__link').onclick = () => {
 			storageSet({ "showUpdMess": false })
 		}
@@ -205,6 +206,7 @@ toggleThisPageInp.onchange = (element) => {
 			if (isChecked(toggleThisPageInp)) {
 		        executeScriptHere('removeAll')
 		        executeScriptHere('watchDOM')
+		        executeScriptHere('showAll')
 		        // sending message to content.js to store is input checked or not to show it when popup open
 			    chrome.tabs.sendMessage(
 			        tabs[0].id,
@@ -241,6 +243,7 @@ const initState = () => {
 	storageGet(["tutorial", "showUpdMess"], (res) => {
 		// if tutorial haven't passed run it
 		if (res.tutorial) initTutorial()
+		// to remove in 1.1.5
 		if (res.showUpdMess) setTimeout(() => { showMessage('.message_upd') }, 100)
 	})
 

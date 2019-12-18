@@ -19,16 +19,8 @@ var showAll = () => {
 		}
 	}
 
-	if (dom_observer) {
-		dom_observer.disconnect()
-	}
-
-	if (dom_observer_new) {
-		dom_observer_new.disconnect()
-	}
-
-	setTimeout(() => loopOver(), 4)
-	setTimeout(() => { if (shouldShow(document.documentElement.scrollHeight, window.innerHeight)) loopOver() }, 100)
+	// delay for double execution in removeHard is 10
+	setTimeout(() => loopOver(), 10)
 }
 // waiting for mor adequate condition:)
 if (shouldShow(docHeight, winHeight)) showAll()

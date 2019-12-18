@@ -36,7 +36,6 @@ var domWatcherHard = () => {
 				if (!myTimer) {
 					myTimer = window.setTimeout(resetLoopCounter, 1000)
 				}
-
 				checkElemForPositionHard(mutation[i].target)
 				mutation[i].addedNodes.forEach((element) => {
 					if (element.nodeName != '#text') checkElemForPositionHard(element)
