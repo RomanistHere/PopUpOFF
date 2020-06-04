@@ -31,20 +31,20 @@ chrome.runtime.onInstalled.addListener((details) => {
 })
 
 // 1.1.4 only
-chrome.runtime.onStartup.addListener(() => {
-	storageGet('showUpdMess', (response) => {
-		if (response.showUpdMess) {
-			storageSet({ showUpdMess: false })
-			chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
-		}
-	})
-})
+// chrome.runtime.onStartup.addListener(() => {
+// 	storageGet('showUpdMess', (response) => {
+// 		if (response.showUpdMess) {
+// 			storageSet({ showUpdMess: false })
+// 			chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
+// 		}
+// 	})
+// })
 
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener((activeInfo) => {
-	chrome.tabs.getSelected(null, (tab) => {
-	    const url = tab.url
+    chrome.tabs.query({ 'active': true }, (info) => {
+    	const url = info[0].url
 	    if (url.includes('chrome://')) {
 			chrome.browserAction.disable(activeInfo.tabId)
 		}

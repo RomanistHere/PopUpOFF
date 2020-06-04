@@ -13,6 +13,7 @@ const ARR_OF_FORB_SITES = [
 	'www.pinterest.com',
 	'trello.com',
 	'calendar.google.com',
+	'drive.google.com'
 ]
 // words for block when easy mode
 const ARR_OF_CONTENT_ITEMS = [
