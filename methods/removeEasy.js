@@ -10,6 +10,9 @@ var removeFixedElems = () => {
 
 	    if ((getStyle($elems[i], 'position') == 'fixed') || 
 	    	(getStyle($elems[i], 'position') == 'sticky')) {
+	    	if ($elems[i].getAttribute('data-PopUpOFF') === 'notification') 
+	        	continue
+	        
 	    	if (getStyle($elems[i], 'display') != 'none') {
 	        	// setting uniq data-atr to elems with display block as initial state to restore it later
 	        	$elems[i].setAttribute('data-popupoffExtension', 'hello')

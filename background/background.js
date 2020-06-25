@@ -22,7 +22,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 					'shortCutMode': false,
 				})
 
-				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/#greetings'})
+				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/#greetings-chrome'})
 			}
 		})
     } else if(details.reason == 'update') {

@@ -15,12 +15,26 @@ document.addEventListener('openOptPage', (e) => {
 	chrome.runtime.sendMessage({ openOptPage: true })
 })
 
+var createNotification = () => {
+	const notification = document.createElement("span")
+	notification.setAttribute('data-PopUpOFF', 'notification')
+	const text = document.createTextNode("PopUpOFF activated")
+	notification.className = 'PopUpOFF_notification'
+	notification.appendChild(text)
+	document.body.appendChild(notification)
+
+	setTimeout(() => {
+		document.querySelector('[data-PopUpOFF="notification"]').remove()
+	}, 5000)
+}
+
 var keyDownCallBack = (e) => {
 	const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
 		e.preventDefault()
 		chrome.runtime.sendMessage({ hardMode: true })
+		createNotification()
 	}
 }
 
