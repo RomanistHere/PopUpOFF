@@ -90,8 +90,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			storageGet(['supervision', 'shortCutMode'], (res) => {
 				const mode = res.shortCutMode
 				if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
-					// do nothing
+					sendResponse({ shouldShow: false })
 				} else if (mode) {
+					sendResponse({ shouldShow: true })
 					storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
 						// need to check both arrays
 						const isHard = (mode == 'thisWebsiteWork') ? true : false
@@ -120,4 +121,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			chrome.runtime.openOptionsPage()
 		}
 	}
+	return true
 })

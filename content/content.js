@@ -33,8 +33,10 @@ var keyDownCallBack = (e) => {
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
 		e.preventDefault()
-		chrome.runtime.sendMessage({ hardMode: true })
-		createNotification()
+		chrome.runtime.sendMessage({ hardMode: true }, (response) => {
+			if (response.shouldShow)
+				createNotification()
+		})
 	}
 }
 
