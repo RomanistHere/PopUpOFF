@@ -9,7 +9,7 @@ import {
 
 // handle install
 chrome.runtime.onInstalled.addListener((details) => {
-    if(details.reason == 'install') {
+    if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (response) => {
 			if (!response.thisWebsiteWork || !response.thisWebsiteWorkEasy) {
@@ -25,21 +25,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/#greetings-chrome'})
 			}
 		})
-    } else if(details.reason == 'update') {
-    	
+    } else if (details.reason == 'update') {
+    	chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
     }
 })
-
-// 1.1.4 only
-// chrome.runtime.onStartup.addListener(() => {
-// 	storageGet('showUpdMess', (response) => {
-// 		if (response.showUpdMess) {
-// 			storageSet({ showUpdMess: false })
-// 			chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
-// 		}
-// 	})
-// })
-
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener((activeInfo) => {
