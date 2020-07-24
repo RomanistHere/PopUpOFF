@@ -1,5 +1,5 @@
 import { ARR_OF_FORB_SITES } from '../constants/data.js'
-import { 
+import {
 	executeScript,
 	storageSet,
 	storageGet,
@@ -22,11 +22,11 @@ chrome.runtime.onInstalled.addListener((details) => {
 					'shortCutMode': false,
 				})
 
-				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/#greetings-chrome'})
+				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
 			}
 		})
     } else if (details.reason == 'update') {
-    	chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
+    	// chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
     }
 })
 
@@ -67,7 +67,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 			    }
 			})
 		}
-	}	
+	}
 })
 
 // messages handling. Currently responsible for 'alt + x' key comb
@@ -90,7 +90,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 						if (!arrOfSites.includes(pureUrl)) {
 					        setBadgeText(isHard ? 'H' : 'E')(tabId)
-				    		
+
 					    	const newArrOfSites = [...arrOfSites, pureUrl]
 					        storageSet({ [mode]: newArrOfSites })
 
