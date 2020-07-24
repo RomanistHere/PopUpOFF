@@ -1,6 +1,6 @@
 # [PopUpOFF](https://chrome.google.com/webstore/detail/popupoff-popup-blocker/ifnkdbpmgkdbfklnbfidaackdenlmhgh)
-### [Here](https://romanisthere.github.io/PopUpOFF-Website/) you can read information/guide for using it.
-### I will describe developer things only below, if u're interested, welcome 
+### [Here](https://romanisthere.github.io/PopUpOFF-Website/index.html) you can read information/guide for using it.
+### I will describe developer things only below, if u're interested, welcome
 # Mechanics
 #### Remove
 
@@ -10,7 +10,7 @@ Easy mode has 3 step check for every fixed/sticky element - yeah, it's a little 
 
 - it checks for top position and height - if element is in valid range - it stays visible(headers, you know - they always at top. I wish all the developers used semantic in their work, this step would not be needed, as well as next one).
 - after position check script checks for content, words like "cookie, email, addblock, etc."  and blocks please-disable-your-adblock ones. Even if it at the top of page(disguised header).
-- third step checks element for tag, if it's header, nav, search, etc or it contains one of these tags, extension display it back. 
+- third step checks element for tag, if it's header, nav, search, etc or it contains one of these tags, extension display it back.
 
 That's main difference between hard and easy mode. Easy one also giving up faster if page consisting from billions of appended elements due to possible lags. Detailed below.</br></br>
 
@@ -23,9 +23,9 @@ So for every element, that changed in way, that could lead to showing you popup,
 You could expect troubles with memory, but do not. It seems very okay. For websites, that use a lot of DOM-rebuilding, extension after few tries give up. I'm going to notify user about it in next releases, cause now it just stops to work. Can be restored by toggling mode again. </br></br>
 #### Disable
 Remember me added weird attribute at top of this story? When you disable mode after changes done, it will restore all hided elements. Also if you toggle easy-hard mode, headers will appear/disappear - it's on elements with this unique attributes. Do not need to reload page, as it is for most of ad blockers right now. I see my user experience better. </br></br>
-#### Forbidden list of websites - since 1.1.1 
+#### Forbidden list of websites - since 1.1.1
 Main problem I faced with user feedback, that they would try PopUpOFF for websites like youtube. Why??? But after few accident, I forbid by default to use my extension there. You can read more about it and change it at options page.  </br></br>
-#### Tutorial - since 1.1.1 
+#### Tutorial - since 1.1.1
 As far as I tracking through analytic, what modes my users use, I decided to add tutorial, and tell them, that I-just-want-to-read-stuff is for extreme cases, where other modes did not help. And most efficient one is "hard" one. I should rename it properly, but have no good ideas about it.</br></br>
 #### Tracking
 It's open source, so you can see what data I track. What mode you use, and what "forbidden" site you want to block down. Why??? So no personal data here. I will remove it all once I get all data I need to create very nice extension.</br></br>
