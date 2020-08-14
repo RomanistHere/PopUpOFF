@@ -1,5 +1,5 @@
 import { ARR_OF_FORB_SITES, emailUrl } from '../constants/data.js'
-import { 
+import {
 	querySelector,
 	isChecked,
 	addClass,
@@ -40,12 +40,10 @@ const initTutorial = () => {
 	}
 	querySelector('.tutorial__skip').onclick = () => {
 	    passTutorial()
-	    _gaq.push(['_trackEvent', 'tutorial', 'skip'])
 	    return false
 	}
 	querySelector('.tutorial_link-finish').onclick = () => {
 	    passTutorial()
-	    _gaq.push(['_trackEvent', 'tutorial', 'pass'])
 	    return false
 	}
 	querySelector('.tutorial_to_options').onclick = () => {
@@ -83,7 +81,6 @@ const initTutorial = () => {
 	//     chrome.tabs.update({ url: emailUrl })
 	//     return false
 	// }
-	_gaq.push(['_trackEvent', 'tutorial', 'init'])
 }
 
 const showMessage = (className) => {
@@ -92,7 +89,6 @@ const showMessage = (className) => {
 		querySelector('.message_forb__link').onclick = () => {
 	        chrome.runtime.openOptionsPage()
 	        removeClass(querySelector(className), 'message-visible')
-			_gaq.push(['_trackEvent', 'forbid_link', 'clicked'])
 			return false
 		}
 	} else if (className == '.message_reload') {
@@ -121,7 +117,6 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 			if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 				chInput.checked = false
 				showMessage('.message_forb')
-				_gaq.push(['_trackEvent', 'forb_site', newUrl])
 			} else {
 				storageGet(curMode, (res) => {
 					// arr of urls where mode is activated now
@@ -130,7 +125,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 					if (isChecked(chInput)) {
 						// if paired mode active
 						if (isChecked(toggleThisWebSiteInp)) {
-					        if (easy) executeScriptHere('restoreEasy') 
+					        if (easy) executeScriptHere('restoreEasy')
 							// set up back
 							storageGet(otherMode, (res) => {
 								const curEasyArr = res[otherMode]
@@ -151,7 +146,6 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 				        storageSet({[curMode]: newArrOfSites})
 						// visual
 						querySelector(selector2).textContent="off"
-						_gaq.push(['_trackEvent', chInput, 'on'])
 					} else {
 						if (!isChecked(toggleThisPageInp)) {
 					        executeScriptHere('restore')
@@ -162,7 +156,6 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						storageSet({[curMode]: newArrOfSites})
 						// visual
 						querySelector(selector2).textContent="on"
-						_gaq.push(['_trackEvent', chInput, 'off'])
 					}
 				})
 			}
@@ -174,7 +167,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 initToggler(
 	toggleThisWebSiteInp,
 	toggleEasyInpThisWebSite,
-	'thisWebsiteWork', 
+	'thisWebsiteWork',
 	'thisWebsiteWorkEasy',
 	'#textOnOffEasyModeThisWEbsite',
 	'#textOnOffSite',
@@ -185,7 +178,7 @@ initToggler(
 initToggler(
 	toggleEasyInpThisWebSite,
 	toggleThisWebSiteInp,
-	'thisWebsiteWorkEasy', 
+	'thisWebsiteWorkEasy',
 	'thisWebsiteWork',
 	'#textOnOffSite',
 	'#textOnOffEasyModeThisWEbsite',
@@ -201,7 +194,6 @@ toggleThisPageInp.onchange = (element) => {
 		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 			toggleThisPageInp.checked = false
 			showMessage('.message_forb')
-			_gaq.push(['_trackEvent', 'forb_site', newUrl])
 		} else {
 			if (isChecked(toggleThisPageInp)) {
 		        executeScriptHere('removeAll')
@@ -211,11 +203,10 @@ toggleThisPageInp.onchange = (element) => {
 			    chrome.tabs.sendMessage(
 			        tabs[0].id,
 			        {
-			        	method: "setStatusThisPage", 
+			        	method: "setStatusThisPage",
 			        	thisPageOn: true
 			        }
 			    )
-			    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'on'])
 		    } else {
 			    if (!isChecked(toggleThisWebSiteInp)) {
 				  	executeScriptHere('restoreEasy')
@@ -228,11 +219,10 @@ toggleThisPageInp.onchange = (element) => {
 			    chrome.tabs.sendMessage(
 			        tabs[0].id,
 			        {
-			        	method: "setStatusThisPage", 
+			        	method: "setStatusThisPage",
 			        	thisPageOn: false
 			        }
 			    )
-			    _gaq.push(['_trackEvent', 'toggleThisPageInp', 'off'])
 		    }
 		}
     })
@@ -262,14 +252,14 @@ const initState = () => {
 			} else IS_SUPERVISION_ACTIVE = false
 		})
 		// hard mode this website input state
-		storageGet("thisWebsiteWork", (res) => {		
+		storageGet("thisWebsiteWork", (res) => {
 			const blockedSitesArr = res.thisWebsiteWork
 
 			if (blockedSitesArr.includes(newUrl)) {
 				querySelector("#toggleThisWebSiteInp").checked = true
 				querySelector('#textOnOffSite').textContent="off"
 				isFirstModeAct = true
-			} 
+			}
 		})
 		// easy mode this website input state
 		storageGet("thisWebsiteWorkEasy", (res) => {
@@ -278,7 +268,7 @@ const initState = () => {
 			if (blockedSitesArr.includes(newUrl) && !isFirstModeAct) {
 				querySelector("#toggleEasyInpThisWebSite").checked = true
 				querySelector('#textOnOffEasyModeThisWEbsite').textContent="off"
-			} 
+			}
 		})
 		// I JUST WANT TO READ input state
 		chrome.tabs.sendMessage(
@@ -289,27 +279,8 @@ const initState = () => {
 			  		querySelector("#toggleThisPageInp").checked = true
 			  	}
 	        }
-	    )			
+	    )
     })
 }
 
 initState()
-
-
-// ga
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-138501898-1']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-  var ga = document.createElement('script');
-  ga.type = 'text/javascript';
-  ga.async = true;
-  ga.src = 'https://ssl.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0];
-  s.parentNode.insertBefore(ga, s);
-})();
-
-document.getElementsByClassName('insturctions')[0].addEventListener('click', () => {
-	_gaq.push(['_trackEvent', 'instructions', 'clicked'])
-})

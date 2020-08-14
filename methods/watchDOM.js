@@ -27,6 +27,11 @@ var domWatcherHard = () => {
 	if (!dom_observer) {
 		dom_observer = new MutationObserver((mutation) => {
 			for (let i = 0; i < mutation.length; i++){
+				// console.log(mutation[i])
+				// if (mutation[i].removedNodes.length) {
+				// 	console.log(mutation[i])
+				// 	console.log(mutation[i].removedNodes[0].data)
+				// }
 				// prevent inifnite looping
 				if (infiniteLoopPreventCounter > 800) {
 					removeDomWatcher()
@@ -41,9 +46,9 @@ var domWatcherHard = () => {
 					if (element.nodeName != '#text') checkElemForPositionHard(element)
 				})
 				removeOverflow()
-			}			
-		}) 
-	}		
+			}
+		})
+	}
 
 	if (!dom_observer_new) {
 		dom_observer_new = new MutationObserver((mutation) => {
@@ -54,9 +59,9 @@ var domWatcherHard = () => {
 	}
 
 	if (!window.location.href.includes('pinterest')) {
-		dom_observer.observe(document.documentElement, { 
-			childList: true, 
-			subtree: true, 
+		dom_observer.observe(document.documentElement, {
+			childList: true,
+			subtree: true,
 			attributes: true
 		})
 	} else {
@@ -76,7 +81,7 @@ var getStyle = ($elem, property) => window.getComputedStyle($elem, null).getProp
 var setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
 
 var checkElem = ($element) => {
-	if ((getStyle($element, 'position') == 'fixed') || 
+	if ((getStyle($element, 'position') == 'fixed') ||
     	(getStyle($element, 'position') == 'sticky')) {
         if (getStyle($element, 'display') != 'none') {
         	// setting uniq data-atr to elems with display block as initial state to restore it later
@@ -103,7 +108,7 @@ var checkElemForPositionHard = ($element) => {
 		for (let i = 0; i < LEN; i++) {
 		    checkElem($elems[i])
 		}
-	}		
+	}
 }
 
 var removeOverflow = () => {
