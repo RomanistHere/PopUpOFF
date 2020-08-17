@@ -10,12 +10,10 @@ var restoreFixedElems = () => {
 		const element = ELEMS[i]
 
 	    if (ARR_OF_CONTENT_ITEMS.some(item => element.innerHTML.includes(item))) {
-			
+
 	    } else {
 	    	element.style.display = null
 	    }
-
-	    //
 
 		const ELEMENT_TOP = window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g) ?
 							Number(window.getComputedStyle(element,null).getPropertyValue('top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
@@ -30,7 +28,7 @@ var restoreFixedElems = () => {
 			element.style.setProperty("display", "none", "important")
 		}
 
-		//    	
+		//
 
 	    if (ARR_OF_TAG_ITEMS.some(item => element.innerHTML.includes(item)) ||
 			(element.tagName == "NAV") ||
