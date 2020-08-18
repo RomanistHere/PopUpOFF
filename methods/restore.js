@@ -4,7 +4,7 @@ var restoreFixedElems = () => {
 	const arr = [...elems]
 
 	try {
-		if (domObserverLight) domObserver.disconnect()
+		if (domObserver) domObserver.disconnect()
 		if (domObserverLight) domObserverLight.disconnect()
 	} catch (e) {
 		console.log(e)

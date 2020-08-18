@@ -1,10 +1,16 @@
-// restore elems when turn off extension by uniq data-atr
 var restoreFixedElems = () => {
 	const ELEMS = document.querySelectorAll('[data-popupoffExtension]')
 	const LEN = ELEMS.length
 
-	const ARR_OF_CONTENT_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss']
+	const ARR_OF_CONTENT_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss', 'turn off', 'turning off', 'disable', 'ad blocker', 'ad block', 'adblock', 'adblocker']
 	const ARR_OF_TAG_ITEMS = ['<nav', '<header', 'search', 'ytmusic', 'searchbox', 'app-drawer']
+
+	try {
+		if (domObserver) domObserver.disconnect()
+		if (domObserverLight) domObserverLight.disconnect()
+	} catch (e) {
+		console.log(e)
+	}
 
 	for (let i=0; i<LEN; i++) {
 		const element = ELEMS[i]
@@ -28,21 +34,11 @@ var restoreFixedElems = () => {
 			element.style.setProperty("display", "none", "important")
 		}
 
-		//
-
 	    if (ARR_OF_TAG_ITEMS.some(item => element.innerHTML.includes(item)) ||
 			(element.tagName == "NAV") ||
 			(element.tagName == "HEADER")) {
 	    	element.style.display = null
 	    }
-	}
-
-	if (dom_observer) {
-		dom_observer.disconnect()
-	}
-
-	if (dom_observer_new) {
-		dom_observer_new.disconnect()
 	}
 }
 

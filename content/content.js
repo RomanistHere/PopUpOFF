@@ -15,7 +15,7 @@ document.addEventListener('openOptPage', (e) => {
 	chrome.runtime.sendMessage({ openOptPage: true })
 })
 
-var createNotification = () => {
+const createNotification = () => {
 	const notification = document.createElement("span")
 	notification.setAttribute('data-PopUpOFF', 'notification')
 	const text = document.createTextNode("PopUpOFF activated")
@@ -28,7 +28,7 @@ var createNotification = () => {
 	}, 5000)
 }
 
-var keyDownCallBack = (e) => {
+const keyDownCallBack = (e) => {
 	const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
@@ -40,7 +40,7 @@ var keyDownCallBack = (e) => {
 	}
 }
 
-var debounce = (func, wait, immediate) => {
+const debounce = (func, wait, immediate) => {
 	var timeout
 	return function() {
 		var context = this, args = arguments

@@ -6,7 +6,7 @@ var infiniteLoopPreventCounter = 0
 var myTimer = 0
 var wasNotStoped = true
 
-var punish = (statsEnabled) => {
+var punish = statsEnabled => {
 	// helper functions
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
@@ -21,6 +21,9 @@ var punish = (statsEnabled) => {
 
 			chrome.storage.sync.set({ stats: newStats })
 		})
+	const addCountToStats = (state) => {
+		return { ...state, numbOfItems: state.numbOfItems + 1 }
+	}
 
 	// state
 	let state = statsEnabled ? {
@@ -38,24 +41,24 @@ var punish = (statsEnabled) => {
 	const removeOverflow = () => {
 		if (getStyle(doc, 'overflow-y')) {
 			setPropImp(doc, "overflow-y", "unset")
-			if (statsEnabled) state = { ...state, numbOfItems: state.numbOfItems + 1 }
+			if (statsEnabled) state = addCountToStats(state)
 		}
 
 		if (getStyle(body, 'overflow-y')) {
 			setPropImp(body, "overflow-y", "unset")
-			if (statsEnabled) state = { ...state, numbOfItems: state.numbOfItems + 1 }
+			if (statsEnabled) state = addCountToStats(state)
 		}
 
 	    if ((getStyle(doc, 'position') == 'fixed') ||
 	    	(getStyle(doc, 'position') == 'absolute')) {
 			setPropImp(doc, "position", "relative")
-			if (statsEnabled) state = { ...state, numbOfItems: state.numbOfItems + 1 }
+			if (statsEnabled) state = addCountToStats(state)
 		}
 
 		if ((getStyle(body, 'position') == 'fixed') ||
 	    	(getStyle(body, 'position') == 'absolute')) {
 			setPropImp(body, "position", "relative")
-			if (statsEnabled) state = { ...state, numbOfItems: state.numbOfItems + 1 }
+			if (statsEnabled) state = addCountToStats(state)
 		}
 	}
 	const checkElem = element => {
@@ -87,19 +90,15 @@ var punish = (statsEnabled) => {
 	    	setPropImp(element, "filter", "none")
 	    	setPropImp(element, "-webkit-filter", "none")
 
-			if (statsEnabled) state = { ...state, numbOfItems: state.numbOfItems + 1 }
+			if (statsEnabled) state = addCountToStats(state)
 	    }
 	}
 	const checkElems = elems => {
-		console.time('time')
-
 		const arr = [...elems]
 		arr.map(checkElem)
-
-		console.timeEnd('time')
 	}
 	// watch DOM
-	const checkElemWithSibl = (element) => {
+	const checkElemWithSibl = element => {
 		if (element instanceof HTMLElement) {
 			// element itself
 			checkElem(element)
@@ -121,13 +120,11 @@ var punish = (statsEnabled) => {
 			wasNotStoped = false
 			domObserverLight.disconnect()
 		} catch (e) {
-			console.log(e)
 		}
 	}
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver((mutation) => {
-				console.log(mutation)
 				for (let i = 0; i < mutation.length; i++){
 					// prevent inifnite looping
 					if (infiniteLoopPreventCounter > 1200) {
