@@ -139,7 +139,6 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						easy ? setBadgeText('E')(tabID) : setBadgeText('H')(tabID)
 						// execute methods
 						executeScriptHere(easy ? 'removeEasy' : 'removeHard')
-						executeScriptHere(easy ? 'watchDOMEasy' : 'watchDOM')
 						executeScriptHere('showAll')
 						// set up back
 						const newArrOfSites = [...curArrOfSites, newUrl]
@@ -197,7 +196,6 @@ toggleThisPageInp.onchange = (element) => {
 		} else {
 			if (isChecked(toggleThisPageInp)) {
 		        executeScriptHere('removeAll')
-		        executeScriptHere('watchDOM')
 		        executeScriptHere('showAll')
 		        // sending message to content.js to store is input checked or not to show it when popup open
 			    chrome.tabs.sendMessage(

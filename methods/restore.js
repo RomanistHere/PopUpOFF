@@ -1,19 +1,16 @@
 // restore elems when turn off extension by uniq data-atr
 var restoreFixedElems = () => {
-	const ELEMS = document.querySelectorAll('[data-popupoffExtension]')
-	const LEN = ELEMS.length
+	const elems = document.querySelectorAll('[data-popupoffExtension]')
+	const arr = [...elems]
 
-	for (let i=0; i<LEN; i++) {
-        ELEMS[i].style.display = null
-	}
-	
-	if (dom_observer) {
-		dom_observer.disconnect()
+	try {
+		if (domObserverLight) domObserver.disconnect()
+		if (domObserverLight) domObserverLight.disconnect()
+	} catch (e) {
+		console.log(e)
 	}
 
-	if (dom_observer_new) {
-		dom_observer_new.disconnect()
-	}
+	arr.map(elem => elem.style.display = null)
 }
 
 chrome.storage.sync.get("autoWorkEasy", (res) => {
@@ -23,12 +20,10 @@ chrome.storage.sync.get("autoWorkEasy", (res) => {
 	} else {
 		chrome.storage.sync.get("autoWork", (res) => {
 			if (res.autoWork) {
-				
+
 			} else {
 				restoreFixedElems()
 			}
 		})
 	}
 })
-
-	
