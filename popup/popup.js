@@ -10,6 +10,7 @@ import {
 	getPureURL,
 	setBadgeText,
 	resetBadgeText,
+	nFormatter,
 } from '../constants/functions.js'
 
 let IS_SUPERVISION_ACTIVE
@@ -95,7 +96,7 @@ const showMessage = (className) => {
 		    return false
 		}
 	} else if (className == '.message_upd') {
-		
+
 	}
 }
 
@@ -220,18 +221,33 @@ toggleThisPageInp.onchange = (element) => {
     })
 }
 
+const updStats = () => {
+	storageGet(["stats"], res => {
+		querySelector('.stats__elem').innerHTML = nFormatter(res.stats.numbOfItems, 1)
+		querySelector('.stats__size').innerHTML = nFormatter(res.stats.cleanedArea, 1)
+	})
+}
+
 // inits input states for every popup opening
 const initState = () => {
-	storageGet(["tutorial", "showUpdMess"], (res) => {
+	storageGet(["tutorial", "showUpdMess", "statsEnabled", "stats"], res => {
 		// if tutorial haven't passed run it
 		if (res.tutorial) initTutorial()
+		// show stats
+		if (res.statsEnabled) {
+			addClass(querySelector('.stats'), 'stats-show')
+			// update statistic
+			querySelector('.stats__elem').innerHTML = nFormatter(res.stats.numbOfItems, 1)
+			querySelector('.stats__size').innerHTML = nFormatter(res.stats.cleanedArea, 1)
+			setInterval(updStats, 1000)
+		}
 	})
 
-	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+	chrome.tabs.query({active: true, currentWindow: true}, tabs => {
 		let isFirstModeAct = false
 	    const newUrl = getPureURL(tabs[0])
 
-		storageGet("supervision", (res) => {
+		storageGet("supervision", res => {
 			if (res.supervision) {
 				// variable to check if site forbidden on click
 				IS_SUPERVISION_ACTIVE = true
@@ -242,7 +258,7 @@ const initState = () => {
 			} else IS_SUPERVISION_ACTIVE = false
 		})
 		// hard mode this website input state
-		storageGet("thisWebsiteWork", (res) => {
+		storageGet("thisWebsiteWork", res => {
 			const blockedSitesArr = res.thisWebsiteWork
 
 			if (blockedSitesArr.includes(newUrl)) {
@@ -252,7 +268,7 @@ const initState = () => {
 			}
 		})
 		// easy mode this website input state
-		storageGet("thisWebsiteWorkEasy", (res) => {
+		storageGet("thisWebsiteWorkEasy", res => {
 			const blockedSitesArr = res.thisWebsiteWorkEasy
 
 			if (blockedSitesArr.includes(newUrl) && !isFirstModeAct) {

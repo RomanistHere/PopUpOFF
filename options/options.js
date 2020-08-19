@@ -6,6 +6,7 @@ import {
 	removeClass
 } from '../constants/functions.js'
 
+// supervision //
 const supervisionToggle = querySelector("#supervisionToggle")
 
 storageGet("supervision", (res) => {
@@ -27,6 +28,7 @@ supervisionToggle.onchange = (element) => {
 	}
 }
 
+// tutorial //
 const tutorialToggle = querySelector("#tutorialToggle")
 
 storageGet("tutorial", (res) => {
@@ -48,6 +50,29 @@ tutorialToggle.onchange = (element) => {
 	}
 }
 
+// stats //
+const statsToggle = querySelector("#statsToggle")
+
+storageGet("statsEnabled", (res) => {
+	if (res.statsEnabled) {
+		addClass(querySelector('.desc-stats'), 'desc-active')
+		statsToggle.checked = true
+	} else {
+		statsToggle.checked = false
+	}
+})
+
+statsToggle.onchange = (element) => {
+	if (statsToggle.checked) {
+		storageSet({ "statsEnabled": true })
+		addClass(querySelector('.desc-stats'), 'desc-active')
+	} else {
+		storageSet({ "statsEnabled": false })
+		removeClass(querySelector('.desc-stats'), 'desc-active')
+	}
+}
+
+// slider //
 const slider = querySelector('.slider__input')
 const sliderTextLeft = querySelector('.slider__left')
 const sliderTextRight = querySelector('.slider__right')

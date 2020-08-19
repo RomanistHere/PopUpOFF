@@ -9,8 +9,8 @@ const removeClass = (node, className) => node.classList.remove(className)
 // Chrome store
 const storageSet = (changes) => chrome.storage.sync.set(changes)
 const storageGet = (request, f) => chrome.storage.sync.get(request, f)
-// Browser actions. Badge - text at right bottom corner of extension's icon 
-const setBadgeText = (text) => 
+// Browser actions. Badge - text at right bottom corner of extension's icon
+const setBadgeText = (text) =>
 	(tabID) => {
 		chrome.browserAction.setBadgeText({
 			text: text ? text : "",
@@ -20,13 +20,33 @@ const setBadgeText = (text) =>
 	}
 const resetBadgeText = setBadgeText('')
 // Curried execute script
-const executeScript = (tabId) => 
-	(methodName) => 
+const executeScript = (tabId) =>
+	(methodName) =>
 		chrome.tabs.executeScript(
 			tabId,
 		  	{file: 'methods/' + methodName + '.js'}
 		)
 const executeScriptHere = executeScript(null)
+
+const nFormatter = (num, digits) => {
+	const si = [
+		{ value: 1, symbol: "" },
+		{ value: 1E3, symbol: "k" },
+		{ value: 1E6, symbol: "M" },
+		{ value: 1E9, symbol: "G" },
+		{ value: 1E12, symbol: "T" },
+		{ value: 1E15, symbol: "P" },
+		{ value: 1E18, symbol: "E" }
+	]
+	const rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+	let i
+	for (i = si.length - 1; i > 0; i--) {
+		if (num >= si[i].value) {
+			break
+		}
+	}
+	return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+}
 
 export {
 	querySelector,
@@ -40,4 +60,5 @@ export {
 	getPureURL,
 	setBadgeText,
 	resetBadgeText,
+	nFormatter,
 }

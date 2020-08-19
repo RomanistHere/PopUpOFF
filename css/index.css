@@ -147,8 +147,11 @@ body {
 }
 
 .string {
+    position: relative;
+
     display: flex;
     align-items: center;
+
     padding: 0 0 0 30px;
     margin-top: 30px
 }
@@ -162,6 +165,8 @@ body {
 }
 
 .desc {
+    position: relative;
+
     margin: 0;
     padding: 8px 0 8px 20px;
 
@@ -172,6 +177,25 @@ body {
     transition: all ease .4s
 }
 
+.desc__mark {
+    display: inline-block;
+
+    width: 15px;
+    height: 15px;
+    margin-left: 4px;
+    padding: 1px;
+
+    border-radius: 50%;
+    border: 1px solid #efbb35;
+
+    text-decoration: none;
+    color: #f9ffeecc;
+    line-height: .9;
+    text-align: center;
+
+    transition: color ease .1s;
+}
+
 .desc-active {
     color: #f9ffee;
 }
@@ -179,6 +203,113 @@ body {
 .desc:hover,
 .toggle:hover+.desc {
     color: #efbb35
+}
+
+.col {
+    color: #efbb35
+}
+
+.stats {
+    position: absolute;
+    display: none;
+
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    padding-top: 5px;
+
+    color: #efbb35;
+    font-size: 14px;
+    text-decoration: none;
+
+    transition: all ease .2s;
+}
+
+.stats-show {
+    display: block;
+}
+
+.stats::after {
+    content: '';
+    position: absolute;
+
+    bottom: 3px;
+    left: 0;
+    right: 0;
+    height: 1px;
+
+    background-color: #efbb35;
+}
+
+.stats:hover {
+    color: #6bb756;
+}
+
+.stats:hover::after {
+    background-color: #6bb756;
+}
+
+.tooltip {
+    position: absolute;
+    pointer-events: none;
+
+    right: -4px;
+    top: -140%;
+    width: 160px;
+    padding: 5px 0;
+
+    border: 1px solid #f9ffee;
+    border-radius: 6px;
+
+    color: #fff;
+    text-align: center;
+
+    background-color: #222831;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+.tooltip-top {
+    z-index: 1;
+
+    top: auto;
+    bottom: -145%;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+
+    top: 100%;
+    right: 10px;
+
+    border-width: 5px;
+    border-style: solid;
+    border-color: #f9ffee transparent transparent transparent;
+}
+
+.tooltip-top::after {
+    top: auto;
+    bottom: 100%;
+
+    border-color: transparent transparent #f9ffee transparent;
+}
+
+.desc__mark:hover + .tooltip {
+    opacity: 1;
+
+    animation: popping .2s ease-out;
+}
+
+@keyframes popping {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: none;
+        opacity: 1;
+    }
 }
 
 .PopUpOFF-forb_site .desc{
