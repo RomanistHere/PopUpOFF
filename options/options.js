@@ -1,4 +1,4 @@
-import { 
+import {
 	storageSet,
 	storageGet,
 	querySelector,
@@ -11,8 +11,8 @@ const supervisionToggle = querySelector("#supervisionToggle")
 storageGet("supervision", (res) => {
 	if (res.supervision) {
 		supervisionToggle.checked = true
+		addClass(querySelector('.desc-supervision'), 'desc-active')
 	} else {
-		querySelector('.supervisionText').textContent = 'ON'
 		supervisionToggle.checked = false
 	}
 })
@@ -20,10 +20,10 @@ storageGet("supervision", (res) => {
 supervisionToggle.onchange = (element) => {
 	if (supervisionToggle.checked) {
 		storageSet({ "supervision": true })
-		querySelector('.supervisionText').textContent = 'OFF'
+		addClass(querySelector('.desc-supervision'), 'desc-active')
 	} else {
 		storageSet({ "supervision": false })
-		querySelector('.supervisionText').textContent = 'ON'
+		removeClass(querySelector('.desc-supervision'), 'desc-active')
 	}
 }
 
@@ -31,6 +31,7 @@ const tutorialToggle = querySelector("#tutorialToggle")
 
 storageGet("tutorial", (res) => {
 	if (res.tutorial) {
+		addClass(querySelector('.desc-tutorial'), 'desc-active')
 		tutorialToggle.checked = true
 	} else {
 		tutorialToggle.checked = false
@@ -40,8 +41,10 @@ storageGet("tutorial", (res) => {
 tutorialToggle.onchange = (element) => {
 	if (tutorialToggle.checked) {
 		storageSet({ "tutorial": true })
+		addClass(querySelector('.desc-tutorial'), 'desc-active')
 	} else {
 		storageSet({ "tutorial": false })
+		removeClass(querySelector('.desc-tutorial'), 'desc-active')
 	}
 }
 

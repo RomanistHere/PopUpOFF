@@ -15,6 +15,11 @@ document.addEventListener('openOptPage', (e) => {
 	chrome.runtime.sendMessage({ openOptPage: true })
 })
 
+// add check if contains url
+chrome.storage.sync.get(['stats'], resp => {
+	document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
+})
+
 const createNotification = () => {
 	const notification = document.createElement("span")
 	notification.setAttribute('data-PopUpOFF', 'notification')

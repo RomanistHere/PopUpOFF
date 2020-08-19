@@ -76,11 +76,6 @@ const initTutorial = () => {
 
 	  	return false
 	}
-
-	// querySelector('.tutorial__contact').onclick = () => {
-	//     chrome.tabs.update({ url: emailUrl })
-	//     return false
-	// }
 }
 
 const showMessage = (className) => {
@@ -100,10 +95,7 @@ const showMessage = (className) => {
 		    return false
 		}
 	} else if (className == '.message_upd') {
-		// to remove in 1.1.5 and in html
-		querySelector('.message_upd__link').onclick = () => {
-			storageSet({ "showUpdMess": false })
-		}
+		
 	}
 }
 
@@ -134,7 +126,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 							})
 							// visual
 							otherInput.checked = false
-							querySelector(selector1).textContent="on"
+							removeClass(querySelector(selector1), 'desc-active')
 						}
 						easy ? setBadgeText('E')(tabID) : setBadgeText('H')(tabID)
 						// execute methods
@@ -144,7 +136,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						const newArrOfSites = [...curArrOfSites, newUrl]
 				        storageSet({[curMode]: newArrOfSites})
 						// visual
-						querySelector(selector2).textContent="off"
+						addClass(querySelector(selector2), 'desc-active')
 					} else {
 						if (!isChecked(toggleThisPageInp)) {
 					        executeScriptHere('restore')
@@ -154,7 +146,7 @@ const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selecto
 						const newArrOfSites = curArrOfSites.filter(e => e !== newUrl)
 						storageSet({[curMode]: newArrOfSites})
 						// visual
-						querySelector(selector2).textContent="on"
+						removeClass(querySelector(selector2), 'desc-active')
 					}
 				})
 			}
@@ -168,8 +160,8 @@ initToggler(
 	toggleEasyInpThisWebSite,
 	'thisWebsiteWork',
 	'thisWebsiteWorkEasy',
-	'#textOnOffEasyModeThisWEbsite',
-	'#textOnOffSite',
+	'.desc-easy',
+	'.desc-hard',
 	false
 )
 
@@ -179,8 +171,8 @@ initToggler(
 	toggleThisWebSiteInp,
 	'thisWebsiteWorkEasy',
 	'thisWebsiteWork',
-	'#textOnOffSite',
-	'#textOnOffEasyModeThisWEbsite',
+	'.desc-hard',
+	'.desc-easy',
 	true
 )
 
@@ -205,6 +197,7 @@ toggleThisPageInp.onchange = (element) => {
 			        	thisPageOn: true
 			        }
 			    )
+				addClass(querySelector('.desc-read'), 'desc-active')
 		    } else {
 			    if (!isChecked(toggleThisWebSiteInp)) {
 				  	executeScriptHere('restoreEasy')
@@ -221,6 +214,7 @@ toggleThisPageInp.onchange = (element) => {
 			        	thisPageOn: false
 			        }
 			    )
+				removeClass(querySelector('.desc-read'), 'desc-active')
 		    }
 		}
     })
@@ -231,8 +225,6 @@ const initState = () => {
 	storageGet(["tutorial", "showUpdMess"], (res) => {
 		// if tutorial haven't passed run it
 		if (res.tutorial) initTutorial()
-		// to remove in 1.1.5
-		if (res.showUpdMess) setTimeout(() => { showMessage('.message_upd') }, 100)
 	})
 
 	chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
@@ -255,7 +247,7 @@ const initState = () => {
 
 			if (blockedSitesArr.includes(newUrl)) {
 				querySelector("#toggleThisWebSiteInp").checked = true
-				querySelector('#textOnOffSite').textContent="off"
+				addClass(querySelector('.desc-hard'), 'desc-active')
 				isFirstModeAct = true
 			}
 		})
@@ -265,7 +257,7 @@ const initState = () => {
 
 			if (blockedSitesArr.includes(newUrl) && !isFirstModeAct) {
 				querySelector("#toggleEasyInpThisWebSite").checked = true
-				querySelector('#textOnOffEasyModeThisWEbsite').textContent="off"
+				addClass(querySelector('.desc-easy'), 'desc-active')
 			}
 		})
 		// I JUST WANT TO READ input state

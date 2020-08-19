@@ -28,35 +28,10 @@ const ARR_OF_FORB_SITES = [
 	'zoom.us',
 	'www.netflix.com',
 ]
-// words for block when easy mode
-const ARR_OF_CONTENT_ITEMS = [
-	'policy', 
-	'cookie', 
-	'subscription', 
-	'subscribe', 
-	'off', 
-	'sale', 
-	'notification', 
-	'notifications', 
-	'updates', 
-	'privacy', 
-	'miss'
-]
-// tags not to block when easy mode
-const ARR_OF_TAG_ITEMS = [
-	'<nav', 
-	'<header', 
-	'search', 
-	'ytmusic', 
-	'searchbox', 
-	'app-drawer'
-]
 // useful info
 const emailUrl = 'mailto:romanisthere@gmail.com'
 
 export {
 	ARR_OF_FORB_SITES,
-	ARR_OF_CONTENT_ITEMS,
-	ARR_OF_TAG_ITEMS,
 	emailUrl,
 }
