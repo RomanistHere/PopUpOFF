@@ -15,10 +15,19 @@ document.addEventListener('openOptPage', (e) => {
 	chrome.runtime.sendMessage({ openOptPage: true })
 })
 
-// add check if contains url
-chrome.storage.sync.get(['stats'], resp => {
-	document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
-})
+const sendStats = () =>
+	chrome.storage.sync.get(['stats'], resp => {
+		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
+	})
+
+if (window.location.href === 'https://romanisthere.github.io/secrets/') {
+	document.addEventListener('showPopUpOFFStats', ({ detail }) => {
+		if (detail === 'letTheShowBegin') {
+			sendStats()
+			setInterval(sendStats, 2000)
+		}
+	})
+}
 
 const createNotification = () => {
 	const notification = document.createElement("span")
@@ -29,8 +38,15 @@ const createNotification = () => {
 	document.body.appendChild(notification)
 
 	setTimeout(() => {
-		document.querySelector('[data-PopUpOFF="notification"]').remove()
+		if (document.querySelector('.PopUpOFF_notification'))
+			document.querySelector('[data-PopUpOFF="notification"]').remove()
 	}, 5000)
+}
+
+const removeNotification = () => {
+	const prevNotification = document.querySelector('.PopUpOFF_notification')
+	if (prevNotification)
+		prevNotification.remove()
 }
 
 const keyDownCallBack = (e) => {
@@ -41,6 +57,8 @@ const keyDownCallBack = (e) => {
 		chrome.runtime.sendMessage({ hardMode: true }, (response) => {
 			if (response.shouldShow)
 				createNotification()
+			else
+				removeNotification()
 		})
 	}
 }

@@ -1,10 +1,13 @@
 import { ARR_OF_FORB_SITES } from '../constants/data.js'
 import {
-	executeScript,
 	storageSet,
 	storageGet,
 	getPureURL,
-	setBadgeText
+	activateMode,
+	activateHard,
+	activateEasy,
+	executeScript,
+	resetBadgeText
 } from '../constants/functions.js'
 
 // handle install
@@ -15,11 +18,16 @@ chrome.runtime.onInstalled.addListener((details) => {
 			if (!response.thisWebsiteWork || !response.thisWebsiteWorkEasy) {
 				// set up start
 				storageSet({
-					'thisWebsiteWork': [],
-					'thisWebsiteWorkEasy': [],
-					'supervision': true,
-					'tutorial': true,
-					'shortCutMode': false,
+					thisWebsiteWork: [],
+					thisWebsiteWorkEasy: [],
+					supervision: true,
+					tutorial: true,
+					shortCutMode: false,
+					stats: {
+						cleanedArea: 0,
+						numbOfItems: 0
+					},
+					statsEnabled: true
 				})
 
 				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
@@ -63,23 +71,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 			storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
 				const arrOfSites = res.thisWebsiteWork
 				const arrOfEasySites = res.thisWebsiteWorkEasy
+
 				if (arrOfSites.includes(pureUrl)) {
-			    	setBadgeText('H')(tabId)
-
-					executeScript(tabId)('removeHard')
-			    	executeScript(tabId)('showAll')
+			    	activateHard(tabId)
 			    } else if (arrOfEasySites.includes(pureUrl)) {
-			    	setBadgeText('E')(tabId)
-
-					executeScript(tabId)('removeEasy')
-			    	executeScript(tabId)('showAll')
+			    	activateEasy(tabId)
 			    }
 			})
 		}
 	}
 })
 
-// messages handling. Currently responsible for 'alt + x' key comb
+// messages from content script. Currently responsible for 'alt + x' key comb
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (sender.tab) {
 		const tabId = sender.tab.id
@@ -90,7 +93,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
 					sendResponse({ shouldShow: false })
 				} else if (mode) {
-					sendResponse({ shouldShow: true })
 					storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
 						// need to check both arrays
 						const isHard = (mode == 'thisWebsiteWork') ? true : false
@@ -98,19 +100,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 						const oppArrOfSites = res[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']
 
 						if (!arrOfSites.includes(pureUrl)) {
-					        setBadgeText(isHard ? 'H' : 'E')(tabId)
-
+							sendResponse({ shouldShow: true })
+							
 					    	const newArrOfSites = [...arrOfSites, pureUrl]
 					        storageSet({ [mode]: newArrOfSites })
 
-					        executeScript(tabId)(isHard ? 'removeHard' : 'removeEasy')
-				    		executeScript(tabId)('showAll')
+							activateMode(isHard)(tabId)
 				    		if (oppArrOfSites.includes(pureUrl)) {
 				    			// check if website is in opposite mode array
 				    			const newOppArrOfSites = oppArrOfSites.filter(e => e !== pureUrl)
 				    			storageSet({[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']: newOppArrOfSites})
 				    		}
-					    }
+					    } else {
+							sendResponse({ shouldShow: false })
+
+							const newArrOfSites = arrOfSites.filter(e => e !== pureUrl)
+							storageSet({[mode]: newArrOfSites})
+
+							executeScript(tabId)('restore')
+							resetBadgeText(tabId)
+						}
 					})
 				}
 			})

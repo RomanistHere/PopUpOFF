@@ -48,6 +48,15 @@ const nFormatter = (num, digits) => {
 	return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
 }
 
+const activateMode = (isHard) =>
+	(tabId) => {
+		setBadgeText(isHard ? 'H' : 'E')(tabId)
+		executeScript(tabId)(isHard ? 'removeHard' : 'removeEasy')
+		executeScript(tabId)('showAll')
+	}
+const activateHard = activateMode(true)
+const activateEasy = activateMode(false)
+
 export {
 	querySelector,
 	isChecked,
@@ -61,4 +70,7 @@ export {
 	setBadgeText,
 	resetBadgeText,
 	nFormatter,
+	activateMode,
+	activateHard,
+	activateEasy,
 }
