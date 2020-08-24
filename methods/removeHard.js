@@ -19,6 +19,9 @@ var punish = statsEnabled => {
 				numbOfItems: resp.stats.numbOfItems + state.numbOfItems
 			}
 
+			if (isNaN(newStats.cleanedArea) || isNaN(newStats.numbOfItems))
+				return
+
 			chrome.storage.sync.set({ stats: newStats })
 		})
 	const addCountToStats = (state) => {
@@ -74,7 +77,7 @@ var punish = statsEnabled => {
 
 			if (statsEnabled) {
 				const layoutArea = element.offsetHeight * element.offsetWidth
-				state = {
+				state = isNaN(layoutArea) ? state : {
 					...state,
 					numbOfItems: state.numbOfItems + 1,
 					cleanedArea: state.cleanedArea + layoutArea
@@ -172,8 +175,10 @@ var punish = statsEnabled => {
 	checkElems(elems)
 	watchDOM()
 	// statistics
-	setNewData(state)
-	window.addEventListener("beforeunload", () => { setNewData(state) })
+	if (statsEnabled) {
+		setNewData(state)
+		window.addEventListener("beforeunload", () => { setNewData(state) })
+	}
 }
 
 chrome.storage.sync.get(['statsEnabled'], resp => {

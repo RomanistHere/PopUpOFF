@@ -101,7 +101,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 						if (!arrOfSites.includes(pureUrl)) {
 							sendResponse({ shouldShow: true })
-							
+
 					    	const newArrOfSites = [...arrOfSites, pureUrl]
 					        storageSet({ [mode]: newArrOfSites })
 
