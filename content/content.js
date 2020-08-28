@@ -79,3 +79,17 @@ const debounce = (func, wait, immediate) => {
 }
 
 document.onkeydown = debounce(keyDownCallBack, 100)
+
+console.log(Element.prototype)
+Element.prototype.removeChild = () => {
+	console.warn('hey')
+}
+Element.prototype.remove = () => {
+	console.warn('hey2')
+}
+// Element.prototype.innerHTML = (child) => {
+// 	console.warn('hey3')
+// }
+Element.prototype.replaceWith = (child) => {
+	console.warn('hey4')
+}

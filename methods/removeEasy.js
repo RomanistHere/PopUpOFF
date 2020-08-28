@@ -93,7 +93,7 @@ var punishEasy = statsEnabled => {
 		}
 	}
 	const contentCheck = (element) => {
-		const ARR_OF_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss', 'turn off', 'turning off', 'disable', 'ad blocker', 'ad block', 'adblock', 'adblocker']
+		const ARR_OF_ITEMS = ['policy', 'cookie', 'subscription', 'subscribe', 'off', 'sale', 'notification', 'notifications', 'updates', 'privacy', 'miss', 'turn off', 'turning off', 'disable', 'ad blocker', 'ad block', 'adblock', 'adblocker', 'advertising', 'bloqueador de anuncios']
 
 	    if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item))) {
 			if (statsEnabled) state = addItemToStats(element, state)
