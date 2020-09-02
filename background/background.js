@@ -25,7 +25,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 					shortCutMode: false,
 					stats: {
 						cleanedArea: 0,
-						numbOfItems: 0
+						numbOfItems: 0,
+						restored: 0
 					},
 					statsEnabled: true
 				})
@@ -40,7 +41,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 				storageSet({
 					stats: {
 						cleanedArea: 0,
-						numbOfItems: 0
+						numbOfItems: 0,
+						restored: 0
 					},
 					statsEnabled: true
 				})
@@ -61,7 +63,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 // handle tab update(open, reload)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
+	if (changeInfo.status === 'loading') {
 		const url = tab.url
 
 		if (url.includes('chrome://')) {

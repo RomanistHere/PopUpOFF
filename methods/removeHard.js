@@ -10,17 +10,32 @@ var punish = statsEnabled => {
 	// helper functions
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
+	const fixStats = stats => {
+		let fixedStats = {...stats}
+		if (isNaN(stats.cleanedArea))
+			fixedStats.cleanedArea = 0
+		if (isNaN(stats.numbOfItems))
+			fixedStats.numbOfItems = 0
+		if (isNaN(stats.restored))
+			fixedStats.restored = 0
+		return fixedStats
+	}
 	const setNewData = state =>
 		chrome.storage.sync.get(['stats'], resp => {
 			// round to first decimal
 			const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
-			const newStats = {
+			let newStats = {
 				cleanedArea: resp.stats.cleanedArea + screenValue,
-				numbOfItems: resp.stats.numbOfItems + state.numbOfItems
+				numbOfItems: resp.stats.numbOfItems + state.numbOfItems,
+				restored: resp.stats.restored + state.restored
 			}
 
-			if (isNaN(newStats.cleanedArea) || isNaN(newStats.numbOfItems))
-				return
+			if (isNaN(newStats.cleanedArea) ||
+				isNaN(newStats.numbOfItems) ||
+				isNaN(newStats.restored))
+					newStats = fixStats(newStats)
+
+			console.log(newStats)
 
 			chrome.storage.sync.set({ stats: newStats })
 		})
@@ -32,7 +47,8 @@ var punish = statsEnabled => {
 	let state = statsEnabled ? {
 		windowArea: window.innerHeight * window.innerWidth,
 		cleanedArea: 0,
-		numbOfItems: 0
+		numbOfItems: 0,
+		restored: 0
 	} : null
 
 	// unmutable
@@ -125,28 +141,61 @@ var punish = statsEnabled => {
 		} catch (e) {
 		}
 	}
+	const restoreContent = mutation => {
+		const targetCopy = mutation.target.cloneNode(true)
+		const parent = mutation.target.parentNode
+
+		mutation.removedNodes.forEach(node => {
+			const removedNodeClone = node.cloneNode(true)
+			targetCopy.appendChild(removedNodeClone)
+		})
+
+		targetCopy.style.removeProperty("height")
+		targetCopy.style.removeProperty("margin")
+		targetCopy.style.removeProperty("padding")
+
+		if (parent)
+			parent.replaceChild(targetCopy, mutation.target)
+
+		// console.log(mutation)
+		// console.log(targetCopy)
+		console.log('Restoring')
+		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
+	}
+	const checkMutation = mutation => {
+		checkElemWithSibl(mutation.target)
+		const arr = [...mutation.addedNodes]
+		arr.map(element => {
+			if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
+		})
+		removeOverflow()
+	}
+	const prevLoop = () => {
+		if (infiniteLoopPreventCounter > 1200) {
+			removeDomWatcher()
+		}
+		infiniteLoopPreventCounter++
+		if (myTimer === 0) {
+			myTimer = setTimeout(resetLoopCounter, 1000)
+		}
+	}
 	const watchDOM = () => {
 		if (!domObserver) {
-			domObserver = new MutationObserver((mutation) => {
-				for (let i = 0; i < mutation.length; i++){
-					// prevent inifnite looping
-					if (infiniteLoopPreventCounter > 1200) {
-						removeDomWatcher()
-						break
-					}
-					infiniteLoopPreventCounter++
-					if (myTimer === 0) {
-						myTimer = setTimeout(resetLoopCounter, 1000)
+			domObserver = new MutationObserver((mutations) => {
+				mutations.forEach(mutation => {
+					// restore content
+					if (mutation.type === 'childList' &&
+						mutation.removedNodes.length &&
+						Array.from(mutation.removedNodes).some(item => item.nodeName === '#text')) {
+							restoreContent(mutation)
 					}
 
+					// disconnect if oversized
+					prevLoop()
+
 					// check element and its siblings
-					checkElemWithSibl(mutation[i].target)
-					const arr = [...mutation[i].addedNodes]
-					arr.map(element => {
-						if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
-					})
-					removeOverflow()
-				}
+					checkMutation(mutation)
+				})
 			})
 		}
 
