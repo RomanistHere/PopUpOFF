@@ -1,4 +1,11 @@
 // I inject this script few times during the load of the page
+// console.warn('_________')
+// console.warn('_________')
+// console.warn('_________')
+// console.warn('HELLO!!!')
+// console.warn('_________')
+// console.warn('_________')
+// console.warn('_________')
 var domObserver
 var domObserverLight
 
@@ -6,18 +13,19 @@ var infiniteLoopPreventCounter = 0
 var myTimer = 0
 var wasNotStoped = true
 
-var punish = statsEnabled => {
+var punish = (statsEnabled, shouldRestoreCont) => {
 	// helper functions
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
+	const checkIsInArr = (arr, item) => arr.includes(item) ? true : false
 	const fixStats = stats => {
 		let fixedStats = {...stats}
 		if (isNaN(stats.cleanedArea))
-			fixedStats.cleanedArea = 0
+			fixedStats = { ...state, cleanedArea: 0 }
 		if (isNaN(stats.numbOfItems))
-			fixedStats.numbOfItems = 0
+			fixedStats = { ...state, numbOfItems: 0 }
 		if (isNaN(stats.restored))
-			fixedStats.restored = 0
+			fixedStats = { ...state, restored: 0 }
 		return fixedStats
 	}
 	const setNewData = state =>
@@ -36,6 +44,7 @@ var punish = statsEnabled => {
 					newStats = fixStats(newStats)
 
 			console.log(newStats)
+			// newStats.cleanedArea = 1000
 
 			chrome.storage.sync.set({ stats: newStats })
 		})
@@ -122,8 +131,10 @@ var punish = statsEnabled => {
 			// element itself
 			checkElem(element)
 		    // all childs of element
-			const elems = element.querySelectorAll("*")
-			checkElems(elems)
+			if (wasNotStoped) {
+				const elems = element.querySelectorAll("*")
+				checkElems(elems)
+			}
 		}
 	}
 	const resetLoopCounter = () => {
@@ -135,7 +146,12 @@ var punish = statsEnabled => {
 		try {
 			domObserver.disconnect()
 			domObserver = false
-			if (wasNotStoped) setTimeout(watchDOM, 3000)
+			if (wasNotStoped) {
+				setTimeout(() => {
+					const newElems = document.body.getElementsByTagName("*")
+					action(newElems)
+				}, 2000)
+			}
 			wasNotStoped = false
 			domObserverLight.disconnect()
 		} catch (e) {
@@ -157,9 +173,6 @@ var punish = statsEnabled => {
 		if (parent)
 			parent.replaceChild(targetCopy, mutation.target)
 
-		// console.log(mutation)
-		// console.log(targetCopy)
-		console.log('Restoring')
 		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
 	}
 	const checkMutation = mutation => {
@@ -173,29 +186,46 @@ var punish = statsEnabled => {
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1200) {
 			removeDomWatcher()
+			return true
 		}
 		infiniteLoopPreventCounter++
 		if (myTimer === 0) {
 			myTimer = setTimeout(resetLoopCounter, 1000)
 		}
+		return false
 	}
 	const watchDOM = () => {
 		if (!domObserver) {
-			domObserver = new MutationObserver((mutations) => {
-				mutations.forEach(mutation => {
+			domObserver = new MutationObserver(mutations => {
+				// console.log(mutations)
+				let processedElems = []
+				const len = mutations.length
+				for (let i = 0; i < len; i++) {
+					// stop and disconnect if oversized
+					const shouldStop = prevLoop()
+					if (shouldStop)
+						break
+
+					const mutation = mutations[i]
+					const isProcessed = checkIsInArr(processedElems, mutation.target)
+
+					// skip if processed
+					if (isProcessed)
+						continue
+					else
+						processedElems = [...processedElems, mutation.target]
+
 					// restore content
-					if (mutation.type === 'childList' &&
+					if (shouldRestoreCont &&
+						mutation.type === 'childList' &&
 						mutation.removedNodes.length &&
 						Array.from(mutation.removedNodes).some(item => item.nodeName === '#text')) {
 							restoreContent(mutation)
 					}
 
-					// disconnect if oversized
-					prevLoop()
-
 					// check element and its siblings
 					checkMutation(mutation)
-				})
+				}
 			})
 		}
 
@@ -219,10 +249,14 @@ var punish = statsEnabled => {
 		}
 	}
 
+	const action = elems => {
+		removeOverflow()
+		checkElems(elems)
+		watchDOM()
+	}
+
 	// Let the hunt begin!
-	removeOverflow()
-	checkElems(elems)
-	watchDOM()
+	action(elems)
 	// statistics
 	if (statsEnabled) {
 		setNewData(state)
@@ -230,6 +264,6 @@ var punish = statsEnabled => {
 	}
 }
 
-chrome.storage.sync.get(['statsEnabled'], resp => {
-	punish(resp.statsEnabled)
+chrome.storage.sync.get(['statsEnabled', 'restoreCont'], resp => {
+	punish(resp.statsEnabled, resp.restoreCont)
 })

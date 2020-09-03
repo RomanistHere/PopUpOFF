@@ -6,21 +6,36 @@ var infiniteLoopPreventCounter = 0
 var myTimer = 0
 var wasNotStoped = true
 
-var punishEasy = statsEnabled => {
+var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	// helper functions
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
+	const fixStats = stats => {
+		let fixedStats = {...stats}
+		if (isNaN(stats.cleanedArea))
+			fixedStats = { ...state, cleanedArea: 0 }
+		if (isNaN(stats.numbOfItems))
+			fixedStats = { ...state, numbOfItems: 0 }
+		if (isNaN(stats.restored))
+			fixedStats = { ...state, restored: 0 }
+		return fixedStats
+	}
 	const setNewData = state =>
 		chrome.storage.sync.get(['stats'], resp => {
 			// round to first decimal
 			const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
-			const newStats = {
+			let newStats = {
 				cleanedArea: resp.stats.cleanedArea + screenValue,
-				numbOfItems: resp.stats.numbOfItems + state.numbOfItems
+				numbOfItems: resp.stats.numbOfItems + state.numbOfItems,
+				restored: resp.stats.restored + state.restored
 			}
 
-			if (isNaN(newStats.cleanedArea) || isNaN(newStats.numbOfItems))
-				return
+			if (isNaN(newStats.cleanedArea) ||
+				isNaN(newStats.numbOfItems) ||
+				isNaN(newStats.restored))
+					newStats = fixStats(newStats)
+
+			console.log(newStats)
 
 			chrome.storage.sync.set({ stats: newStats })
 		})
@@ -41,7 +56,8 @@ var punishEasy = statsEnabled => {
 	let state = statsEnabled ? {
 		windowArea: window.innerHeight * window.innerWidth,
 		cleanedArea: 0,
-		numbOfItems: 0
+		numbOfItems: 0,
+		restored: 0
 	} : null
 
 	// unmutable
@@ -145,8 +161,10 @@ var punishEasy = statsEnabled => {
 			// element itself
 			checkElem(element)
 			// all childs of element
-			const elems = element.querySelectorAll("*")
-			checkElems(elems)
+			if (wasNotStoped) {
+				const elems = element.querySelectorAll("*")
+				checkElems(elems)
+			}
 		}
 	}
 	const resetLoopCounter = () => {
@@ -158,33 +176,79 @@ var punishEasy = statsEnabled => {
 		try {
 			domObserver.disconnect()
 			domObserver = false
-			if (wasNotStoped) setTimeout(watchDOM, 3000)
+			if (wasNotStoped) {
+				setTimeout(() => {
+					const newElems = document.body.getElementsByTagName("*")
+					action(newElems)
+				}, 2000)
+			}
 			wasNotStoped = false
 			domObserverLight.disconnect()
 		} catch (e) {
 		}
 	}
+	const restoreContent = mutation => {
+		const targetCopy = mutation.target.cloneNode(true)
+		const parent = mutation.target.parentNode
+
+		mutation.removedNodes.forEach(node => {
+			const removedNodeClone = node.cloneNode(true)
+			targetCopy.appendChild(removedNodeClone)
+		})
+
+		targetCopy.style.removeProperty("height")
+		targetCopy.style.removeProperty("margin")
+		targetCopy.style.removeProperty("padding")
+
+		if (parent)
+			parent.replaceChild(targetCopy, mutation.target)
+
+		// console.log(mutation)
+		// console.log(targetCopy)
+		// console.log('Restoring')
+		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
+	}
+	const checkMutation = mutation => {
+		checkElemWithSibl(mutation.target)
+		const arr = [...mutation.addedNodes]
+		arr.map(element => {
+			if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
+		})
+		removeOverflow()
+	}
+	const prevLoop = () => {
+		if (infiniteLoopPreventCounter > 1000) {
+			removeDomWatcher()
+			return true
+		}
+		infiniteLoopPreventCounter++
+		if (myTimer === 0) {
+			myTimer = setTimeout(resetLoopCounter, 1000)
+		}
+		return false
+	}
 	const watchDOM = () => {
 		if (!domObserver) {
-			domObserver = new MutationObserver((mutation) => {
-				for (let i = 0; i < mutation.length; i++){
-					// prevent inifnite looping
-					if (infiniteLoopPreventCounter > 600) {
-						removeDomWatcher()
+			domObserver = new MutationObserver(mutations => {
+				const len = mutations.length
+				for (let i = 0; i < len; i++) {
+					// disconnect if oversized
+					const shouldStop = prevLoop()
+					if (shouldStop)
 						break
-					}
-					infiniteLoopPreventCounter++
-					if (myTimer === 0) {
-						myTimer = setTimeout(resetLoopCounter, 1000)
+
+					const mutation = mutations[i]
+
+					// restore content
+					if (shouldRestoreCont &&
+						mutation.type === 'childList' &&
+						mutation.removedNodes.length &&
+						Array.from(mutation.removedNodes).some(item => item.nodeName === '#text')) {
+							restoreContent(mutation)
 					}
 
 					// check element and its siblings
-					checkElemWithSibl(mutation[i].target)
-					const arr = [...mutation[i].addedNodes]
-					arr.map(element => {
-						if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
-					})
-					removeOverflow()
+					checkMutation(mutation)
 				}
 			})
 		}
@@ -209,10 +273,14 @@ var punishEasy = statsEnabled => {
 		}
 	}
 
+	const action = elems => {
+		removeOverflow()
+		checkElems(elems)
+		watchDOM()
+	}
+
 	// Let the hunt begin!
-	removeOverflow()
-	checkElems(elems)
-	watchDOM()
+	action(elems)
 	// statistics
 	if (statsEnabled) {
 		setNewData(state)
@@ -220,6 +288,6 @@ var punishEasy = statsEnabled => {
 	}
 }
 
-chrome.storage.sync.get(['statsEnabled'], resp => {
-	punishEasy(resp.statsEnabled)
+chrome.storage.sync.get(['statsEnabled', 'restoreCont'], resp => {
+	punishEasy(resp.statsEnabled, resp.restoreCont)
 })

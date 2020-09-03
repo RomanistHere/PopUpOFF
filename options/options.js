@@ -72,6 +72,28 @@ statsToggle.onchange = (element) => {
 	}
 }
 
+// prevent content //
+const prevContToggle = querySelector("#prevContToggle")
+
+storageGet("restoreCont", (res) => {
+	if (res.restoreCont) {
+		addClass(querySelector('.desc-prevCont'), 'desc-active')
+		prevContToggle.checked = true
+	} else {
+		prevContToggle.checked = false
+	}
+})
+
+prevContToggle.onchange = (element) => {
+	if (prevContToggle.checked) {
+		storageSet({ "restoreCont": true })
+		addClass(querySelector('.desc-prevCont'), 'desc-active')
+	} else {
+		storageSet({ "restoreCont": false })
+		removeClass(querySelector('.desc-prevCont'), 'desc-active')
+	}
+}
+
 // slider //
 const slider = querySelector('.slider__input')
 const sliderTextLeft = querySelector('.slider__left')

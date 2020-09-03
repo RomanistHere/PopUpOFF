@@ -28,7 +28,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 						numbOfItems: 0,
 						restored: 0
 					},
-					statsEnabled: true
+					statsEnabled: true,
+					restoreCont: false
 				})
 
 				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
@@ -44,7 +45,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 						numbOfItems: 0,
 						restored: 0
 					},
-					statsEnabled: true
+					statsEnabled: true,
+					restoreCont: false
 				})
 			}
 		})
@@ -63,6 +65,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 // handle tab update(open, reload)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	// if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
 	if (changeInfo.status === 'loading') {
 		const url = tab.url
 
