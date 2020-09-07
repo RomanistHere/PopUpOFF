@@ -1,4 +1,4 @@
-// I inject this script few times during the load of the page
+// Script can be injected few times in the same area
 // console.warn('_________')
 // console.warn('_________')
 // console.warn('_________')
@@ -77,21 +77,24 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 			if (statsEnabled) state = addCountToStats(state)
 		}
 
-	    if ((getStyle(doc, 'position') == 'fixed') ||
-	    	(getStyle(doc, 'position') == 'absolute')) {
+		const docPosStyle = getStyle(doc, 'position')
+	    if ((docPosStyle == 'fixed') ||
+	    	(docPosStyle == 'absolute')) {
 			setPropImp(doc, "position", "relative")
 			if (statsEnabled) state = addCountToStats(state)
 		}
 
-		if ((getStyle(body, 'position') == 'fixed') ||
-	    	(getStyle(body, 'position') == 'absolute')) {
+		const bodyPosStyle = getStyle(body, 'position')
+		if ((bodyPosStyle== 'fixed') ||
+	    	(bodyPosStyle == 'absolute')) {
 			setPropImp(body, "position", "relative")
 			if (statsEnabled) state = addCountToStats(state)
 		}
 	}
 	const checkElem = element => {
-		if ((getStyle(element, 'position') == 'fixed') ||
-	    	(getStyle(element, 'position') == 'sticky')) {
+		const elemPosStyle = getStyle(element, 'position')
+		if ((elemPosStyle == 'fixed') ||
+	    	(elemPosStyle == 'sticky')) {
 
 			if (element.getAttribute('data-PopUpOFF') === 'notification')
 	        	return
@@ -157,24 +160,6 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		} catch (e) {
 		}
 	}
-	const restoreContent = mutation => {
-		const targetCopy = mutation.target.cloneNode(true)
-		const parent = mutation.target.parentNode
-
-		mutation.removedNodes.forEach(node => {
-			const removedNodeClone = node.cloneNode(true)
-			targetCopy.appendChild(removedNodeClone)
-		})
-
-		targetCopy.style.removeProperty("height")
-		targetCopy.style.removeProperty("margin")
-		targetCopy.style.removeProperty("padding")
-
-		if (parent)
-			parent.replaceChild(targetCopy, mutation.target)
-
-		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
-	}
 	const checkMutation = mutation => {
 		checkElemWithSibl(mutation.target)
 		const arr = [...mutation.addedNodes]
@@ -182,6 +167,9 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 			if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
 		})
 		removeOverflow()
+	}
+	const unsetHeight = mutation => {
+		mutation.target.style.removeProperty("height")
 	}
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1200) {
@@ -194,10 +182,33 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		}
 		return false
 	}
+	const restoreNode = mutation => {
+		const target = mutation.target
+
+		mutation.removedNodes.forEach(node => {
+			const removedNodeClone = node.cloneNode(true)
+			target.appendChild(removedNodeClone)
+		})
+
+		target.style.removeProperty("height")
+		target.style.removeProperty("margin")
+		target.style.removeProperty("padding")
+
+		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
+	}
+	const checkForRestore = mutation => {
+		unsetHeight(mutation)
+
+		if (mutation.type === 'childList' &&
+		mutation.removedNodes.length) {
+			restoreNode(mutation)
+		}
+	}
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
 				// console.log(mutations)
+				// console.time('time')
 				let processedElems = []
 				const len = mutations.length
 				for (let i = 0; i < len; i++) {
@@ -207,25 +218,22 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 						break
 
 					const mutation = mutations[i]
-					const isProcessed = checkIsInArr(processedElems, mutation.target)
 
-					// skip if processed
-					if (isProcessed)
-						continue
-					else
-						processedElems = [...processedElems, mutation.target]
-
-					// restore content
-					if (shouldRestoreCont &&
-						mutation.type === 'childList' &&
-						mutation.removedNodes.length &&
-						Array.from(mutation.removedNodes).some(item => item.nodeName === '#text')) {
-							restoreContent(mutation)
+					if (!shouldRestoreCont) {
+						const isProcessed = checkIsInArr(processedElems, mutation.target)
+						// skip if processed
+						if (isProcessed)
+							continue
+						else
+							processedElems = [...processedElems, mutation.target]
+					} else {
+						checkForRestore(mutation)
 					}
 
 					// check element and its siblings
 					checkMutation(mutation)
 				}
+				// console.timeEnd('time')
 			})
 		}
 
@@ -244,7 +252,8 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 			domObserver.observe(doc, {
 				childList: true,
 				subtree: true,
-				attributes: true
+				attributes: true,
+				// attributeOldValue: true
 			})
 		}
 	}
