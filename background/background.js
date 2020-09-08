@@ -36,7 +36,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 			}
 		})
     } else if (details.reason == 'update') {
-    	// chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/pages/update.html'})
+    	chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.6'})
 		storageGet('stats', (resp) => {
 			if (!resp.stats) {
 				storageSet({

@@ -1,11 +1,4 @@
 // Script can be injected few times in the same area
-// console.warn('_________')
-// console.warn('_________')
-// console.warn('_________')
-// console.warn('HELLO!!!')
-// console.warn('_________')
-// console.warn('_________')
-// console.warn('_________')
 var domObserver
 var domObserverLight
 
@@ -42,9 +35,6 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 				isNaN(newStats.numbOfItems) ||
 				isNaN(newStats.restored))
 					newStats = fixStats(newStats)
-
-			console.log(newStats)
-			// newStats.cleanedArea = 1000
 
 			chrome.storage.sync.set({ stats: newStats })
 		})
@@ -207,8 +197,6 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
-				// console.log(mutations)
-				// console.time('time')
 				let processedElems = []
 				const len = mutations.length
 				for (let i = 0; i < len; i++) {
@@ -233,7 +221,6 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 					// check element and its siblings
 					checkMutation(mutation)
 				}
-				// console.timeEnd('time')
 			})
 		}
 
@@ -252,8 +239,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 			domObserver.observe(doc, {
 				childList: true,
 				subtree: true,
-				attributes: true,
-				// attributeOldValue: true
+				attributes: true
 			})
 		}
 	}

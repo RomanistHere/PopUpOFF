@@ -1,4 +1,4 @@
-// I inject this script few times during the load of the page
+// Script can be injected few times in the same area
 var domObserver
 var domObserverLight
 
@@ -10,6 +10,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	// helper functions
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
+	const checkIsInArr = (arr, item) => arr.includes(item) ? true : false
 	const fixStats = stats => {
 		let fixedStats = {...stats}
 		if (isNaN(stats.cleanedArea))
@@ -34,8 +35,6 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 				isNaN(newStats.numbOfItems) ||
 				isNaN(newStats.restored))
 					newStats = fixStats(newStats)
-
-			console.log(newStats)
 
 			chrome.storage.sync.set({ stats: newStats })
 		})
@@ -63,7 +62,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	// unmutable
 	const doc = document.documentElement
 	const body = document.body
-	const elems = document.body.getElementsByTagName("*")
+	const elems = body.getElementsByTagName("*")
 
 	// methods
 	const removeOverflow = () => {
@@ -77,25 +76,29 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 			if (statsEnabled) state = addCountToStats(state)
 		}
 
-	    if ((getStyle(doc, 'position') == 'fixed') ||
-	    	(getStyle(doc, 'position') == 'absolute')) {
+		const docPosStyle = getStyle(doc, 'position')
+	    if ((docPosStyle == 'fixed') ||
+	    	(docPosStyle == 'absolute')) {
 			setPropImp(doc, "position", "relative")
 			if (statsEnabled) state = addCountToStats(state)
 		}
 
-		if ((getStyle(body, 'position') == 'fixed') ||
-	    	(getStyle(body, 'position') == 'absolute')) {
+		const bodyPosStyle = getStyle(body, 'position')
+		if ((bodyPosStyle == 'fixed') ||
+	    	(bodyPosStyle == 'absolute')) {
 			setPropImp(body, "position", "relative")
 			if (statsEnabled) state = addCountToStats(state)
 		}
 	}
 	const positionCheck = element => {
 		// needs to get minus value for top value if it is
-		const ELEMENT_TOP = getStyle(element, 'top').match(/[+-]?\d+(?:\.\d+)?/g) ?
-							Number(getStyle(element, 'top').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
+		const elemTopStyle = getStyle(element, 'top')
+		const elemHeightStyle = getStyle(element, 'height')
+		const ELEMENT_TOP = elemTopStyle.match(/[+-]?\d+(?:\.\d+)?/g) ?
+							Number(elemTopStyle.match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 							100
-		const ELEMENT_HEIGHT = getStyle(element, 'height').match(/[+-]?\d+(?:\.\d+)?/g) ?
-							Number(getStyle(element, 'height').match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
+		const ELEMENT_HEIGHT = elemHeightStyle.match(/[+-]?\d+(?:\.\d+)?/g) ?
+							Number(elemHeightStyle.match(/[+-]?\d+(?:\.\d+)?/g)[0]) :
 							300
 
 		if (ELEMENT_TOP > 10) {
@@ -129,8 +132,9 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	    }
 	}
 	const checkElem = element => {
-	    if ((getStyle(element, 'position') == 'fixed') ||
-	    	(getStyle(element, 'position') == 'sticky')) {
+		const elemPosStyle = getStyle(element, 'position')
+	    if ((elemPosStyle == 'fixed') ||
+	    	(elemPosStyle == 'sticky')) {
 
 	    	if (element.getAttribute('data-PopUpOFF') === 'notification')
 	        	return
@@ -156,7 +160,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		arr.map(checkElem)
 	}
 	// watch DOM
-	var checkElemWithSibl = (element) => {
+	const checkElemWithSibl = (element) => {
 		if (element instanceof HTMLElement) {
 			// element itself
 			checkElem(element)
@@ -187,27 +191,6 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		} catch (e) {
 		}
 	}
-	const restoreContent = mutation => {
-		const targetCopy = mutation.target.cloneNode(true)
-		const parent = mutation.target.parentNode
-
-		mutation.removedNodes.forEach(node => {
-			const removedNodeClone = node.cloneNode(true)
-			targetCopy.appendChild(removedNodeClone)
-		})
-
-		targetCopy.style.removeProperty("height")
-		targetCopy.style.removeProperty("margin")
-		targetCopy.style.removeProperty("padding")
-
-		if (parent)
-			parent.replaceChild(targetCopy, mutation.target)
-
-		// console.log(mutation)
-		// console.log(targetCopy)
-		// console.log('Restoring')
-		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
-	}
 	const checkMutation = mutation => {
 		checkElemWithSibl(mutation.target)
 		const arr = [...mutation.addedNodes]
@@ -215,6 +198,9 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 			if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
 		})
 		removeOverflow()
+	}
+	const unsetHeight = mutation => {
+		mutation.target.style.removeProperty("height")
 	}
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1000) {
@@ -227,9 +213,32 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		}
 		return false
 	}
+	const restoreNode = mutation => {
+		const target = mutation.target
+
+		mutation.removedNodes.forEach(node => {
+			const removedNodeClone = node.cloneNode(true)
+			target.appendChild(removedNodeClone)
+		})
+
+		target.style.removeProperty("height")
+		target.style.removeProperty("margin")
+		target.style.removeProperty("padding")
+
+		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
+	}
+	const checkForRestore = mutation => {
+		unsetHeight(mutation)
+
+		if (mutation.type === 'childList' &&
+		mutation.removedNodes.length) {
+			restoreNode(mutation)
+		}
+	}
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
+				let processedElems = []
 				const len = mutations.length
 				for (let i = 0; i < len; i++) {
 					// disconnect if oversized
@@ -239,12 +248,15 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 
 					const mutation = mutations[i]
 
-					// restore content
-					if (shouldRestoreCont &&
-						mutation.type === 'childList' &&
-						mutation.removedNodes.length &&
-						Array.from(mutation.removedNodes).some(item => item.nodeName === '#text')) {
-							restoreContent(mutation)
+					if (!shouldRestoreCont) {
+						const isProcessed = checkIsInArr(processedElems, mutation.target)
+						// skip if processed
+						if (isProcessed)
+							continue
+						else
+							processedElems = [...processedElems, mutation.target]
+					} else {
+						checkForRestore(mutation)
 					}
 
 					// check element and its siblings
