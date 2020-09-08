@@ -26,12 +26,19 @@ Remember me added weird attribute at top of this story? When you disable mode af
 #### Forbidden list of websites - since 1.1.1
 Main problem I faced with user feedback, that they would try PopUpOFF for websites like youtube. Why??? But after few accident, I forbid by default to use my extension there. You can read more about it and change it at options page.  </br></br>
 #### Tutorial - since 1.1.1
-As far as I tracking through analytic, what modes my users use, I decided to add tutorial, and tell them, that I-just-want-to-read-stuff is for extreme cases, where other modes did not help. And most efficient one is "hard" one. I should rename it properly, but have no good ideas about it.</br></br>
+As far as I tracking through analytic, what modes my users use, I decided to add tutorial, and tell them, that I-just-want-to-read-stuff is for extreme cases, where other modes did not help. And most efficient one is "hard" one. I should rename it properly, but have no good ideas about it right now.</br></br>
 #### Tracking
-It's open source, so you can see what data I track. What mode you use, and what "forbidden" site you want to block down. Why??? So no personal data here. I will remove it all once I get all data I need to create very nice extension.</br></br>
-#### Future
-I want to implement automatic mode, based on user's list of blocked websites. So will be no reason to open extension and click some weird-named modes. But we need a lot of people here, so this data base will be uploading properly. But it's really far away right now.</br></br>
+Tracking is completely removed since 1.1.6</br></br>
+#### Prevent paid content from hiding - since 1.1.6
+Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reducing of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont) </br></br>
 #### Changelog:
+1.1.6
+- new (experimental) feature: prevent paid content from hiding;
+- new feature: collect and display stats;
+- remove all tracking and analytics systems;
+- activate/deactivate on shortcut (Alt + x);
+- changes in design and performance;
+
 1.1.5
 - add notification after activating from keyboard shortcut
 - add Google services to list of forbidden websites
