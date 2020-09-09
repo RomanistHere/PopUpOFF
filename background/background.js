@@ -32,7 +32,7 @@ browser.runtime.onInstalled.addListener((details) => {
 					restoreCont: false
 				})
 
-				browser.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
+				browser.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-firefox'})
 			}
 		})
     } else if (details.reason == 'update') {
