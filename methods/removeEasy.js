@@ -219,7 +219,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 
 		for (let i = 0; i < length; i++) {
 			const removedNodeClone = mutation.removedNodes[i].cloneNode(true)
-			if (removedNodeClone.getAttribute('data-PopUpOFF') === 'notification')
+			if (removedNodeClone instanceof Element && removedNodeClone.getAttribute('data-PopUpOFF') === 'notification')
 				return
 
 			target.appendChild(removedNodeClone)
