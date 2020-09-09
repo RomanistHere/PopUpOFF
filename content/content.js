@@ -15,19 +15,20 @@ document.addEventListener('openOptPage', (e) => {
 	browser.runtime.sendMessage({ openOptPage: true })
 })
 
-// const sendStats = () =>
-// 	browser.storage.sync.get(['stats'], resp => {
-// 		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
-// 	})
-//
-// if (window.location.href === 'https://romanisthere.github.io/secrets/') {
-// 	document.addEventListener('showPopUpOFFStats', ({ detail }) => {
-// 		if (detail === 'letTheShowBegin') {
-// 			sendStats()
-// 			setInterval(sendStats, 2000)
-// 		}
-// 	})
-// }
+const sendStats = () =>
+	browser.storage.sync.get(['stats'], resp => {
+		const clonedDetail = cloneInto(resp.stats, document.defaultView)
+		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: clonedDetail }))
+	})
+
+if (window.location.href === 'https://romanisthere.github.io/secrets/') {
+	document.addEventListener('showPopUpOFFStats', ({ detail }) => {
+		if (detail === 'letTheShowBegin') {
+			sendStats()
+			setInterval(sendStats, 2000)
+		}
+	})
+}
 
 let notifTimeout
 
