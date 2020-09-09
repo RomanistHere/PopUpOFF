@@ -1,7 +1,7 @@
 // local variable for state of current page (do not work after reload)
 var	thisPageOn = false
 
-chrome.runtime.onMessage.addListener((msg, sender, response) => {
+browser.runtime.onMessage.addListener((msg, sender, response) => {
 	if (msg.method === "getStatusThisPage") {
 		response(thisPageOn)
 	}
@@ -12,22 +12,22 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
 })
 
 document.addEventListener('openOptPage', (e) => {
-	chrome.runtime.sendMessage({ openOptPage: true })
+	browser.runtime.sendMessage({ openOptPage: true })
 })
 
-const sendStats = () =>
-	chrome.storage.sync.get(['stats'], resp => {
-		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
-	})
-
-if (window.location.href === 'https://romanisthere.github.io/secrets/') {
-	document.addEventListener('showPopUpOFFStats', ({ detail }) => {
-		if (detail === 'letTheShowBegin') {
-			sendStats()
-			setInterval(sendStats, 2000)
-		}
-	})
-}
+// const sendStats = () =>
+// 	browser.storage.sync.get(['stats'], resp => {
+// 		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
+// 	})
+//
+// if (window.location.href === 'https://romanisthere.github.io/secrets/') {
+// 	document.addEventListener('showPopUpOFFStats', ({ detail }) => {
+// 		if (detail === 'letTheShowBegin') {
+// 			sendStats()
+// 			setInterval(sendStats, 2000)
+// 		}
+// 	})
+// }
 
 let notifTimeout
 
@@ -59,7 +59,7 @@ const keyDownCallBack = (e) => {
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
 		e.preventDefault()
-		chrome.runtime.sendMessage({ hardMode: true }, (response) => {
+		browser.runtime.sendMessage({ hardMode: true }, (response) => {
 			if (response.shouldShow)
 				createNotification()
 			else

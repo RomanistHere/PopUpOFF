@@ -48,7 +48,7 @@ const initTutorial = () => {
 	    return false
 	}
 	querySelector('.tutorial_to_options').onclick = () => {
-		chrome.runtime.openOptionsPage()
+		browser.runtime.openOptionsPage()
 		passTutorial()
 		return false
 	}
@@ -83,14 +83,14 @@ const showMessage = (className) => {
 	addClass(querySelector(className), 'message-visible')
 	if (className == '.message_forb') {
 		querySelector('.message_forb__link').onclick = () => {
-	        chrome.runtime.openOptionsPage()
+	        browser.runtime.openOptionsPage()
 	        removeClass(querySelector(className), 'message-visible')
 			return false
 		}
 	} else if (className == '.message_reload') {
 		querySelector('.message_reload__link').onclick = () => {
-		    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+		    browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
+		        browser.tabs.update(tabs[0].id, {url: tabs[0].url})
 		        removeClass(querySelector(className), 'message-visible')
 		    })
 		    return false
@@ -102,7 +102,7 @@ const showMessage = (className) => {
 
 const initToggler = (chInput, otherInput, curMode, otherMode, selector1, selector2, easy) => {
 	chInput.onchange = (element) => {
-		chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+		browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
 			// grab pure url
 		    const newUrl = getPureURL(tabs[0])
 		    const tabID = tabs[0].id
@@ -181,7 +181,7 @@ initToggler(
 const toggleThisPageInp = querySelector('#toggleThisPageInp')
 
 toggleThisPageInp.onchange = (element) => {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
 	    const newUrl = getPureURL(tabs[0])
 		if (IS_SUPERVISION_ACTIVE && ARR_OF_FORB_SITES.includes(newUrl)) {
 			toggleThisPageInp.checked = false
@@ -191,7 +191,7 @@ toggleThisPageInp.onchange = (element) => {
 		        executeScriptHere('removeAll')
 		        executeScriptHere('showAll')
 		        // sending message to content.js to store is input checked or not to show it when popup open
-			    chrome.tabs.sendMessage(
+			    browser.tabs.sendMessage(
 			        tabs[0].id,
 			        {
 			        	method: "setStatusThisPage",
@@ -208,7 +208,7 @@ toggleThisPageInp.onchange = (element) => {
 			    	executeScriptHere('restore')
 			    }
 			    showMessage('.message_reload')
-			    chrome.tabs.sendMessage(
+			    browser.tabs.sendMessage(
 			        tabs[0].id,
 			        {
 			        	method: "setStatusThisPage",
@@ -243,7 +243,7 @@ const initState = () => {
 		}
 	})
 
-	chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+	browser.tabs.query({active: true, currentWindow: true}, tabs => {
 		let isFirstModeAct = false
 	    const newUrl = getPureURL(tabs[0])
 
@@ -277,7 +277,7 @@ const initState = () => {
 			}
 		})
 		// I JUST WANT TO READ input state
-		chrome.tabs.sendMessage(
+		browser.tabs.sendMessage(
 	        tabs[0].id,
 	        {method: "getStatusThisPage"},
 	        (response) => {
