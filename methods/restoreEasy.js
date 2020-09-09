@@ -9,7 +9,7 @@ var restoreFixedElems = () => {
 		if (domObserver) domObserver.disconnect()
 		if (domObserverLight) domObserverLight.disconnect()
 	} catch (e) {
-		console.log(e)
+		// console.log(e)
 	}
 
 	for (let i=0; i<LEN; i++) {

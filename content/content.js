@@ -29,6 +29,8 @@ if (window.location.href === 'https://romanisthere.github.io/secrets/') {
 	})
 }
 
+let notifTimeout
+
 const createNotification = () => {
 	const notification = document.createElement("span")
 	notification.setAttribute('data-PopUpOFF', 'notification')
@@ -37,7 +39,8 @@ const createNotification = () => {
 	notification.appendChild(text)
 	document.body.appendChild(notification)
 
-	setTimeout(() => {
+	clearTimeout(notifTimeout)
+	notifTimeout = setTimeout(() => {
 		if (document.querySelector('.PopUpOFF_notification'))
 			document.querySelector('[data-PopUpOFF="notification"]').remove()
 	}, 5000)
@@ -45,8 +48,10 @@ const createNotification = () => {
 
 const removeNotification = () => {
 	const prevNotification = document.querySelector('.PopUpOFF_notification')
-	if (prevNotification)
+	if (prevNotification) {
+		clearTimeout(notifTimeout)
 		prevNotification.remove()
+	}
 }
 
 const keyDownCallBack = (e) => {

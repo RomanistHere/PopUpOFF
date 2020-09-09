@@ -215,11 +215,15 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	}
 	const restoreNode = mutation => {
 		const target = mutation.target
+		const length = mutation.removedNodes.length
 
-		mutation.removedNodes.forEach(node => {
-			const removedNodeClone = node.cloneNode(true)
+		for (let i = 0; i < length; i++) {
+			const removedNodeClone = mutation.removedNodes[i].cloneNode(true)
+			if (removedNodeClone.getAttribute('data-PopUpOFF') === 'notification')
+				return
+
 			target.appendChild(removedNodeClone)
-		})
+		}
 
 		target.style.removeProperty("height")
 		target.style.removeProperty("margin")
