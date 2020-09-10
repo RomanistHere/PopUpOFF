@@ -159,6 +159,14 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		const arr = [...elems]
 		arr.map(checkElem)
 	}
+	const unhide = elem => {
+		if (elem.innerHTML.length > 5)
+			elem.classList.remove('hide')
+	}
+	const findHidden = () => {
+		const hidden = [...doc.querySelectorAll('.hide')]
+		hidden.map(unhide)
+	}
 	// watch DOM
 	const checkElemWithSibl = (element) => {
 		if (element instanceof HTMLElement) {
@@ -292,6 +300,8 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	const action = elems => {
 		removeOverflow()
 		checkElems(elems)
+		if (shouldRestoreCont)
+			findHidden()
 		watchDOM()
 	}
 
