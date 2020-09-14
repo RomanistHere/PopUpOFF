@@ -207,8 +207,14 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		})
 		removeOverflow()
 	}
-	const unsetHeight = mutation => {
-		mutation.target.style.removeProperty("height")
+	const unsetHeight = ({ target }) => {
+		if (target.getAttribute('data-popupoffextension') === 'hello')
+			return
+
+		if (getStyle(target, 'display') == 'none')
+			setPropImp(target, "display", "unset")
+
+		target.style.removeProperty("height")
 	}
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1000) {
