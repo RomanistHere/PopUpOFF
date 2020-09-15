@@ -164,10 +164,10 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	}
 	const unhide = elem => {
 		if (elem.innerHTML.length > 5)
-			elem.classList.remove('hide')
+			elem.classList.remove('hide', 'height_0')
 	}
 	const findHidden = () => {
-		const hidden = [...doc.querySelectorAll('.hide')]
+		const hidden = [...doc.querySelectorAll('.hide'), ...doc.querySelectorAll('.height_0')]
 		hidden.map(unhide)
 	}
 	// watch DOM
