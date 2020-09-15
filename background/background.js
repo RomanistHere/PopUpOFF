@@ -11,7 +11,7 @@ import {
 } from '../constants/functions.js'
 
 // handle install
-chrome.runtime.onInstalled.addListener((details) => {
+browser.runtime.onInstalled.addListener((details) => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (response) => {
@@ -32,11 +32,11 @@ chrome.runtime.onInstalled.addListener((details) => {
 					restoreCont: false
 				})
 
-				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
+				browser.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-firefox'})
 			}
 		})
     } else if (details.reason == 'update') {
-    	chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.7'})
+    	browser.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.7'})
 		storageGet('stats', (resp) => {
 			let fixedStats = {}
 			if (!resp.stats) {
@@ -62,23 +62,23 @@ chrome.runtime.onInstalled.addListener((details) => {
 })
 
 // handle tab switch(focus)
-chrome.tabs.onActivated.addListener((activeInfo) => {
-    chrome.tabs.query({ 'active': true }, (info) => {
+browser.tabs.onActivated.addListener((activeInfo) => {
+    browser.tabs.query({ 'active': true }, (info) => {
     	const url = info[0].url
-	    if (url.includes('chrome://')) {
-			chrome.browserAction.disable(activeInfo.tabId)
+	    if (url.includes('about:')) {
+			browser.browserAction.disable(activeInfo.tabId)
 		}
     })
 })
 
 // handle tab update(open, reload)
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	// if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
 	if (changeInfo.status === 'loading') {
 		const url = tab.url
 
 		if (url.includes('chrome://')) {
-			chrome.browserAction.disable(tabId)
+			browser.browserAction.disable(tabId)
 		} else {
 			const pureUrl = getPureURL({ url })
 			storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
@@ -96,7 +96,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 })
 
 // messages from content script. Currently responsible for 'alt + x' key comb
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (sender.tab) {
 		const tabId = sender.tab.id
 		const pureUrl = getPureURL(sender)
@@ -137,7 +137,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				}
 			})
 		} else if (request.openOptPage) {
-			chrome.runtime.openOptionsPage()
+			browser.runtime.openOptionsPage()
 		}
 	}
 	return true
