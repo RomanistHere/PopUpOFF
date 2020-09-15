@@ -42,7 +42,7 @@ var restoreFixedElems = () => {
 	}
 }
 
-browser.storage.sync.get("autoWork", (res) => {
+chrome.storage.sync.get("autoWork", (res) => {
 	// check if we gonna remove or restore elems
 	if (res.autoWork) {
 

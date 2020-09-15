@@ -2,7 +2,7 @@ var removeFixedElems = (statsEnabled) => {
 	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
 	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
 	const setNewData = state =>
-		browser.storage.sync.get(['stats'], resp => {
+		chrome.storage.sync.get(['stats'], resp => {
 			// round to first decimal
 			const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
 			const newStats = {
@@ -13,7 +13,7 @@ var removeFixedElems = (statsEnabled) => {
 			if (isNaN(newStats.cleanedArea) || isNaN(newStats.numbOfItems))
 				return
 
-			browser.storage.sync.set({ stats: newStats })
+			chrome.storage.sync.set({ stats: newStats })
 		})
 	const addItemToStats = (element, state) => {
 		const layoutArea = element.offsetHeight * element.offsetWidth
@@ -83,6 +83,6 @@ var removeFixedElems = (statsEnabled) => {
 	}
 }
 
-browser.storage.sync.get(['statsEnabled'], resp => {
+chrome.storage.sync.get(['statsEnabled'], resp => {
 	removeFixedElems(resp.statsEnabled)
 })

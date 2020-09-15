@@ -1,7 +1,7 @@
 // local variable for state of current page (do not work after reload)
 var	thisPageOn = false
 
-browser.runtime.onMessage.addListener((msg, sender, response) => {
+chrome.runtime.onMessage.addListener((msg, sender, response) => {
 	if (msg.method === "getStatusThisPage") {
 		response(thisPageOn)
 	}
@@ -12,13 +12,12 @@ browser.runtime.onMessage.addListener((msg, sender, response) => {
 })
 
 document.addEventListener('openOptPage', (e) => {
-	browser.runtime.sendMessage({ openOptPage: true })
+	chrome.runtime.sendMessage({ openOptPage: true })
 })
 
 const sendStats = () =>
-	browser.storage.sync.get(['stats'], resp => {
-		const clonedDetail = cloneInto(resp.stats, document.defaultView)
-		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: clonedDetail }))
+	chrome.storage.sync.get(['stats'], resp => {
+		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
 	})
 
 if (window.location.href === 'https://romanisthere.github.io/secrets/') {
@@ -60,7 +59,7 @@ const keyDownCallBack = (e) => {
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
 		e.preventDefault()
-		browser.runtime.sendMessage({ hardMode: true }, (response) => {
+		chrome.runtime.sendMessage({ hardMode: true }, (response) => {
 			if (response.shouldShow)
 				createNotification()
 			else

@@ -13,12 +13,12 @@ var restoreFixedElems = () => {
 	arr.map(elem => elem.style.display = null)
 }
 
-browser.storage.sync.get("autoWorkEasy", (res) => {
+chrome.storage.sync.get("autoWorkEasy", (res) => {
 	// check if we gonna remove or restore elems
 	if (res.autoWorkEasy) {
 
 	} else {
-		browser.storage.sync.get("autoWork", (res) => {
+		chrome.storage.sync.get("autoWork", (res) => {
 			if (res.autoWork) {
 
 			} else {

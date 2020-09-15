@@ -4,7 +4,6 @@ html{
     display: flex;
 
     align-items: center;
-    overflow-y: auto;
 
     --slider-width: 200px;
 }

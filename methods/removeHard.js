@@ -22,7 +22,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		return fixedStats
 	}
 	const setNewData = state =>
-		browser.storage.sync.get(['stats'], resp => {
+		chrome.storage.sync.get(['stats'], resp => {
 			// round to first decimal
 			const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
 			let newStats = {
@@ -36,7 +36,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 				isNaN(newStats.restored))
 					newStats = fixStats(newStats)
 
-			browser.storage.sync.set({ stats: newStats })
+			chrome.storage.sync.set({ stats: newStats })
 		})
 	const addCountToStats = (state) => {
 		return { ...state, numbOfItems: parseFloat(state.numbOfItems) + 1 }
@@ -283,6 +283,6 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	}
 }
 
-browser.storage.sync.get(['statsEnabled', 'restoreCont'], resp => {
+chrome.storage.sync.get(['statsEnabled', 'restoreCont'], resp => {
 	punish(resp.statsEnabled, resp.restoreCont)
 })

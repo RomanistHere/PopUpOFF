@@ -12,19 +12,19 @@ const storageGet = (request, f) => chrome.storage.sync.get(request, f)
 // Browser actions. Badge - text at right bottom corner of extension's icon
 const setBadgeText = (text) =>
 	(tabID) => {
-		browser.browserAction.setBadgeText({
+		chrome.browserAction.setBadgeText({
 			text: text ? text : "",
 			tabId: tabID ? tabID : null
 		})
-		browser.browserAction.setBadgeBackgroundColor({ color: "#222831" })
+		chrome.browserAction.setBadgeBackgroundColor({ color: "#222831" })
 	}
 const resetBadgeText = setBadgeText('')
 // Curried execute script
 const executeScript = (tabId) =>
 	(methodName) =>
-		browser.tabs.executeScript(
+		chrome.tabs.executeScript(
 			tabId,
-		  	{file: '/methods/' + methodName + '.js'}
+		  	{file: 'methods/' + methodName + '.js'}
 		)
 const executeScriptHere = executeScript(null)
 
