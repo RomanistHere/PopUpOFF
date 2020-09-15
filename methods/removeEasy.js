@@ -26,9 +26,9 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 			// round to first decimal
 			const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
 			let newStats = {
-				cleanedArea: resp.stats.cleanedArea + screenValue,
-				numbOfItems: resp.stats.numbOfItems + state.numbOfItems,
-				restored: resp.stats.restored + state.restored
+				cleanedArea: parseFloat(resp.stats.cleanedArea) + parseFloat(screenValue),
+				numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
+				restored: parseFloat(resp.stats.restored) + parseFloat(state.restored)
 			}
 
 			if (isNaN(newStats.cleanedArea) ||
@@ -43,17 +43,17 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 
 		return isNaN(layoutArea) ? state : {
 			...state,
-			numbOfItems: state.numbOfItems + 1,
-			cleanedArea: state.cleanedArea + layoutArea
+			numbOfItems: parseFloat(state.numbOfItems) + 1,
+			cleanedArea: parseFloat(state.cleanedArea) + parseFloat(layoutArea)
 		}
 	}
 	const addCountToStats = (state) => {
-		return { ...state, numbOfItems: state.numbOfItems + 1 }
+		return { ...state, numbOfItems: parseFloat(state.numbOfItems) + 1 }
 	}
 
 	// state
 	let state = statsEnabled ? {
-		windowArea: window.innerHeight * window.innerWidth,
+		windowArea: parseFloat(window.innerHeight * window.innerWidth),
 		cleanedArea: 0,
 		numbOfItems: 0,
 		restored: 0
@@ -126,7 +126,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	    if (ARR_OF_ITEMS.some(item => element.innerHTML.includes(item)) ||
 			(element.tagName == "NAV") ||
 			(element.tagName == "HEADER")) {
-			if (statsEnabled) state = {...state, numbOfItems: state.numbOfItems - 1 }
+			if (statsEnabled) state = {...state, numbOfItems: parseFloat(state.numbOfItems) - 1 }
 
 	    	element.style.display = null
 	    }
@@ -160,8 +160,10 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		arr.map(checkElem)
 	}
 	const unhide = elem => {
-		if (elem.innerHTML.length > 5)
+		if (elem.innerHTML.length > 5) {
 			elem.classList.remove('hide', 'height_0')
+			if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
+		}
 	}
 	const findHidden = () => {
 		const hidden = [...doc.querySelectorAll('.hide'), ...doc.querySelectorAll('.height_0')]
@@ -211,8 +213,10 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		if (target.getAttribute('data-popupoffextension') === 'hello')
 			return
 
-		if (getStyle(target, 'display') == 'none')
+		if (getStyle(target, 'display') == 'none') {
 			setPropImp(target, "display", "unset")
+			if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
+		}
 
 		target.style.removeProperty("height")
 	}
@@ -243,7 +247,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		target.style.removeProperty("margin")
 		target.style.removeProperty("padding")
 
-		if (statsEnabled) state = { ...state, restored: state.restored + 1 }
+		if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
 	}
 	const checkForRestore = mutation => {
 		unsetHeight(mutation)
