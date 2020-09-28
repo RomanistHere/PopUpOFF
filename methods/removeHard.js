@@ -70,6 +70,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		const docPosStyle = getStyle(doc, 'position')
 	    if ((docPosStyle == 'fixed') ||
 	    	(docPosStyle == 'absolute')) {
+			setPropImp(doc, "min-height", "100vh")
 			setPropImp(doc, "position", "relative")
 			if (statsEnabled) state = addCountToStats(state)
 		}
@@ -78,6 +79,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		if ((bodyPosStyle== 'fixed') ||
 	    	(bodyPosStyle == 'absolute')) {
 			setPropImp(body, "position", "relative")
+			setPropImp(body, "min-height", "100vh")
 			if (statsEnabled) state = addCountToStats(state)
 		}
 	}

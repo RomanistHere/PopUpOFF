@@ -36,28 +36,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 			}
 		})
     } else if (details.reason == 'update') {
-    	chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.7'})
-		storageGet('stats', (resp) => {
-			let fixedStats = {}
-			if (!resp.stats) {
-				storageSet({
-					stats: {
-						cleanedArea: 0,
-						numbOfItems: 0,
-						restored: 0
-					}
-				})
-			} else if (resp.stats.cleanedArea > 1000) {
-				fixedStats = { ...resp.stats, cleanedArea: 50 }
-			} else if (resp.stats.numbOfItems > 200000) {
-				fixedStats = { ...resp.stats, numbOfItems: 10000 }
-			} else if (resp.stats.restored > 100) {
-				fixedStats = { ...resp.stats, restored: 20 }
-			} else {
-				return
-			}
-			storageSet({ stats: fixedStats })
-		})
+    	// chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.7'})
     }
 })
 
