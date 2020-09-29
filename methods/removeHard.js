@@ -122,12 +122,16 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	}
 	const unhide = elem => {
 		if (elem.innerHTML.length > 5) {
-			elem.classList.remove('hide', 'height_0')
+			elem.classList.remove('hide', 'height_0', 'not_scroll')
 			if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
 		}
 	}
 	const findHidden = () => {
-		const hidden = [...doc.querySelectorAll('.hide'), ...doc.querySelectorAll('.height_0')]
+		const hidden = [
+			...doc.querySelectorAll('.hide'),
+			...doc.querySelectorAll('.height_0'),
+			...doc.querySelectorAll('.not_scroll'),
+		]
 		hidden.map(unhide)
 	}
 	// watch DOM
@@ -163,15 +167,29 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		}
 	}
 	const checkMutation = mutation => {
+		if ((mutation.target.nodeName == 'SCRIPT') ||
+		(mutation.target.nodeName == 'HEAD') ||
+		(mutation.target.nodeName == 'STYLE'))
+			return
+
 		checkElemWithSibl(mutation.target)
 		const arr = [...mutation.addedNodes]
 		arr.map(element => {
-			if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
+			if ((element.nodeName != '#text') &&
+		 	(element.nodeName != '#comment') &&
+			(element.nodeName != 'SCRIPT') &&
+			(element.nodeName != 'HEAD') &&
+			(element.nodeName != 'STYLE')) checkElemWithSibl(element)
 		})
 		removeOverflow()
 	}
 	const unsetHeight = ({ target }) => {
 		if (target.getAttribute('data-popupoffextension') === 'hello')
+			return
+
+		if ((target.nodeName == 'SCRIPT') ||
+		(target.nodeName == 'HEAD') ||
+		(target.nodeName == 'STYLE'))
 			return
 
 		if (getStyle(target, 'display') == 'none') {
