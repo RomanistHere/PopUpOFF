@@ -17,7 +17,7 @@
   "content_security_policy": "script-src 'self'; object-src 'self'",
   "content_scripts": [
     {
-      "js":         [ "content/content.js" ],
+      "js":         [ "content/content.js", "content/functions.js" ],
       "css":        [ "content/content.css" ],
       "matches":    [ "<all_urls>" ],
       "all_frames": true,

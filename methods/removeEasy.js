@@ -7,50 +7,6 @@ var myTimer = 0
 var wasNotStoped = true
 
 var punishEasy = (statsEnabled, shouldRestoreCont) => {
-	// helper functions
-	const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
-	const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
-	const checkIsInArr = (arr, item) => arr.includes(item) ? true : false
-	const fixStats = stats => {
-		let fixedStats = {...stats}
-		if (isNaN(stats.cleanedArea))
-			fixedStats = { ...state, cleanedArea: 0 }
-		if (isNaN(stats.numbOfItems))
-			fixedStats = { ...state, numbOfItems: 0 }
-		if (isNaN(stats.restored))
-			fixedStats = { ...state, restored: 0 }
-		return fixedStats
-	}
-	const setNewData = state =>
-		chrome.storage.sync.get(['stats'], resp => {
-			// round to first decimal
-			const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
-			let newStats = {
-				cleanedArea: parseFloat(resp.stats.cleanedArea) + parseFloat(screenValue),
-				numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
-				restored: parseFloat(resp.stats.restored) + parseFloat(state.restored)
-			}
-
-			if (isNaN(newStats.cleanedArea) ||
-				isNaN(newStats.numbOfItems) ||
-				isNaN(newStats.restored))
-					newStats = fixStats(newStats)
-
-			chrome.storage.sync.set({ stats: newStats })
-		})
-	const addItemToStats = (element, state) => {
-		const layoutArea = element.offsetHeight * element.offsetWidth
-
-		return isNaN(layoutArea) ? state : {
-			...state,
-			numbOfItems: parseFloat(state.numbOfItems) + 1,
-			cleanedArea: parseFloat(state.cleanedArea) + parseFloat(layoutArea)
-		}
-	}
-	const addCountToStats = (state) => {
-		return { ...state, numbOfItems: parseFloat(state.numbOfItems) + 1 }
-	}
-
 	// state
 	let state = statsEnabled ? {
 		windowArea: parseFloat(window.innerHeight * window.innerWidth),
@@ -65,31 +21,6 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	const elems = body.getElementsByTagName("*")
 
 	// methods
-	const removeOverflow = () => {
-	    if (getStyle(doc, 'overflow-y') == 'hidden') {
-			setPropImp(doc, "overflow-y", "unset")
-			if (statsEnabled) state = addCountToStats(state)
-		}
-
-		if (getStyle(body, 'overflow-y') == 'hidden') {
-			setPropImp(body, "overflow-y", "unset")
-			if (statsEnabled) state = addCountToStats(state)
-		}
-
-		const docPosStyle = getStyle(doc, 'position')
-	    if ((docPosStyle == 'fixed') ||
-	    	(docPosStyle == 'absolute')) {
-			setPropImp(doc, "position", "relative")
-			if (statsEnabled) state = addCountToStats(state)
-		}
-
-		const bodyPosStyle = getStyle(body, 'position')
-		if ((bodyPosStyle == 'fixed') ||
-	    	(bodyPosStyle == 'absolute')) {
-			setPropImp(body, "position", "relative")
-			if (statsEnabled) state = addCountToStats(state)
-		}
-	}
 	const positionCheck = element => {
 		// needs to get minus value for top value if it is
 		const elemTopStyle = getStyle(element, 'top')
@@ -154,16 +85,6 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 
 			if (statsEnabled) state = addItemToStats(element, state)
 	    }
-	}
-	const checkElems = elems => {
-		const arr = [...elems]
-		arr.map(checkElem)
-	}
-	const unhide = elem => {
-		if (elem.innerHTML.length > 5) {
-			elem.classList.remove('hide', 'height_0')
-			if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
-		}
 	}
 	const findHidden = () => {
 		const hidden = [...doc.querySelectorAll('.hide'), ...doc.querySelectorAll('.height_0')]
