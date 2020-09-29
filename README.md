@@ -1,5 +1,6 @@
 # [PopUpOFF](https://chrome.google.com/webstore/detail/popupoff-popup-blocker/ifnkdbpmgkdbfklnbfidaackdenlmhgh)
 ### [Here](https://romanisthere.github.io/PopUpOFF-Website/index.html) you can read information/guide for using it.
+### [Follow](https://twitter.com/RomanistHere) updates to stay in touch.
 ### I will describe developer things only below, if u're interested, welcome
 # Mechanics
 #### Remove
@@ -30,7 +31,7 @@ As far as I tracking through analytic, what modes my users use, I decided to add
 #### Tracking
 Tracking is completely removed since 1.1.6</br></br>
 #### Prevent paid content from hiding - since 1.1.6
-Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reducing of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont) </br></br>
+Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reducing of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont/) </br></br>
 #### Changelog:
 1.1.6
 - new (experimental) feature: prevent paid content from hiding;
