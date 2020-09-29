@@ -1,9 +1,14 @@
-// variable to check event listener
+// "global" variable to checkis event listener added
 let beforeUnloadAactive = false
+
 // helpers
-const getStyle = ($elem, property) => window.getComputedStyle($elem, null).getPropertyValue(property)
-const setPropImp = ($elem, prop, val) => $elem.style.setProperty(prop, val, "important")
-const checkIsInArr = (arr, item) => arr.includes(item) ? true : false
+const getStyle = (elem, property) =>
+    window.getComputedStyle(elem, null).getPropertyValue(property)
+const setPropImp = (elem, prop, val) =>
+    elem.style.setProperty(prop, val, "important")
+const checkIsInArr = (arr, item) =>
+    arr.includes(item) ? true : false
+
 // stats
 const fixStats = stats => {
     let fixedStats = { ...stats }

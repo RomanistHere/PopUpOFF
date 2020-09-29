@@ -115,8 +115,10 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	// statistics
 	if (statsEnabled) {
 		setNewData(state)
-		if (!beforeUnloadAactive)
+		if (!beforeUnloadAactive) {
 			window.addEventListener("beforeunload", () => { setNewData(state) })
+			beforeUnloadAactive = true
+		}
 	}
 }
 
