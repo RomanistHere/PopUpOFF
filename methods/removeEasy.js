@@ -66,6 +66,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 		if ((element.nodeName == 'SCRIPT') ||
 		(element.nodeName == 'HEAD') ||
 		(element.nodeName == 'BODY') ||
+		(element.nodeName == 'HTML') ||
 		(element.nodeName == 'STYLE'))
 			return
 
@@ -84,6 +85,7 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	    	contentCheck(element)
 	    	semanticCheck(element)
 	    }
+
 	    if ((getStyle(element, 'filter') != 'none') ||
 	    	(getStyle(element, '-webkit-filter') != 'none')) {
 	    	setPropImp(element, "filter", "none")
@@ -91,6 +93,8 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 
 			if (statsEnabled) state = addItemToStats(element, state)
 	    }
+
+		if (shouldRestoreCont) state = detectGrad(state, statsEnabled, element)
 	}
 	// watch DOM
 	const prevLoop = () => {

@@ -25,6 +25,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 		if ((element.nodeName == 'SCRIPT') ||
 		(element.nodeName == 'HEAD') ||
 		(element.nodeName == 'BODY') ||
+		(element.nodeName == 'HTML') ||
 		(element.nodeName == 'STYLE'))
 			return
 
@@ -52,6 +53,8 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 
 			if (statsEnabled) state = addItemToStats(element, state)
 	    }
+
+		if (shouldRestoreCont) state = detectGrad(state, statsEnabled, element)
 	}
 
 	// watch DOM

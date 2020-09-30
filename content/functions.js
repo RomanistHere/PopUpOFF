@@ -1,5 +1,6 @@
 // "global" variable to checkis event listener added
 let beforeUnloadAactive = false
+let isCSSAppended = false
 
 // helpers
 const getStyle = (elem, property) =>
@@ -85,7 +86,7 @@ const checkElems = (elems, checkElem) => {
 }
 const unhide = (elem, statsEnabled, state) => {
     if (elem.innerHTML.length > 5) {
-        elem.classList.remove('hide', 'height_0', 'not_scroll')
+        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded')
         if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
     }
     return state
@@ -96,8 +97,29 @@ const findHidden = (state, statsEnabled, doc) => {
         ...doc.querySelectorAll('.hide'),
         ...doc.querySelectorAll('.height_0'),
         ...doc.querySelectorAll('.not_scroll'),
+        ...doc.querySelectorAll('.paragraph--reduced'),
+        ...doc.querySelectorAll('.paragraph--dynamic'),
+        ...doc.querySelectorAll('.paragraph--faded'),
     ]
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
+    return state
+}
+const detectGrad = (state, statsEnabled, element) => {
+    if (getStyle(element, 'background-image').includes('linear-gradient')) {
+        setPropImp(element, "background-image", "unset")
+        if (statsEnabled) state = addCountToStats(state)
+    }
+
+    if (getComputedStyle(element, '::before').getPropertyValue('background-image').includes('linear-gradient') ||
+    getComputedStyle(element, '::after').getPropertyValue('background-image').includes('linear-gradient')) {
+        if (!isCSSAppended) {
+            document.head.insertAdjacentHTML("beforeend", `<style>.PopUpOFF-no_grad::after,.PopUpOFF-no_grad::before{background-image:unset!important}</style>`)
+            isCSSAppended = true
+        }
+        element.classList.add('PopUpOFF-no_grad')
+        if (statsEnabled) state = addCountToStats(state)
+    }
+    
     return state
 }
 
