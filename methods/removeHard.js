@@ -64,7 +64,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	// watch DOM
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1200) {
-			removeDomWatcher(domObserver, wasNotStoped, body, domObserverLight)
+			removeDomWatcher(domObserver, wasNotStoped, body, domObserverLight, action)
 			return true
 		}
 		infiniteLoopPreventCounter++

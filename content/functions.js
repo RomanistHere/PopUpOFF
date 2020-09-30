@@ -118,7 +118,7 @@ const resetLoopCounter = (infiniteLoopPreventCounter, myTimer) => {
     clearTimeout(myTimer)
     myTimer = 0
 }
-const removeDomWatcher = (domObserver, wasNotStoped, body, domObserverLight) => {
+const removeDomWatcher = (domObserver, wasNotStoped, body, domObserverLight, action) => {
     try {
         domObserver.disconnect()
         domObserver = false

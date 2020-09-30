@@ -63,6 +63,12 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	    }
 	}
 	const checkElem = element => {
+		if ((element.nodeName == 'SCRIPT') ||
+		(element.nodeName == 'HEAD') ||
+		(element.nodeName == 'BODY') ||
+		(element.nodeName == 'STYLE'))
+			return
+
 		const elemPosStyle = getStyle(element, 'position')
 	    if ((elemPosStyle == 'fixed') ||
 	    	(elemPosStyle == 'sticky')) {
@@ -86,132 +92,31 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 			if (statsEnabled) state = addItemToStats(element, state)
 	    }
 	}
-	const findHidden = () => {
-		const hidden = [...doc.querySelectorAll('.hide'), ...doc.querySelectorAll('.height_0')]
-		hidden.map(unhide)
-	}
 	// watch DOM
-	const checkElemWithSibl = (element) => {
-		if (element instanceof HTMLElement) {
-			// element itself
-			checkElem(element)
-			// all childs of element
-			if (wasNotStoped) {
-				const elems = element.querySelectorAll("*")
-				checkElems(elems)
-			}
-		}
-	}
-	const resetLoopCounter = () => {
-	    infiniteLoopPreventCounter = 0
-		clearTimeout(myTimer)
-	    myTimer = 0
-	}
-	const removeDomWatcher = () => {
-		try {
-			domObserver.disconnect()
-			domObserver = false
-			if (wasNotStoped) {
-				setTimeout(() => {
-					const newElems = document.body.getElementsByTagName("*")
-					action(newElems)
-				}, 2000)
-			}
-			wasNotStoped = false
-			domObserverLight.disconnect()
-		} catch (e) {
-		}
-	}
-	const checkMutation = mutation => {
-		checkElemWithSibl(mutation.target)
-		const arr = [...mutation.addedNodes]
-		arr.map(element => {
-			if ((element.nodeName != '#text') && (element.nodeName != '#comment')) checkElemWithSibl(element)
-		})
-		removeOverflow()
-	}
-	const unsetHeight = ({ target }) => {
-		if (target.getAttribute('data-popupoffextension') === 'hello')
-			return
-
-		if (getStyle(target, 'display') == 'none') {
-			setPropImp(target, "display", "unset")
-			if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
-		}
-
-		target.style.removeProperty("height")
-	}
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1000) {
-			removeDomWatcher()
+			removeDomWatcher(domObserver, wasNotStoped, body, domObserverLight, action)
 			return true
 		}
 		infiniteLoopPreventCounter++
 		if (myTimer === 0) {
-			myTimer = setTimeout(resetLoopCounter, 1000)
+			myTimer = setTimeout(() => resetLoopCounter(infiniteLoopPreventCounter, myTimer), 1000)
 		}
 		return false
-	}
-	const restoreNode = mutation => {
-		const target = mutation.target
-		const length = mutation.removedNodes.length
-
-		for (let i = 0; i < length; i++) {
-			const removedNodeClone = mutation.removedNodes[i].cloneNode(true)
-			if (removedNodeClone instanceof Element && removedNodeClone.getAttribute('data-PopUpOFF') === 'notification')
-				return
-
-			target.appendChild(removedNodeClone)
-		}
-
-		target.style.removeProperty("height")
-		target.style.removeProperty("margin")
-		target.style.removeProperty("padding")
-
-		if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
-	}
-	const checkForRestore = mutation => {
-		unsetHeight(mutation)
-
-		if (mutation.type === 'childList' &&
-		mutation.removedNodes.length) {
-			restoreNode(mutation)
-		}
 	}
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
-				let processedElems = []
-				const len = mutations.length
-				for (let i = 0; i < len; i++) {
-					// disconnect if oversized
-					const shouldStop = prevLoop()
-					if (shouldStop)
-						break
-
-					const mutation = mutations[i]
-
-					if (!shouldRestoreCont) {
-						const isProcessed = checkIsInArr(processedElems, mutation.target)
-						// skip if processed
-						if (isProcessed)
-							continue
-						else
-							processedElems = [...processedElems, mutation.target]
-					} else {
-						checkForRestore(mutation)
-					}
-
-					// check element and its siblings
-					checkMutation(mutation)
-				}
+				state = watchMutations(mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem)
 			})
 		}
 
 		if (window.location.href.includes('pinterest')) {
 			// cant deal with this website, i guess there will be array of this-one-like websites or I find out another solution
 			domObserverLight = new MutationObserver(mutation => {
-				mutation.map(removeOverflow)
+				mutation.map(item => {
+					state = removeOverflow(statsEnabled, state, doc, body)
+				})
 			})
 			domObserverLight.observe(doc, {
 				attributes: true
@@ -229,10 +134,10 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	}
 
 	const action = elems => {
-		removeOverflow()
-		checkElems(elems)
+		state = removeOverflow(statsEnabled, state, doc, body)
+		checkElems(elems, checkElem)
 		if (shouldRestoreCont)
-			findHidden()
+			state = findHidden(state, statsEnabled, doc)
 		watchDOM()
 	}
 
@@ -241,7 +146,10 @@ var punishEasy = (statsEnabled, shouldRestoreCont) => {
 	// statistics
 	if (statsEnabled) {
 		setNewData(state)
-		window.addEventListener("beforeunload", () => { setNewData(state) })
+		if (!beforeUnloadAactive) {
+			window.addEventListener("beforeunload", () => { setNewData(state) })
+			beforeUnloadAactive = true
+		}
 	}
 }
 
