@@ -47,6 +47,9 @@ const initTutorial = () => {
 	    passTutorial()
 	    return false
 	}
+	querySelector('.tutorial_link-inline').onclick = () => {
+	    passTutorial()
+	}
 	querySelector('.tutorial_to_options').onclick = () => {
 		chrome.runtime.openOptionsPage()
 		passTutorial()

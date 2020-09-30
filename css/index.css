@@ -448,6 +448,13 @@ body {
     color: #efbb35;
     transition: all ease 1s;
 }
+.tutorial_link-inline {
+    display: inline;
+
+    text-decoration: none;
+    color: #efbb35;
+    transition: all ease 1s;
+}
 .tutorial__no_marg_top{
     margin-top: 0;
 }
@@ -490,6 +497,7 @@ body {
     color: #efbb35;
 }
 .tutorial__next:hover,
+.tutorial_link-inline:hover,
 .tutorial_to_options:hover{
     color: #f9ffee;
 }
