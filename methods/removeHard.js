@@ -39,14 +39,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	        	element.setAttribute('data-popupoffExtension', 'hello')
 	        }
 
-			if (statsEnabled) {
-				const layoutArea = element.offsetHeight * element.offsetWidth
-				state = isNaN(layoutArea) ? state : {
-					...state,
-					numbOfItems: parseFloat(state.numbOfItems) + 1,
-					cleanedArea: parseFloat(state.cleanedArea) + parseFloat(layoutArea)
-				}
-			}
+			if (statsEnabled) state = addItemToStats(element, state)
 
 	        setPropImp(element, "display", "none")
 			setTimeout(() => element ? setPropImp(element, "display", "none") : false, 10)
@@ -57,7 +50,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	    	setPropImp(element, "filter", "none")
 	    	setPropImp(element, "-webkit-filter", "none")
 
-			if (statsEnabled) state = addCountToStats(state)
+			if (statsEnabled) state = addItemToStats(element, state)
 	    }
 	}
 
