@@ -33,12 +33,23 @@ Tracking is completely removed since 1.1.6</br></br>
 #### Prevent paid content from hiding - since 1.1.6
 Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reducing of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont/) </br></br>
 #### Changelog:
+1.1.8
+- fix issues
+- minor improvements
+- recognize and remove gradient overlays
+- update tutorial
+
+1.1.7
+- instructions link updated
+- prevent paid content improved
+- stats fixed
+
 1.1.6
-- new (experimental) feature: prevent paid content from hiding;
-- new feature: collect and display stats;
-- remove all tracking and analytics systems;
-- activate/deactivate on shortcut (Alt + x);
-- changes in design and performance;
+- new (experimental) feature: prevent paid content from hiding
+- new feature: collect and display stats
+- remove all tracking and analytics systems
+- activate/deactivate on shortcut (Alt + x)
+- changes in design and performance
 
 1.1.5
 - add notification after activating from keyboard shortcut
