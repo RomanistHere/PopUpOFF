@@ -22,12 +22,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 
 	// methods
 	const checkElem = element => {
-		if ((element.nodeName == 'SCRIPT') ||
-		(element.nodeName == 'HEAD') ||
-		(element.nodeName == 'BODY') ||
-		(element.nodeName == 'HTML') ||
-		(element.nodeName == 'STYLE'))
-			return
+		if (!isDecentElem(element)) return
 
 		const elemPosStyle = getStyle(element, 'position')
 		if ((elemPosStyle == 'fixed') ||
@@ -46,18 +41,7 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 			setTimeout(() => element ? setPropImp(element, "display", "none") : false, 10)
 	    }
 
-	    if ((getStyle(element, 'filter') != 'none') ||
-	    	(getStyle(element, '-webkit-filter') != 'none')) {
-	    	setPropImp(element, "filter", "none")
-	    	setPropImp(element, "-webkit-filter", "none")
-
-			if (statsEnabled) state = addItemToStats(element, state)
-	    }
-
-		if (shouldRestoreCont) state = detectGrad(state, statsEnabled, element)
-
-		if (element.shadowRoot)
-			checkElemWithSibl(element.shadowRoot, checkElem)
+	    state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem)
 	}
 
 	// watch DOM

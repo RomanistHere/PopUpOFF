@@ -7,7 +7,8 @@ import {
 	activateHard,
 	activateEasy,
 	executeScript,
-	resetBadgeText
+	resetBadgeText,
+	backupData
 } from '../constants/functions.js'
 
 // handle install
@@ -41,18 +42,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 		backupData()
     }
 })
-
-const backupData = () => {
-	storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'stats'], response => {
-		storageSet({
-			backupData: {
-				hard: response.thisWebsiteWork,
-				easy: response.thisWebsiteWorkEasy,
-				stats: response.stats
-			}
-		})
-	})
-}
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener((activeInfo) => {

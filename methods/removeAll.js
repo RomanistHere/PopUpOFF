@@ -1,4 +1,5 @@
 var removeFixedElems = (statsEnabled) => {
+	// state
 	let state = statsEnabled ? {
 		windowArea: parseFloat(window.innerHeight * window.innerWidth),
 		cleanedArea: 0,
@@ -6,17 +7,14 @@ var removeFixedElems = (statsEnabled) => {
 		restored: 0
 	} : null
 
+	// unmutable
 	const doc = document.documentElement
 	const body = document.body
 	const elems = body.getElementsByTagName("*")
 
+	// methods
 	const checkElem = elem => {
-		if ((elem.nodeName == 'SCRIPT') ||
-		(elem.nodeName == 'HEAD') ||
-		(elem.nodeName == 'BODY') ||
-		(elem.nodeName == 'HTML') ||
-		(elem.nodeName == 'STYLE'))
-			return
+		if (!isDecentElem(elem)) return
 
 		const elemPosStyle = getStyle(elem, 'position')
 		if ((elemPosStyle == 'fixed') ||
@@ -33,16 +31,7 @@ var removeFixedElems = (statsEnabled) => {
 		    setPropImp(elem, "display", "none")
 		}
 
-		if ((getStyle(elem, 'filter') != 'none') ||
-		    (getStyle(elem, '-webkit-filter') != 'none')) {
-		    setPropImp(elem, "filter", "none")
-		    setPropImp(elem, "-webkit-filter", "none")
-
-		    if (statsEnabled) state = addCountToStats(state)
-		}
-
-		if (elem.shadowRoot)
-			checkElemWithSibl(elem.shadowRoot, checkElem)
+		state = additionalChecks(elem, state, statsEnabled, true, checkElem)
 	}
 
 	// remove

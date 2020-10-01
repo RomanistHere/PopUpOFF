@@ -57,6 +57,17 @@ const activateMode = (isHard) =>
 const activateHard = activateMode(true)
 const activateEasy = activateMode(false)
 
+const backupData = () =>
+	storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'stats'], response => {
+		storageSet({
+			backupData: {
+				hard: response.thisWebsiteWork,
+				easy: response.thisWebsiteWorkEasy,
+				stats: response.stats
+			}
+		})
+	})
+
 export {
 	querySelector,
 	isChecked,
@@ -73,4 +84,5 @@ export {
 	activateMode,
 	activateHard,
 	activateEasy,
+	backupData,
 }

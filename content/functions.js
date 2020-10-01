@@ -122,6 +122,29 @@ const detectGrad = (state, statsEnabled, element) => {
 
     return state
 }
+const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, checkElem) => {
+    if ((getStyle(element, 'filter') != 'none') ||
+        (getStyle(element, '-webkit-filter') != 'none')) {
+        setPropImp(element, "filter", "none")
+        setPropImp(element, "-webkit-filter", "none")
+
+        if (statsEnabled) state = addItemToStats(element, state)
+    }
+
+    if (shouldRestoreCont) state = detectGrad(state, statsEnabled, element)
+
+    if (element.shadowRoot)
+        checkElemWithSibl(element.shadowRoot, checkElem)
+
+    return state
+}
+const isDecentElem = element => {
+    return ((element.nodeName == 'SCRIPT') ||
+    (element.nodeName == 'HEAD') ||
+    (element.nodeName == 'BODY') ||
+    (element.nodeName == 'HTML') ||
+    (element.nodeName == 'STYLE')) ? false : true
+}
 
 // watch DOM
 const checkElemWithSibl = (element, checkElem) => {
