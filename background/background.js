@@ -29,7 +29,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 						restored: 0
 					},
 					statsEnabled: true,
-					restoreCont: false
+					restoreCont: false,
+					backupData: {}
 				})
 
 				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
@@ -37,8 +38,21 @@ chrome.runtime.onInstalled.addListener((details) => {
 		})
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.7'})
+		backupData()
     }
 })
+
+const backupData = () => {
+	storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'stats'], response => {
+		storageSet({
+			backupData: {
+				hard: response.thisWebsiteWork,
+				easy: response.thisWebsiteWorkEasy,
+				stats: response.stats
+			}
+		})
+	})
+}
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener((activeInfo) => {
