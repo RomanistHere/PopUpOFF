@@ -11,27 +11,26 @@ var removeFixedElems = (statsEnabled) => {
 	const elems = body.getElementsByTagName("*")
 
 	const checkElem = elem => {
-		if ((element.nodeName == 'SCRIPT') ||
-		(element.nodeName == 'HEAD') ||
-		(element.nodeName == 'BODY') ||
-		(element.nodeName == 'HTML') ||
-		(element.nodeName == 'STYLE'))
+		if ((elem.nodeName == 'SCRIPT') ||
+		(elem.nodeName == 'HEAD') ||
+		(elem.nodeName == 'BODY') ||
+		(elem.nodeName == 'HTML') ||
+		(elem.nodeName == 'STYLE'))
 			return
 
-		const elemPosStyle = getStyle(element, 'position')
+		const elemPosStyle = getStyle(elem, 'position')
 		if ((elemPosStyle == 'fixed') ||
-		    (elemPosStyle == 'sticky')) {
+	    (elemPosStyle == 'sticky')) {
+			if (statsEnabled) state = addItemToStats(elem, state)
 		    // setting uniq data-atr to elems with display block as initial state to restore it later
 		    elem.setAttribute('data-popupoffExtension', 'hello')
 		    setPropImp(elem, "display", "none")
-
-		    if (statsEnabled) state = addItemToStats(elem, state)
 		}
 
 		if (elemPosStyle == 'absolute') {
-		    setPropImp(elem, "display", "none")
+			if (statsEnabled) state = addItemToStats(elem, state)
 
-		    if (statsEnabled) state = addItemToStats(elem, state)
+		    setPropImp(elem, "display", "none")
 		}
 
 		if ((getStyle(elem, 'filter') != 'none') ||
@@ -39,8 +38,11 @@ var removeFixedElems = (statsEnabled) => {
 		    setPropImp(elem, "filter", "none")
 		    setPropImp(elem, "-webkit-filter", "none")
 
-		    if (statsEnabled) state = { ...state, numbOfItems: parseFloat(state.numbOfItems) + 1 }
+		    if (statsEnabled) state = addCountToStats(state)
 		}
+
+		if (elem.shadowRoot)
+			checkElemWithSibl(elem.shadowRoot, checkElem)
 	}
 
 	// remove

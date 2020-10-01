@@ -119,7 +119,7 @@ const detectGrad = (state, statsEnabled, element) => {
         element.classList.add('PopUpOFF-no_grad')
         if (statsEnabled) state = addCountToStats(state)
     }
-    
+
     return state
 }
 
@@ -133,6 +133,9 @@ const checkElemWithSibl = (element, checkElem) => {
             const elems = element.querySelectorAll("*")
             checkElems(elems, checkElem)
         }
+    } else if (element instanceof ShadowRoot) {
+        const elems = element.querySelectorAll("*")
+        checkElems(elems, checkElem)
     }
 }
 const resetLoopCounter = (infiniteLoopPreventCounter, myTimer) => {

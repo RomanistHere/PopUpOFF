@@ -55,6 +55,9 @@ var punish = (statsEnabled, shouldRestoreCont) => {
 	    }
 
 		if (shouldRestoreCont) state = detectGrad(state, statsEnabled, element)
+
+		if (element.shadowRoot)
+			checkElemWithSibl(element.shadowRoot, checkElem)
 	}
 
 	// watch DOM
