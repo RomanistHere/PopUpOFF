@@ -55,8 +55,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 // handle tab update(open, reload)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-	// if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
-	if (changeInfo.status === 'loading') {
+	if ((changeInfo.status === 'complete') || (changeInfo.status === 'loading')) {
+	// if (changeInfo.status === 'loading') {
 		const url = tab.url
 
 		if (url.includes('chrome://')) {
