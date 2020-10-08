@@ -86,7 +86,7 @@ const checkElems = (elems, checkElem) => {
 }
 const unhide = (elem, statsEnabled, state) => {
     if (elem.innerHTML.length > 5) {
-        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded')
+        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded', 'article-teaser-overflow')
         if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
     }
     return state
@@ -97,9 +97,10 @@ const findHidden = (state, statsEnabled, doc) => {
         ...doc.querySelectorAll('.hide'),
         ...doc.querySelectorAll('.height_0'),
         ...doc.querySelectorAll('.not_scroll'),
+        ...doc.querySelectorAll('.paragraph--faded'),
         ...doc.querySelectorAll('.paragraph--reduced'),
         ...doc.querySelectorAll('.paragraph--dynamic'),
-        ...doc.querySelectorAll('.paragraph--faded'),
+        ...doc.querySelectorAll('.article-teaser-overflow'),
     ]
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
     return state
