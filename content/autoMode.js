@@ -19,31 +19,68 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	const body = document.body
 	const elems = body.getElementsByTagName("*")
 
+	const roundToTwo = (num) =>
+		+(Math.round(num + "e+2")  + "e-2")
+
 	// methods
 	const positionCheck = element => {
 		// needs to get minus value for top value if it is
-        console.log(element.nodeName)
+        // console.log(element.nodeName)
         // memoize layoutArea and screenValue
         const layoutArea = element.offsetHeight * element.offsetWidth
-        const screenValue = Math.round(layoutArea/state.windowArea * 10) / 10
+		const screenValue = roundToTwo(layoutArea/state.windowArea)
+		if (screenValue === 0) {
+			setPropImp(element, "display", "none")
+			// console.log('hidden! 0')
+			return
+		}
+
         const elemTopStyle = getStyle(element, 'top')
 		const elemBotStyle = getStyle(element, 'bottom')
         const elemWidthStyle = getStyle(element, 'width')
 		const elemHeightStyle = getStyle(element, 'height')
+
+		console.log(element)
         console.log('elemTopStyle ', elemTopStyle)
+		console.log('elemOffsetTop', element.offsetTop)
         console.log('elemBotStyle ', elemBotStyle)
-        console.log('elemWidthStyle ', elemWidthStyle)
+		console.log('elemOffsetBot', window.innerHeight - (element.offsetTop + element.offsetHeight))
+		console.log('elemWidthStyle ', elemWidthStyle)
+        console.log('elemOffsetWidth ', element.offsetWidth)
 		console.log('elemHeightStyle ', elemHeightStyle)
+		console.log('elemOffsetHeight', element.offsetHeight)
         console.log('layoutArea ', layoutArea)
         console.log('screenValue ', screenValue)
+
+		if (screenValue === 1) {
+			// hz che delat'
+			setPropImp(element, "display", "none")
+			// console.log('hidden! 1')
+			return
+		}
+
+		if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
+			// scrolling videos in the articles
+			setPropImp(element, "display", "none")
+		}
+
+		if (element.offsetTop <= 70 && element.offsetHeight <= 200) {
+			// it's a header!
+			return
+		}
+
+		if (screenValue <= .1) {
+			return
+		}
 
         // if (screenValue >= .2)
             // return true
         // else if ()
         // position from bottom
 
+		setPropImp(element, "display", "none")
 
-        return false
+        return
 	}
 	const checkElem = element => {
 		if (!isDecentElem(element)) return
