@@ -24,14 +24,16 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 
 	// methods
 	const positionCheck = element => {
-		// needs to get minus value for top value if it is
-        // console.log(element.nodeName)
+		if (element.getAttribute('data-PopUpOFF') === 'bl') {
+			return
+		}
         // memoize layoutArea and screenValue
         const layoutArea = element.offsetHeight * element.offsetWidth
 		const screenValue = roundToTwo(layoutArea/state.windowArea)
 		if (screenValue === 0) {
-			setPropImp(element, "display", "none")
-			// console.log('hidden! 0')
+			// setPropImp(element, "display", "none")
+			// element.setAttribute('data-PopUpOFF', 'bl')
+			console.warn('Zero')
 			return
 		}
 
@@ -40,11 +42,13 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
         const elemWidthStyle = getStyle(element, 'width')
 		const elemHeightStyle = getStyle(element, 'height')
 
+		const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
+
 		console.log(element)
         console.log('elemTopStyle ', elemTopStyle)
 		console.log('elemOffsetTop', element.offsetTop)
         console.log('elemBotStyle ', elemBotStyle)
-		console.log('elemOffsetBot', window.innerHeight - (element.offsetTop + element.offsetHeight))
+		console.log('elemOffsetBot', offsetBot)
 		console.log('elemWidthStyle ', elemWidthStyle)
         console.log('elemOffsetWidth ', element.offsetWidth)
 		console.log('elemHeightStyle ', elemHeightStyle)
@@ -53,32 +57,45 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
         console.log('screenValue ', screenValue)
 
 		if (screenValue === 1) {
-			// hz che delat'
-			setPropImp(element, "display", "none")
-			// console.log('hidden! 1')
+			// case 1: overlay on the whole screen - should block
+			// case 2: video in full screen mode - should not
+			console.warn('Full screen!')
+			// setPropImp(element, "display", "none")
+			// element.setAttribute('data-PopUpOFF', 'bl')
+			return
+		}
+
+		if (screenValue <= .03) {
+			// buttons and side/social menus
+			console.warn('Super small')
 			return
 		}
 
 		if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
 			// scrolling videos in the articles
-			setPropImp(element, "display", "none")
+			console.warn('Scrolling video!')
+			// setPropImp(element, "display", "none")
+			// element.setAttribute('data-PopUpOFF', 'bl')
+			return
 		}
 
 		if (element.offsetTop <= 70 && element.offsetHeight <= 200) {
 			// it's a header!
+			console.warn('Header!')
+			return
+		}
+
+		if (offsetBot <= 100) {
+			// bottom notification
+			console.warn('Bottom notification')
 			return
 		}
 
 		if (screenValue <= .1) {
+			// buttons and side/social menus
+			console.warn('nothing special')
 			return
 		}
-
-        // if (screenValue >= .2)
-            // return true
-        // else if ()
-        // position from bottom
-
-		setPropImp(element, "display", "none")
 
         return
 	}
