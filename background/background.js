@@ -22,7 +22,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 					thisWebsiteWork: [],
 					thisWebsiteWorkEasy: [],
 					supervision: true,
-					tutorial: true,
+					tutorial: false,
 					shortCutMode: false,
 					stats: {
 						cleanedArea: 0,
@@ -34,11 +34,11 @@ chrome.runtime.onInstalled.addListener((details) => {
 					backupData: {}
 				})
 
-				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#greetings-chrome'})
+				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html'})
 			}
 		})
     } else if (details.reason == 'update') {
-    	// chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#1.1.7'})
+    	// chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0'})
 		backupData()
     }
 })
@@ -115,16 +115,17 @@ const checkAndRunMode = (tabId, pureUrl, sendResponse) => {
 	})
 }
 
-chrome.contextMenus.removeAll()
-chrome.contextMenus.create({
-	title: `Toggle PopUpOFF`,
-	onclick: (obj, tabs) => {
-		const pureUrl = getPureURL(tabs)
-		const tabId = tabs.id
-		const fakeShouldResp = () => null
-		checkAndRunMode(tabId, pureUrl, fakeShouldResp)
-	}
-})
+// add context menu with options
+// chrome.contextMenus.removeAll()
+// chrome.contextMenus.create({
+// 	title: `Toggle PopUpOFF`,
+// 	onclick: (obj, tabs) => {
+// 		const pureUrl = getPureURL(tabs)
+// 		const tabId = tabs.id
+// 		const fakeShouldResp = () => null
+// 		checkAndRunMode(tabId, pureUrl, fakeShouldResp)
+// 	}
+// })
 
 // messages from content script. Currently responsible for 'alt + x' key comb
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
