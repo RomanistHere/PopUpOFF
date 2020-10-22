@@ -5,11 +5,11 @@ var infiniteLoopPreventCounter = 0
 var myTimer = 0
 var wasNotStoped = true
 
-// development
-pushed = []
-removePushed = () => {
-	pushed.forEach(elem => elem.remove())
-}
+// questionable
+const memoize = {}
+setInterval(() => {
+	console.log(memoize)
+}, 5000)
 
 const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// state
@@ -32,34 +32,36 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 
 	// methods
 	const positionCheck = element => {
-		if (element.getAttribute('data-PopUpOFF') === 'bl') {
-			return
-		}
+		// if (element.getAttribute('data-PopUpOFF') === 'bl') {
+		// 	// questionable
+		// 	console.log('repeat')
+		// 	return true
+		// }
 
 		if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-			// console.warn('Zero')
-			pushed.push(element)
-			return
+			console.warn('Zero')
+			return true
 		}
-        // memoize layoutArea and screenValue
+
         const layoutArea = element.offsetHeight * element.offsetWidth
 		const screenValue = roundToTwo(layoutArea/state.windowArea)
 
-        const elemTopStyle = getStyle(element, 'top')
-		const elemBotStyle = getStyle(element, 'bottom')
-        const elemWidthStyle = getStyle(element, 'width')
-		const elemHeightStyle = getStyle(element, 'height')
+        // const elemTopStyle = getStyle(element, 'top')
+		// const elemBotStyle = getStyle(element, 'bottom')
+        // const elemWidthStyle = getStyle(element, 'width')
+		// const elemHeightStyle = getStyle(element, 'height')
 
 		const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
 		console.log(element)
-        console.log('elemTopStyle ', elemTopStyle)
+        // console.log('elemTopStyle ', elemTopStyle)
 		console.log('elemOffsetTop', element.offsetTop)
-        console.log('elemBotStyle ', elemBotStyle)
+		console.log('elemOffsetLeft', element.offsetLeft)
+        // console.log('elemBotStyle ', elemBotStyle)
 		console.log('elemOffsetBot', offsetBot)
-		console.log('elemWidthStyle ', elemWidthStyle)
+		// console.log('elemWidthStyle ', elemWidthStyle)
         console.log('elemOffsetWidth ', element.offsetWidth)
-		console.log('elemHeightStyle ', elemHeightStyle)
+		// console.log('elemHeightStyle ', elemHeightStyle)
 		console.log('elemOffsetHeight', element.offsetHeight)
         console.log('layoutArea ', layoutArea)
         console.log('screenValue ', screenValue)
@@ -68,7 +70,6 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			// case 1: overlay on the whole screen - should block
 			// case 2: video in full screen mode - should not
 			console.warn('Full screen!')
-			pushed.push(element)
 			return videoCheck(element)
 		}
 
@@ -78,17 +79,17 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			return false
 		}
 
-		if (screenValue < .98 && screenValue >= .1) {
-			console.warn('Overlay')
-			pushed.push(element)
-			return
+		if (element.offsetLeft <= 0 && element.offsetWidth <= 300) {
+			// youtube sidebar
+			console.warn('SideBar!')
+			return false
 		}
 
-		// if (screenValue > .1 && screenValue < .5) {
-		// 	console.warn('Small overlay')
-		// 	pushed.push(element)
-		// 	return
-		// }
+		if (screenValue < .98 && screenValue >= .1) {
+			// overlays
+			console.warn('Overlay')
+			return true
+		}
 
 		if (screenValue <= .03) {
 			// buttons and side/social menus
@@ -99,24 +100,22 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 		if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
 			// scrolling videos in the articles
 			console.warn('Scrolling video!')
-			pushed.push(element)
-			return
+			return true
 		}
 
 		if (offsetBot <= 100) {
 			// bottom notification
 			console.warn('Bottom notification')
-			pushed.push(element)
-			return
+			return true
 		}
 
 		if (screenValue <= .1) {
 			// buttons and side/social menus
 			console.warn('nothing special')
-			return
+			return false
 		}
 
-        return
+        return true
 	}
 	const checkElem = element => {
 		if (!isDecentElem(element)) return
@@ -131,13 +130,19 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	    	// if (getStyle(element, 'display') != 'none') {
 	        // 	element.setAttribute('data-popupoffExtension', 'hello')
 	        // }
+			const elemKey =`${element.offsetWidth}x${element.offsetHeight}`
+			const memoized = elemKey in memoize
+	    	const shouldRemove = memoized ? memoize[elemKey] : positionCheck(element)
 
-	    	const shouldRemove = positionCheck(element)
             if (shouldRemove) {
                 // if (statsEnabled) state = addItemToStats(element, state)
 
                 setPropImp(element, "display", "none")
+				// element.setAttribute('data-PopUpOFF', 'bl')
             }
+
+			if (!memoized)
+				memoize[elemKey] = shouldRemove
 	    }
 
 	    state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem)
