@@ -5,7 +5,6 @@ var infiniteLoopPreventCounter = 0
 var myTimer = 0
 var wasNotStoped = true
 
-// questionable
 const memoize = {}
 // setInterval(() => {
 // 	console.log(memoize)
@@ -25,9 +24,6 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	const body = document.body
 	const elems = body.getElementsByTagName("*")
 
-	const roundToTwo = num =>
-		+(Math.round(num + "e+2")  + "e-2")
-
 	const videoCheck = element => true
 
 	// methods
@@ -40,22 +36,13 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
         const layoutArea = element.offsetHeight * element.offsetWidth
 		const screenValue = roundToTwo(layoutArea/state.windowArea)
 
-        // const elemTopStyle = getStyle(element, 'top')
-		// const elemBotStyle = getStyle(element, 'bottom')
-        // const elemWidthStyle = getStyle(element, 'width')
-		// const elemHeightStyle = getStyle(element, 'height')
-
 		const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
 		console.log(element)
-        // // console.log('elemTopStyle ', elemTopStyle)
-		// console.log('elemOffsetTop', element.offsetTop)
+		console.log('elemOffsetTop', element.offsetTop)
 		// console.log('elemOffsetLeft', element.offsetLeft)
-        // // console.log('elemBotStyle ', elemBotStyle)
 		// console.log('elemOffsetBot', offsetBot)
-		// // console.log('elemWidthStyle ', elemWidthStyle)
-        // console.log('elemOffsetWidth ', element.offsetWidth)
-		// // console.log('elemHeightStyle ', elemHeightStyle)
+        console.log('elemOffsetWidth ', element.offsetWidth)
 		// console.log('elemOffsetHeight', element.offsetHeight)
         // console.log('layoutArea ', layoutArea)
         console.log('screenValue ', screenValue)
@@ -67,7 +54,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			return videoCheck(element)
 		}
 
-		if (element.offsetTop <= 70 && element.offsetHeight <= 200) {
+		if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
 			// it's a header!
 			// console.warn('Header!')
 			return false
@@ -85,7 +72,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			return true
 		}
 
-		if (screenValue <= .03) {
+		if (screenValue <= .03 && element.offsetTop > 100) {
 			// buttons and side/social menus
 			// console.warn('Super small')
 			return false
@@ -103,7 +90,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			return true
 		}
 
-		if (screenValue <= .1) {
+		if (screenValue <= .1 && element.offsetTop > 100) {
 			// buttons and side/social menus
 			// console.warn('nothing special')
 			return false
@@ -201,6 +188,19 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// }
 }
 
-chrome.storage.sync.get(['statsEnabled', 'restoreCont'], resp => {
-	autoMode(resp.statsEnabled, resp.restoreCont)
+chrome.storage.sync.get(['statsEnabled', 'restoreCont', 'hardModeActive', 'whitelist'], resp => {
+	const { statsEnabled, restoreCont, hardModeActive, whitelist } = resp
+	const pureUrl = getPureURL(window.location.href)
+	console.log(resp)
+	console.log(pureUrl)
+	console.log('hard: ', hardModeActive.includes(pureUrl))
+	console.log('whitelist: ', whitelist.includes(pureUrl))
+
+	if (whitelist.includes(pureUrl))
+		return
+
+	if (hardModeActive.includes(pureUrl))
+		hardMode(statsEnabled, restoreCont)
+
+	autoMode(statsEnabled, restoreCont)
 })

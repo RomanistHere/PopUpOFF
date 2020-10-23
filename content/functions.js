@@ -9,6 +9,10 @@ const setPropImp = (elem, prop, val) =>
     elem.style.setProperty(prop, val, "important")
 const checkIsInArr = (arr, item) =>
     arr.includes(item) ? true : false
+const getPureURL = url =>
+    url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8))
+const roundToTwo = num =>
+    +(Math.round(num + "e+2")  + "e-2")
 
 // stats
 const fixStats = stats => {
@@ -24,7 +28,7 @@ const fixStats = stats => {
 const setNewData = state =>
     chrome.storage.sync.get(['stats'], resp => {
         // round to first decimal
-        const screenValue = Math.round(state.cleanedArea/state.windowArea * 10) / 10
+        const screenValue = roundToTwo(state.cleanedArea/state.windowArea)
         let newStats = {
             cleanedArea: parseFloat(resp.stats.cleanedArea) + parseFloat(screenValue),
             numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
