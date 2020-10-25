@@ -1,11 +1,15 @@
 const hardMode = (statsEnabled, shouldRestoreCont) => {
 	// state
-	let state = statsEnabled ? {
-		windowArea: parseFloat(window.innerHeight * window.innerWidth),
-		cleanedArea: 0,
-		numbOfItems: 0,
-		restored: 0
-	} : null
+	let state = statsEnabled
+		? {
+			windowArea: parseFloat(window.innerHeight * window.innerWidth),
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0
+		}
+		: {
+			windowArea: parseFloat(window.innerHeight * window.innerWidth)
+		}
 
 	// unmutable
 	const doc = document.documentElement

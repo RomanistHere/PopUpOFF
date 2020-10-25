@@ -12,12 +12,16 @@ const memoize = {}
 
 const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// state
-	let state = statsEnabled ? {
-		windowArea: parseFloat(window.innerHeight * window.innerWidth),
-		cleanedArea: 0,
-		numbOfItems: 0,
-		restored: 0
-	} : null
+	let state = statsEnabled
+		? {
+			windowArea: parseFloat(window.innerHeight * window.innerWidth),
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0
+		}
+		: {
+			windowArea: parseFloat(window.innerHeight * window.innerWidth)
+		}
 
 	// unmutable
 	const doc = document.documentElement
@@ -188,30 +192,70 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// }
 }
 
-chrome.storage.sync.get(['statsEnabled', 'restoreCont', 'hardModeActive', 'easyModeActive', 'whitelist'], resp => {
-	const { statsEnabled, restoreCont, hardModeActive, whitelist } = resp
+chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'whitelist', 'restoreContActive', 'curAutoMode'], resp => {
+	const { statsEnabled, restoreContActive, hardModeActive, whitelist, easyModeActive, curAutoMode } = resp
 	const pureUrl = getPureURL(window.location.href)
+	const shouldRestoreCont = restoreContActive.includes(pureUrl)
 	console.log(resp)
 	console.log(pureUrl)
 	console.log('hard: ', hardModeActive.includes(pureUrl))
 	console.log('whitelist: ', whitelist.includes(pureUrl))
 
+	// check arrays with sites first of all
 	if (whitelist.includes(pureUrl))
 		return
 
 	if (hardModeActive.includes(pureUrl)) {
-		hardMode(statsEnabled, restoreCont)
+		hardMode(statsEnabled, shouldRestoreCont)
 		return
 	}
 
 	if (easyModeActive.includes(pureUrl)) {
-		autoMode(statsEnabled, restoreCont)
+		autoMode(statsEnabled, shouldRestoreCont)
 		return
 	}
 
-	// if current automode === whitelist(none) -> return
-	// if current automode === easymode -> autoMode
-	// if current automode === hardmode -> hardMode
+	// if nothing check and automode
+	if (curAutoMode === 'easyModeActive') {
+		autoMode(statsEnabled, shouldRestoreCont)
+		return
+	}
+
+	if (curAutoMode === 'whitelist')
+		return
+
+	if (curAutoMode === 'hardModeActive') {
+		hardMode(statsEnabled, shouldRestoreCont)
+		return
+	}
 
 	autoMode(statsEnabled, restoreCont)
+})
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	// "change mode" listener from popup.js
+	const { activeMode } = request
+	// check stats and restore content
+	chrome.storage.sync.get(['statsEnabled', 'restoreContActive'], resp => {
+		const { statsEnabled, restoreContActive } = resp
+		const pureUrl = getPureURL(window.location.href)
+		const shouldRestoreCont = restoreContActive.includes(pureUrl)
+
+	    if (activeMode === 'hardModeActive') {
+			hardMode(statsEnabled, shouldRestoreCont)
+			return
+		}
+
+	    if (activeMode === 'easyModeActive') {
+			autoMode(statsEnabled, shouldRestoreCont)
+			return
+		}
+
+	    if (activeMode === 'whitelist') {
+			// reset
+			sendResponse({ closePopup: true })
+			window.location.reload()
+			return
+		}
+	})
 })

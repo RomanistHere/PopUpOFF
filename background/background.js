@@ -41,9 +41,11 @@ chrome.runtime.onInstalled.addListener((details) => {
     	// chrome.tabs.create({url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0'})
 		backupData()
 		storageSet({
-			hardModeActive: ['www.jamieoliver.com', 'www.healthline.com'],
+			hardModeActive: [],
 			easyModeActive: [],
-			whitelist: []
+			whitelist: ['www.healthline.com', 'www.jamieoliver.com'],
+			restoreContActive: [],
+			curAutoMode: 'easyModeActive'
 		})
     }
 })

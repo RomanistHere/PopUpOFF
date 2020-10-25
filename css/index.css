@@ -155,12 +155,14 @@ body {
 
 .desc {
     position: relative;
+    display: block;
 
     margin: 5px;
     padding: 25px 0 25px 92px;
 
     font-size: 20px;
     color: #f9ffeecc;
+    text-decoration: none;
 
     cursor: pointer;
 
