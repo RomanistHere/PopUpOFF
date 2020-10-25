@@ -188,7 +188,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// }
 }
 
-chrome.storage.sync.get(['statsEnabled', 'restoreCont', 'hardModeActive', 'whitelist'], resp => {
+chrome.storage.sync.get(['statsEnabled', 'restoreCont', 'hardModeActive', 'easyModeActive', 'whitelist'], resp => {
 	const { statsEnabled, restoreCont, hardModeActive, whitelist } = resp
 	const pureUrl = getPureURL(window.location.href)
 	console.log(resp)
@@ -199,8 +199,19 @@ chrome.storage.sync.get(['statsEnabled', 'restoreCont', 'hardModeActive', 'white
 	if (whitelist.includes(pureUrl))
 		return
 
-	if (hardModeActive.includes(pureUrl))
+	if (hardModeActive.includes(pureUrl)) {
 		hardMode(statsEnabled, restoreCont)
+		return
+	}
+
+	if (easyModeActive.includes(pureUrl)) {
+		autoMode(statsEnabled, restoreCont)
+		return
+	}
+
+	// if current automode === whitelist(none) -> return
+	// if current automode === easymode -> autoMode
+	// if current automode === hardmode -> hardMode
 
 	autoMode(statsEnabled, restoreCont)
 })

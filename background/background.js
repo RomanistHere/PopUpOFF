@@ -42,6 +42,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 		backupData()
 		storageSet({
 			hardModeActive: ['www.jamieoliver.com', 'www.healthline.com'],
+			easyModeActive: [],
 			whitelist: []
 		})
     }
