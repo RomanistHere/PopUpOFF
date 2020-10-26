@@ -19,9 +19,9 @@ chrome.runtime.onInstalled.addListener((details) => {
 			if (!response.thisWebsiteWork || !response.thisWebsiteWorkEasy) {
 				// set up start
 				storageSet({
-					thisWebsiteWork: [],
-					thisWebsiteWorkEasy: [],
-					supervision: true,
+					// thisWebsiteWork: [],
+					// thisWebsiteWorkEasy: [],
+					// supervision: true,
 					tutorial: false,
 					shortCutMode: false,
 					stats: {
@@ -30,11 +30,16 @@ chrome.runtime.onInstalled.addListener((details) => {
 						restored: 0
 					},
 					statsEnabled: true,
-					restoreCont: false,
-					backupData: {}
+					// restoreCont: false,
+					backupData: {},
+					hardModeActive: [],
+					easyModeActive: [],
+					whitelist: [],
+					restoreContActive: [],
+					curAutoMode: 'easyModeActive'
 				})
 
-				chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html'})
+				// chrome.tabs.create({url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html'})
 			}
 		})
     } else if (details.reason == 'update') {
@@ -43,7 +48,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 		storageSet({
 			hardModeActive: [],
 			easyModeActive: [],
-			whitelist: ['www.healthline.com', 'www.jamieoliver.com'],
+			whitelist: [],
 			restoreContActive: [],
 			curAutoMode: 'easyModeActive'
 		})

@@ -173,7 +173,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	}
 
 	const action = elems => {
-		// state = removeOverflow(statsEnabled, state, doc, body)
+		state = removeOverflow(statsEnabled, state, doc, body)
 		checkElems(elems, checkElem)
 		// if (shouldRestoreCont)
 		// 	state = findHidden(state, statsEnabled, doc)

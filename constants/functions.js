@@ -1,11 +1,13 @@
 // DOM searching
 const querySelector = (selector) => document.querySelector(selector)
+const querySelectorAll = (selector) => document.querySelectorAll(selector)
 const isChecked = (node) => node.checked
 // Get root url of website
 const getPureURL = ({ url }) => url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8))
 // DOM manipulating
 const addClass = (node, className) => node.classList.add(className)
 const removeClass = (node, className) => node.classList.remove(className)
+const getAttr = (node, attrName) => node.getAttribute(attrName)
 // Chrome store
 const storageSet = (changes) => chrome.storage.sync.set(changes)
 const storageGet = (request, f) => chrome.storage.sync.get(request, f)
@@ -70,9 +72,11 @@ const backupData = () =>
 
 export {
 	querySelector,
+	querySelectorAll,
 	isChecked,
 	addClass,
 	removeClass,
+	getAttr,
 	storageSet,
 	storageGet,
 	executeScript,
