@@ -4,90 +4,69 @@
         <link rel="stylesheet" href="../css/options.css">
     </head>
     <body>
-        <h2 class="options__header options_text">
-            Developer's supervision
-        </h2>
-        <p class="options__desc options_text">
-            There is <a class="options_text-col" target="_blank" href="https://github.com/RomanistHere/PopUpOFF/blob/develop/constants/data.js#L1">a list of websites</a> where PopUpOFF is not working by default. These websites do not show popups but use the same mechanic to display information to users. If you enable it there accidentally, you can hide some important information from yourself.
-        </p>
-        <div class="string">
-            <div class="toggle toggle--push toggle--push--glow">
-                <input type="checkbox" id="supervisionToggle" class="toggle--checkbox">
-                <label class="toggle--btn" for="supervisionToggle" data-label-on="on"  data-label-off="off"></label>
+        <section class="options__section">
+            <h2 class="options__header options_text options__header-big">
+                Automode
+            </h2>
+            <p class="options__desc options_text">
+                Finally! Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Easy</span> and <span class="options_text-col">Disable</span>.
+            </p>
+            <div class="options__slider slider">
+                <span data-value="1" class="slider__text options_text slider__left slider__easy">Easy</span>
+                <span data-value="2" class="slider__text options_text slider__center slider__dis">Disable</span>
+                <span data-value="3" class="slider__text options_text slider__right slider__hard">Hard</span>
+                <input class="slider__input" type="range" min="1" max="3" value="2">
             </div>
-            <label for="supervisionToggle" class="desc desc-supervision">
-                Developer's supervision
-            </label>
-        </div>
-        <p class="options__desc options_text">
-            Disabling supervision is highly not recommended. If you do it, responsibility for further usage would be only on you.
-        </p>
+        </section>
 
-
-        <h2 class="options__header options_text">
-            Tutorial
-        </h2>
-        <div class="string">
-            <div class="toggle toggle--push toggle--push--glow">
-                <input type="checkbox" id="tutorialToggle" class="toggle--checkbox">
-                <label class="toggle--btn" for="tutorialToggle" data-label-on="on"  data-label-off="off"></label>
+        <section class="options__section">
+            <h2 class="options__header options_text">
+                Tutorial
+            </h2>
+            <div class="options__desc">
+                <a href="#" class="options__btn">
+                    <div class="cross">
+                        <span class="cross__item cross__one"></span>
+                        <span class="cross__item cross__two"></span>
+                    </div>
+                    <span class="options__label">Show the tutorial next time you open PopUpOFF</span>
+                </a>
             </div>
-            <label for="tutorialToggle" class="desc desc-tutorial">
-                Show the tutorial next time you open PopUpOFF
-            </label>
-        </div>
+        </section>
 
-
-        <h2 class="options__header options_text">
-            Statistics
-        </h2>
-        <p class="options__desc options_text">
-            I can't see or collect your statistics. It's just a little bit of fun for you. But I'm very interested in it indeed. So if you sent me "hello" with your stats, I would be really glad. Up to you. <span class="options_text-col">Enjoy :)</span>
-        </p>
-        <div class="string">
-            <div class="toggle toggle--push toggle--push--glow">
-                <input type="checkbox" id="statsToggle" class="toggle--checkbox">
-                <label class="toggle--btn" for="statsToggle" data-label-on="on"  data-label-off="off"></label>
+        <section class="options__section">
+            <h2 class="options__header options_text">
+                Statistics
+            </h2>
+            <p class="options__desc options_text">
+                I can't see or collect your statistics. It's just a little bit of fun for you. Screenshot it, tag me, share via socials - I will comment it! <span class="options_text-col">Enjoy :)</span>
+            </p>
+            <div class="options__desc">
+                <a href="#" class="options__btn options__btn-active">
+                    <div class="cross">
+                        <span class="cross__item cross__one"></span>
+                        <span class="cross__item cross__two"></span>
+                    </div>
+                    <span class="options__label">Collect and display your stats</span>
+                </a>
             </div>
-            <label for="statsToggle" class="desc desc-stats">
-                Collect and display your stats
-            </label>
-        </div>
+        </section>
 
-
-        <h2 class="options__header options_text">
-            Experimental
-        </h2>
-        <p class="options__desc options_text">
-            Some websites show content to you and after few seconds reduce it. This should help. </br>
-            Experimental means it should work but I need a little help from you guys. For websites I'm aware of it is working. But I would be glad if you found one where it isn't and sent it to me. Thank you.
-        </p>
-        <div class="string">
-            <div class="toggle toggle--push toggle--push--glow">
-                <input type="checkbox" id="prevContToggle" class="toggle--checkbox">
-                <label class="toggle--btn" for="prevContToggle" data-label-on="on"  data-label-off="off"></label>
+        <section class="options__section">
+            <h2 class="options__header options_text">
+                Keyboard shortcut
+            </h2>
+            <p class="options__desc options_text">
+                Currently you can not change the shortcut itself. It is <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span> (Hi Apple). But here you can choose what mode is going to be active after you press it.
+            </p>
+            <div class="options__slider slider">
+                <span data-value="1" class="slider__text options_text slider__left slider__easy">Easy</span>
+                <span data-value="2" class="slider__text options_text slider__center slider__dis">Disable</span>
+                <span data-value="3" class="slider__text options_text slider__right slider__hard">Hard</span>
+                <input class="slider__input" type="range" min="1" max="3" value="2">
             </div>
-            <label for="prevContToggle" class="desc desc-prevCont">
-                Prevent content from hiding
-            </label>
-        </div>
-        <p class="options__desc options_text">
-            <a class="options_text-col" target="_blank" href="https://romanisthere.github.io/posts/prev-cont/">Why doesn't it work?</a>
-        </p>
+        </section>
 
-
-        <h2 class="options__header options_text">
-            Keyboard shortcut
-        </h2>
-        <p class="options__desc options_text">
-            Currently you can not change the shortcut itself. It is <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span> (Hi Apple). But here you can choose what mode it activates.
-        </p>
-        <div class="options__slider slider">
-            <span data-value="1" class="slider__text options_text slider__left slider__easy">Easy</span>
-            <span data-value="2" class="slider__text options_text slider__center slider__dis">Disable</span>
-            <span data-value="3" class="slider__text options_text slider__right slider__hard">Hard</span>
-            <input class="slider__input" type="range" min="1" max="3" value="2">
-        </div>
         <script type="module" src="options.js"></script>
     </body>
 </html>

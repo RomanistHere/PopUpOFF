@@ -13,6 +13,7 @@ import {
 	nFormatter,
 } from '../constants/functions.js'
 
+// vizually set clicked button as active
 const setNewBtn = (btns, newActBtn) => {
     btns.forEach(item => item.classList.remove('desc-active'))
     addClass(newActBtn, 'desc-active')
@@ -29,6 +30,7 @@ buttons.forEach(item => item.addEventListener('click', function(e) {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         // check website in dif modes
         storageGet(['hardModeActive', 'easyModeActive', 'whitelist'], resp => {
+			// can be active only one from 3
             const { hardModeActive, easyModeActive, whitelist } = resp
             const newUrl = getPureURL(tabs[0])
             const modes = {
@@ -58,6 +60,7 @@ buttons.forEach(item => item.addEventListener('click', function(e) {
     return false
 }))
 
+// init popup state
 const init = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         storageGet(['hardModeActive', 'easyModeActive', 'whitelist', 'curAutoMode'], resp => {
@@ -69,6 +72,7 @@ const init = () => {
                 'whitelist': whitelist,
             }
 
+			// if website is in one of arrays - set the proper mode
             for (let [key, value] of Object.entries(modes)) {
                 if (value.includes(newUrl)) {
                     const actButton = querySelector(`[data-mode="${key}"]`)
@@ -77,6 +81,7 @@ const init = () => {
                 }
             }
 
+			// otherwise enable automatic one
             const actButton = querySelector(`[data-mode="${curAutoMode}"]`)
             setNewBtn(buttons, actButton)
         })
