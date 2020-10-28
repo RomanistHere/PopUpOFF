@@ -6,9 +6,6 @@ var myTimer = 0
 var wasNotStoped = true
 
 const memoize = {}
-// setInterval(() => {
-// 	console.log(memoize)
-// }, 5000)
 
 const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// state
@@ -196,10 +193,10 @@ chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'wh
 	const { statsEnabled, restoreContActive, hardModeActive, whitelist, easyModeActive, curAutoMode } = resp
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
-	console.log(resp)
-	console.log(pureUrl)
-	console.log('hard: ', hardModeActive.includes(pureUrl))
-	console.log('whitelist: ', whitelist.includes(pureUrl))
+	// console.log(resp)
+	// console.log(pureUrl)
+	// console.log('hard: ', hardModeActive.includes(pureUrl))
+	// console.log('whitelist: ', whitelist.includes(pureUrl))
 
 	// check arrays with sites first of all
 	if (whitelist.includes(pureUrl))

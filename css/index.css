@@ -211,6 +211,29 @@ body {
     color: var(--yellow-col)
 }
 
+.stats_cont {
+    position: relative;
+    height: 37px;
+    margin-bottom: 5px;
+
+    background-color: var(--white-col);
+}
+
+.stats_cont::after {
+    content: '';
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -3px;
+
+    width: 40px;
+    height: 5px;
+    border-radius: 0 0 10px 10px;
+
+    background-color: var(--white-col);
+}
+
 .stats {
     position: absolute;
     display: none;
@@ -218,11 +241,12 @@ body {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    padding-top: 5px;
+    padding-top: 2px;
 
-    color: var(--yellow-col);
-    font-size: 14px;
+    color: var(--dark-col);
+    font-size: 18px;
     text-decoration: none;
+    font-weight: normal;
 
     transition: all ease .2s;
 }
@@ -240,7 +264,7 @@ body {
     right: 0;
     height: 1px;
 
-    background-color: var(--yellow-col);
+    background-color: var(--dark-col);
 }
 
 .stats:hover {
@@ -251,12 +275,31 @@ body {
     background-color: #6bb756;
 }
 
+.side {
+    position: absolute;
+
+    width: 100%;
+    height: 150px;
+    top: -150px;
+    left: 0;
+
+    box-sizing: border-box;
+
+    transition: all ease .5s;
+    background-color: var(--white-col);
+}
+
+.stats_cont:hover .side {
+    z-index: 2;
+    top: 27px;
+}
+
 .tooltip {
     position: absolute;
     pointer-events: none;
 
-    right: -4px;
-    top: -140%;
+    right: -6px;
+    top: -310%;
     width: 160px;
     padding: 5px 0;
 
@@ -266,6 +309,7 @@ body {
     color: #fff;
     text-align: center;
     font-size: 16px;
+    line-height: 1.59;
 
     background-color: var(--dark-col);
     opacity: 0;
@@ -273,10 +317,8 @@ body {
 }
 
 .tooltip-top {
-    z-index: 1;
-
     top: auto;
-    bottom: -145%;
+    bottom: -310%;
 }
 
 .tooltip::after {
@@ -298,7 +340,11 @@ body {
     border-color: transparent transparent var(--white-col) transparent;
 }
 
-.desc__mark:hover + .tooltip {
+.desc__mark {
+    position: relative;
+}
+
+.desc__mark:hover .tooltip {
     opacity: 1;
 
     animation: popping .2s ease-out;
@@ -325,7 +371,7 @@ body {
 }
 
 .link {
-    background-color: #fff;
+    background-color: var(--white-col);
     text-align: center;
     justify-content: center;
     padding: 0
@@ -587,8 +633,8 @@ body {
 }
 
 .insturctions {
-    color: #111;
-    font-weight: 400;
+    color: var(--dark-col);
+    font-weight: normal;
     padding: 6px 0;
     width: 100%;
     font-size: 16px;
@@ -597,5 +643,5 @@ body {
 }
 
 .insturctions:hover {
-    color: var(--yellow-col)
+    color: var(--green-col);
 }
