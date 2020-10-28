@@ -154,18 +154,6 @@ body {
     transform: rotate(-45deg);
 }
 
-.add_opt {
-    display: block;
-
-    margin: 0;
-    padding: 0 0 0 40px;
-
-    color: var(--dark-col);
-    font-weight: normal;
-    font-size: 20px;
-    text-decoration: none;
-}
-
 .desc {
     position: relative;
     display: block;
@@ -203,6 +191,7 @@ body {
 
 .desc__mark {
     display: inline-block;
+    position: relative;
 
     width: 20px;
     height: 20px;
@@ -218,6 +207,27 @@ body {
     text-align: center;
 
     transition: color ease .1s;
+}
+
+.add_opt {
+    display: block;
+
+    margin: 0;
+    padding: 0 0 0 40px;
+
+    font-weight: normal;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.desc__mark-text {
+    width: auto;
+    height: auto;
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    color: var(--dark-col);
 }
 
 .col {
@@ -300,8 +310,10 @@ body {
 }
 
 .tooltip-top {
-    top: auto;
-    bottom: -310%;
+    z-index: 10;
+
+    top: 22px;
+    left: 0;
 }
 
 .tooltip::after {
@@ -319,18 +331,20 @@ body {
 .tooltip-top::after {
     top: auto;
     bottom: 100%;
+    right: auto;
+    left: 30px;
 
-    border-color: transparent transparent var(--white-col) transparent;
-}
-
-.desc__mark {
-    position: relative;
+    border-color: transparent transparent var(--dark-col) transparent;
 }
 
 .desc__mark:hover .tooltip {
     opacity: 1;
 
     animation: popping .2s ease-out;
+}
+
+.desc__mark-top {
+    color: var(--dark-col);
 }
 
 @keyframes popping {
@@ -359,25 +373,6 @@ body {
     justify-content: center;
     padding: 0
 }
-
-/* .link {
-    width: 50%;
-    height: 55px;
-    border: 2px solid var(--dark-col);
-    border-width: 0 5px 5px 2.5px;
-    box-sizing: border-box;
-    display: flex;
-    float: left;
-    background-color: var(--white-col);
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    padding: 0
-}
-
-.link2 {
-    border-width: 0 2.5px 5px 5px;
-} */
 
 .message {
     position: absolute;

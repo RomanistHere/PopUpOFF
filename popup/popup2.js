@@ -140,5 +140,14 @@ prevContBtn.addEventListener('click', function(e) {
 		}
 
 		storageSet({ restoreContActive: newArr })
+		state = { ...state, isRestContActive: !state.isRestContActive }
+
+		// reload current page and close popup
+		if (state.isRestContActive) {
+			chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+				window.close()
+		    })
+		}
 	})
 })
