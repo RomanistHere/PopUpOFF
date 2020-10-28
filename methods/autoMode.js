@@ -117,7 +117,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			const shouldRemove = memoized ? memoize[elemKey] : positionCheck(element)
 
             if (shouldRemove) {
-                // if (statsEnabled) state = addItemToStats(element, state)
+                if (statsEnabled) state = addItemToStats(element, state)
 
                 setPropImp(element, "display", "none")
             }
@@ -180,13 +180,13 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// Let the hunt begin!
 	action(elems)
 	// statistics
-	// if (statsEnabled) {
-	// 	setNewData(state)
-	// 	if (!beforeUnloadAactive) {
-	// 		window.addEventListener("beforeunload", () => { setNewData(state) })
-	// 		beforeUnloadAactive = true
-	// 	}
-	// }
+	if (statsEnabled) {
+		setNewData(state)
+		if (!beforeUnloadAactive) {
+			window.addEventListener("beforeunload", () => { setNewData(state) })
+			beforeUnloadAactive = true
+		}
+	}
 }
 
 chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'whitelist', 'restoreContActive', 'curAutoMode'], resp => {

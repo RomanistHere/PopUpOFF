@@ -92,11 +92,11 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	// Let the hunt begin!
 	action(elems)
 	// statistics
-	// if (statsEnabled) {
-	// 	setNewData(state)
-	// 	if (!beforeUnloadAactive) {
-	// 		window.addEventListener("beforeunload", () => { setNewData(state) })
-	// 		beforeUnloadAactive = true
-	// 	}
-	// }
+	if (statsEnabled) {
+		setNewData(state)
+		if (!beforeUnloadAactive) {
+			window.addEventListener("beforeunload", () => { setNewData(state) })
+			beforeUnloadAactive = true
+		}
+	}
 }

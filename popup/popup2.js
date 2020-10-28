@@ -13,6 +13,12 @@ import {
 	nFormatter,
 } from '../constants/functions.js'
 
+let state = {
+	curMode: null,
+	isRestContActive: false,
+	pureUrl: null,
+}
+
 // vizually set clicked button as active
 const setNewBtn = (btns, newActBtn) => {
     btns.forEach(item => item.classList.remove('desc-active'))
@@ -60,32 +66,79 @@ buttons.forEach(item => item.addEventListener('click', function(e) {
     return false
 }))
 
+// stats update
+const updStats = () => {
+	storageGet(['stats'], res => {
+		querySelector('.stats__elem').innerHTML = nFormatter(res.stats.numbOfItems, 1)
+		querySelector('.stats__size').innerHTML = nFormatter(res.stats.cleanedArea, 1)
+	})
+}
+
 // init popup state
 const init = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        storageGet(['hardModeActive', 'easyModeActive', 'whitelist', 'curAutoMode'], resp => {
-            const { hardModeActive, easyModeActive, whitelist, curAutoMode } = resp
+        storageGet(['hardModeActive', 'easyModeActive', 'whitelist', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
+			if (resp.statsEnabled) {
+				addClass(querySelector('.stats'), 'stats-show')
+				// update statistic
+				querySelector('.stats__elem').innerHTML = nFormatter(resp.stats.numbOfItems, 1)
+				querySelector('.stats__size').innerHTML = nFormatter(resp.stats.cleanedArea, 1)
+				setInterval(updStats, 1000)
+			}
+			// mode init
+            const { hardModeActive, easyModeActive, restoreContActive, whitelist, curAutoMode } = resp
             const newUrl = getPureURL(tabs[0])
+			state = { ...state, pureUrl: newUrl }
             const modes = {
                 'hardModeActive': hardModeActive,
                 'easyModeActive': easyModeActive,
                 'whitelist': whitelist,
             }
 
+			if (restoreContActive.includes(newUrl)) {
+				querySelector('.add_opt').classList.add('add_opt-active')
+				state = { ...state, isRestContActive: true }
+			}
+
 			// if website is in one of arrays - set the proper mode
             for (let [key, value] of Object.entries(modes)) {
                 if (value.includes(newUrl)) {
                     const actButton = querySelector(`[data-mode="${key}"]`)
+					state = { ...state, curMode: key }
                     setNewBtn(buttons, actButton)
-                    return
+                    break
                 }
             }
 
 			// otherwise enable automatic one
-            const actButton = querySelector(`[data-mode="${curAutoMode}"]`)
-            setNewBtn(buttons, actButton)
+			if (state.curMode === null) {
+				const actButton = querySelector(`[data-mode="${curAutoMode}"]`)
+				state = { ...state, curMode: curAutoMode }
+	            setNewBtn(buttons, actButton)
+			}
+
+			console.log(state)
         })
     })
 }
-
 init()
+
+// prevent content
+
+const prevContBtn = querySelector('.add_opt')
+prevContBtn.addEventListener('click', function(e) {
+	e.preventDefault()
+	storageGet(['restoreContActive'], resp => {
+		const { restoreContActive } = resp
+		let newArr = []
+		if (state.isRestContActive) {
+			newArr = restoreContActive.filter(url => url !== state.pureUrl)
+			this.classList.remove('add_opt-active')
+		} else {
+			newArr = [...newArr, state.pureUrl]
+			this.classList.add('add_opt-active')
+		}
+
+		storageSet({ restoreContActive: newArr })
+	})
+})
