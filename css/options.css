@@ -41,9 +41,8 @@ body {
 }
 
 .options__header-big {
-    font-size: 34px;
+    font-size: 36px;
     font-weight: normal;
-    color: var(--green-col);
 }
 
 .options__section {

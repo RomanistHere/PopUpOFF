@@ -23,7 +23,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 					// thisWebsiteWorkEasy: [],
 					// supervision: true,
 					tutorial: false,
-					shortCutMode: false,
 					stats: {
 						cleanedArea: 0,
 						numbOfItems: 0,
@@ -36,7 +35,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 					easyModeActive: [],
 					whitelist: [],
 					restoreContActive: [],
-					curAutoMode: 'easyModeActive'
+					curAutoMode: 'easyModeActive',
+					shortCutMode: 'hardMode',
 				})
 
 				// chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html' })
