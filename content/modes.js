@@ -1,11 +1,105 @@
-var domObserver
-var domObserverLight
+const hardMode = (statsEnabled, shouldRestoreCont) => {
+	// state
+	let state = statsEnabled
+		? {
+			windowArea: parseFloat(window.innerHeight * window.innerWidth),
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0
+		}
+		: {
+			windowArea: parseFloat(window.innerHeight * window.innerWidth)
+		}
 
-var infiniteLoopPreventCounter = 0
-var myTimer = 0
-var wasNotStoped = true
+	// unmutable
+	const doc = document.documentElement
+	const body = document.body
+	const elems = body.getElementsByTagName("*")
 
-const memoize = {}
+	// methods
+	const checkElem = element => {
+		if (!isDecentElem(element)) return
+
+		const elemPosStyle = getStyle(element, 'position')
+		if ((elemPosStyle == 'fixed') ||
+	    	(elemPosStyle == 'sticky')) {
+
+			// if (element.getAttribute('data-PopUpOFF') === 'notification')
+	        // 	return
+
+	        if (getStyle(element, 'display') != 'none') {
+	        	element.setAttribute('data-PopUpOFFBl', 'bl')
+	        }
+
+			if (statsEnabled) state = addItemToStats(element, state)
+
+	        setPropImp(element, "display", "none")
+			// setTimeout(() => element ? setPropImp(element, "display", "none") : false, 10)
+	    }
+
+	    state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem)
+	}
+
+	// watch DOM
+	const prevLoop = () => {
+		if (infiniteLoopPreventCounter > 1200) {
+			removeDomWatcher(domObserver, wasNotStoped, body, domObserverLight, action)
+			return true
+		}
+		infiniteLoopPreventCounter++
+		if (myTimer === 0) {
+			myTimer = setTimeout(() => resetLoopCounter(infiniteLoopPreventCounter, myTimer), 1000)
+		}
+		return false
+	}
+	const watchDOM = () => {
+		if (!domObserver) {
+			domObserver = new MutationObserver(mutations => {
+				state = watchMutations(mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem)
+			})
+		}
+
+		if (window.location.href.includes('pinterest')) {
+			// cant deal with this website, i guess there will be array of this-one-like websites or I find out another solution
+			domObserverLight = new MutationObserver(mutation => {
+				mutation.map(item => {
+					state = removeOverflow(statsEnabled, state, doc, body)
+				})
+			})
+			domObserverLight.observe(doc, {
+				attributes: true
+			})
+			domObserverLight.observe(body, {
+				attributes: true
+			})
+		} else {
+			domObserver.observe(doc, {
+				childList: true,
+				subtree: true,
+				attributes: true
+			})
+		}
+	}
+
+	const action = elems => {
+		state = removeOverflow(statsEnabled, state, doc, body)
+		checkElems(elems, checkElem)
+		if (shouldRestoreCont)
+			state = findHidden(state, statsEnabled, doc)
+		watchDOM()
+	}
+
+	// Let the hunt begin!
+	action(elems)
+	// statistics
+	if (statsEnabled) {
+		setNewData(state)
+		if (!beforeUnloadAactive) {
+			window.addEventListener("beforeunload", () => { setNewData(state) })
+			beforeUnloadAactive = true
+		}
+	}
+}
 
 const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// state
@@ -108,9 +202,6 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	    	if (element.getAttribute('data-PopUpOFF') === 'notification')
 	        	return
 
-	    	// if (getStyle(element, 'display') != 'none') {
-	        // 	element.setAttribute('data-popupoffExtension', 'hello')
-	        // }
 			const elemKey =`${element.offsetWidth}x${element.offsetHeight}`
 			const memoized = elemKey in memoize
 			const shouldRemove = memoized ? memoize[elemKey] : positionCheck(element)
@@ -187,81 +278,3 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 		}
 	}
 }
-
-// initializing
-chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'whitelist', 'restoreContActive', 'curAutoMode'], resp => {
-	// check if script is inside the iframe
-	if (window !== window.parent)
-		return
-
-	const { statsEnabled, restoreContActive, hardModeActive, whitelist, easyModeActive, curAutoMode } = resp
-	const pureUrl = getPureURL(window.location.href)
-	const shouldRestoreCont = restoreContActive.includes(pureUrl)
-
-	// console.log(resp)
-	// console.log(pureUrl)
-	// console.log('hard: ', hardModeActive.includes(pureUrl))
-	// console.log('whitelist: ', whitelist.includes(pureUrl))
-
-	// check arrays with sites first of all
-	if (whitelist.includes(pureUrl))
-		return
-
-	if (hardModeActive.includes(pureUrl)) {
-		hardMode(statsEnabled, shouldRestoreCont)
-		return
-	}
-
-	if (easyModeActive.includes(pureUrl)) {
-		autoMode(statsEnabled, shouldRestoreCont)
-		return
-	}
-
-	// if nothing check and automode
-	if (curAutoMode === 'easyModeActive') {
-		autoMode(statsEnabled, shouldRestoreCont)
-		return
-	}
-
-	if (curAutoMode === 'whitelist')
-		return
-
-	if (curAutoMode === 'hardModeActive') {
-		hardMode(statsEnabled, shouldRestoreCont)
-		return
-	}
-
-	autoMode(statsEnabled, restoreCont)
-})
-
-// "change mode" listener from popup.js
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	// check if script is inside the iframe
-	if (window !== window.parent)
-		return
-
-	const { activeMode } = request
-	// check stats and restore content
-	chrome.storage.sync.get(['statsEnabled', 'restoreContActive'], resp => {
-		const { statsEnabled, restoreContActive } = resp
-		const pureUrl = getPureURL(window.location.href)
-		const shouldRestoreCont = restoreContActive.includes(pureUrl)
-
-	    if (activeMode === 'hardModeActive') {
-			hardMode(statsEnabled, shouldRestoreCont)
-			return
-		}
-
-	    if (activeMode === 'easyModeActive') {
-			autoMode(statsEnabled, shouldRestoreCont)
-			return
-		}
-
-	    if (activeMode === 'whitelist') {
-			// reset
-			sendResponse({ closePopup: true })
-			window.location.reload()
-			return
-		}
-	})
-})

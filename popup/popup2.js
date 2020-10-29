@@ -29,9 +29,15 @@ const setNewBtn = (btns, newActBtn) => {
 const buttons = querySelectorAll('.desc')
 buttons.forEach(item => item.addEventListener('click', function(e) {
     e.preventDefault()
-    setNewBtn(buttons, this)
 
-    const mode = getAttr(this, 'data-mode')
+	const mode = getAttr(this, 'data-mode')
+
+	if (state.curMode === mode)
+		return
+
+
+
+    setNewBtn(buttons, this)
 
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         // check website in dif modes
@@ -65,10 +71,13 @@ buttons.forEach(item => item.addEventListener('click', function(e) {
 			})
 		}
 
+		if (state.curMode === 'hardModeActive' && mode === 'easyModeActive')
+			executeScriptHere('restore')
+
 		state = { ...state, curMode: mode }
         // send msg to content script with new active mode
         chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
-            if (resp.closePopup === true) {
+            if (resp && resp.closePopup === true) {
 				chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
                 window.close()
             }

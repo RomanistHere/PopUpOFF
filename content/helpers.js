@@ -1,18 +1,50 @@
-// "global" variable to checkis event listener added
+// "global" variables //
+// event check
 let beforeUnloadAactive = false
 let isCSSAppended = false
+
+// dom sobservers
+let domObserver
+let domObserverLight
+
+// prevent infinite loop
+let infiniteLoopPreventCounter = 0
+let myTimer = 0
+let wasNotStoped = true
+
+// memoize for easy mode
+const memoize = {}
 
 // helpers
 const getStyle = (elem, property) =>
     window.getComputedStyle(elem, null).getPropertyValue(property)
+
 const setPropImp = (elem, prop, val) =>
     elem.style.setProperty(prop, val, "important")
+
 const checkIsInArr = (arr, item) =>
     arr.includes(item) ? true : false
+
 const getPureURL = url =>
     url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8))
+
 const roundToTwo = num =>
     +(Math.round(num + "e+2")  + "e-2")
+
+const debounce = (func, wait, immediate) => {
+	var timeout
+	return function() {
+		var context = this, args = arguments
+		var later = function() {
+			timeout = null
+			if (!immediate) func.apply(context, args)
+		}
+		var callNow = immediate && !timeout
+		clearTimeout(timeout)
+		timeout = setTimeout(later, wait)
+		if (callNow) func.apply(context, args)
+	}
+}
 
 // stats
 const fixStats = stats => {
@@ -25,13 +57,14 @@ const fixStats = stats => {
         fixedStats = { ...stats, restored: 0 }
     return fixedStats
 }
+
 const setNewData = state =>
     chrome.storage.sync.get(['stats'], resp => {
         // round to first decimal
         const screenValue = roundToTwo(state.cleanedArea/state.windowArea)
-        
+
         let newStats = {
-            cleanedArea: parseFloat(resp.stats.cleanedArea) + parseFloat(screenValue),
+            cleanedArea: parseFloat(resp.stats.cleanedArea) + parseFloat(isNaN(screenValue) ? 0 : screenValue),
             numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
             restored: parseFloat(resp.stats.restored) + parseFloat(state.restored)
         }
@@ -43,9 +76,11 @@ const setNewData = state =>
 
         chrome.storage.sync.set({ stats: newStats })
     })
+
 const addCountToStats = (state) => {
     return { ...state, numbOfItems: parseFloat(state.numbOfItems) + 1 }
 }
+
 const addItemToStats = (element, state) => {
     const layoutArea = element.offsetHeight * element.offsetWidth
 
@@ -85,10 +120,12 @@ const removeOverflow = (statsEnabled, state, doc, body) => {
     }
     return state
 }
+
 const checkElems = (elems, checkElem) => {
     const arr = [...elems]
     arr.map(checkElem)
 }
+
 const unhide = (elem, statsEnabled, state) => {
     if (elem.innerHTML.length > 5) {
         elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded', 'article-teaser-overflow')
@@ -96,6 +133,7 @@ const unhide = (elem, statsEnabled, state) => {
     }
     return state
 }
+
 const findHidden = (state, statsEnabled, doc) => {
     // classes from different websites
     const hidden = [
@@ -110,6 +148,7 @@ const findHidden = (state, statsEnabled, doc) => {
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
     return state
 }
+
 const detectGrad = (state, statsEnabled, element) => {
     if (getStyle(element, 'background-image').includes('linear-gradient')) {
         setPropImp(element, "background-image", "unset")
@@ -128,6 +167,7 @@ const detectGrad = (state, statsEnabled, element) => {
 
     return state
 }
+
 const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, checkElem) => {
     if ((getStyle(element, 'filter') != 'none') ||
         (getStyle(element, '-webkit-filter') != 'none')) {
@@ -144,6 +184,7 @@ const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, check
 
     return state
 }
+
 const isDecentElem = element => {
     return ((element.nodeName == 'SCRIPT') ||
     (element.nodeName == 'HEAD') ||
@@ -167,11 +208,13 @@ const checkElemWithSibl = (element, checkElem) => {
         checkElems(elems, checkElem)
     }
 }
+
 const resetLoopCounter = (infiniteLoopPreventCounter, myTimer) => {
     infiniteLoopPreventCounter = 0
     clearTimeout(myTimer)
     myTimer = 0
 }
+
 const removeDomWatcher = (domObserver, wasNotStoped, body, domObserverLight, action) => {
     try {
         domObserver.disconnect()
@@ -187,6 +230,7 @@ const removeDomWatcher = (domObserver, wasNotStoped, body, domObserverLight, act
     } catch (e) {
     }
 }
+
 const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {
     if ((mutation.target.nodeName == 'SCRIPT') ||
     (mutation.target.nodeName == 'HEAD') ||
@@ -205,6 +249,7 @@ const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {
     })
     return removeOverflow(statsEnabled, state, doc, body)
 }
+
 const unsetHeight = ({ target }, statsEnabled, state) => {
     if (target.getAttribute('data-popupoffextension') === 'hello')
         return state
@@ -223,6 +268,7 @@ const unsetHeight = ({ target }, statsEnabled, state) => {
 
     return state
 }
+
 const restoreNode = (mutation, statsEnabled, state) => {
     const target = mutation.target
     const length = mutation.removedNodes.length
@@ -243,6 +289,7 @@ const restoreNode = (mutation, statsEnabled, state) => {
 
     return state
 }
+
 const checkForRestore = (mutation, statsEnabled, state) => {
     state = unsetHeight(mutation, statsEnabled, state)
 
@@ -253,6 +300,7 @@ const checkForRestore = (mutation, statsEnabled, state) => {
 
     return state
 }
+
 const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem) => {
     let processedElems = []
     const len = mutations.length
