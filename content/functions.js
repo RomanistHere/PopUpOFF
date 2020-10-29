@@ -18,11 +18,11 @@ const roundToTwo = num =>
 const fixStats = stats => {
     let fixedStats = { ...stats }
     if (isNaN(stats.cleanedArea))
-        fixedStats = { ...state, cleanedArea: 0 }
+        fixedStats = { ...stats, cleanedArea: 0 }
     if (isNaN(stats.numbOfItems))
-        fixedStats = { ...state, numbOfItems: 0 }
+        fixedStats = { ...stats, numbOfItems: 0 }
     if (isNaN(stats.restored))
-        fixedStats = { ...state, restored: 0 }
+        fixedStats = { ...stats, restored: 0 }
     return fixedStats
 }
 const setNewData = state =>

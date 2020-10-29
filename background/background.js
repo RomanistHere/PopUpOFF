@@ -33,7 +33,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 					backupData: {},
 					hardModeActive: [],
 					easyModeActive: [],
-					whitelist: [],
+					whitelist: [...ARR_OF_FORB_SITES],
 					restoreContActive: [],
 					curAutoMode: 'easyModeActive',
 					shortCutMode: 'hardMode',
@@ -45,15 +45,15 @@ chrome.runtime.onInstalled.addListener((details) => {
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
 		// backupData()
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], response => {
-			storageSet({
-				hardModeActive: [...response.thisWebsiteWork],
-				easyModeActive: [...response.thisWebsiteWorkEasy],
-				whitelist: [],
-				restoreContActive: [],
-				curAutoMode: 'easyModeActive'
-			})
-		})
+		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], response => {
+		// 	storageSet({
+		// 		hardModeActive: [...response.thisWebsiteWork],
+		// 		easyModeActive: [...response.thisWebsiteWorkEasy],
+		// 		whitelist: [],
+		// 		restoreContActive: [],
+		// 		curAutoMode: 'easyModeActive'
+		// 	})
+		// })
     }
 })
 

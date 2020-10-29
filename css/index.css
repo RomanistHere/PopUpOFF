@@ -106,19 +106,41 @@ body {
     transform: translateX(-50%);
 }
 
-.desc-active .icon {
-    display: block;
-}
-
 .icon {
     position: absolute;
-    display: none;
+    opacity: 0;
 
     top: 50%;
     left: 20%;
-    transform: translate(-50%,-50%);
+    transform: translate(300%,-50%);
     width: 30px;
     height: 30px;
+
+    transition: all ease .5s;
+}
+
+.desc-active .icon {
+    transform: translate(-50%,-50%);
+    opacity: 1;
+    animation: arrow .8s ease-out;
+}
+
+@keyframes arrow {
+    0%, 50% {
+        transform: translate(-300%,-50%);
+    }
+    90% {
+        transform: translate(-20%,-50%);
+    }
+    94% {
+        transform: translate(-60%,-50%);
+    }
+    98% {
+        transform: translate(-40%,-50%);
+    }
+    100% {
+        transform: translate(-50%,-50%);
+    }
 }
 
 .arrow {

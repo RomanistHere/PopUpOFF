@@ -21,7 +21,7 @@ let state = {
 
 // vizually set clicked button as active
 const setNewBtn = (btns, newActBtn) => {
-    btns.forEach(item => item.classList.remove('desc-active'))
+    btns.forEach(item => removeClass(item, 'desc-active'))
     addClass(newActBtn, 'desc-active')
 }
 
@@ -55,9 +55,21 @@ buttons.forEach(item => item.addEventListener('click', function(e) {
             storageSet(modes)
         })
 
+		// if whitelist just enabled and prevent content active -> remove prevent content (prevent content is not working in whitelist)
+		if (mode === 'whitelist' && state.isRestContActive) {
+			storageGet(['restoreContActive'], resp => {
+				const { restoreContActive } = resp
+				const newContActive = restoreContActive.filter(url => url !== state.pureUrl)
+				storageSet({ restoreContActive: newContActive })
+				state = { ...state, isRestContActive: false }
+			})
+		}
+
+		state = { ...state, curMode: mode }
         // send msg to content script with new active mode
         chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp.closePopup === true) {
+				chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
                 window.close()
             }
         })
@@ -78,6 +90,7 @@ const updStats = () => {
 const init = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         storageGet(['hardModeActive', 'easyModeActive', 'whitelist', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
+			// set statistics
 			if (resp.statsEnabled) {
 				addClass(querySelector('.stats'), 'stats-show')
 				// update statistic
@@ -85,7 +98,8 @@ const init = () => {
 				querySelector('.stats__size').innerHTML = nFormatter(resp.stats.cleanedArea, 1)
 				setInterval(updStats, 1000)
 			}
-			// mode init
+
+			// modes init
             const { hardModeActive, easyModeActive, restoreContActive, whitelist, curAutoMode } = resp
             const newUrl = getPureURL(tabs[0])
 			state = { ...state, pureUrl: newUrl }
@@ -95,8 +109,9 @@ const init = () => {
                 'whitelist': whitelist,
             }
 
+			// check restore content array and set btn
 			if (restoreContActive.includes(newUrl)) {
-				querySelector('.add_opt').classList.add('add_opt-active')
+				addClass(querySelector('.add_opt'), 'add_opt-active')
 				state = { ...state, isRestContActive: true }
 			}
 
@@ -128,21 +143,38 @@ init()
 const prevContBtn = querySelector('.add_opt')
 prevContBtn.addEventListener('click', function(e) {
 	e.preventDefault()
-	storageGet(['restoreContActive'], resp => {
-		const { restoreContActive } = resp
+	storageGet(['restoreContActive', 'easyModeActive', 'whitelist'], resp => {
+		const { restoreContActive, easyModeActive, whitelist } = resp
 		let newArr = []
+		let newEasyMode = []
+		let newWhitelist = []
+
+		// add/remove site to restore cotntent array
 		if (state.isRestContActive) {
 			newArr = restoreContActive.filter(url => url !== state.pureUrl)
-			this.classList.remove('add_opt-active')
+			removeClass(this, 'add_opt-active')
 		} else {
 			newArr = [...newArr, state.pureUrl]
-			this.classList.add('add_opt-active')
+			addClass(this, 'add_opt-active')
 		}
 
-		storageSet({ restoreContActive: newArr })
+		// if whitelist activated, add website to easy mode (prevent content should not work in whitelist)
+		if (state.curMode === 'whitelist') {
+			newEasyMode = [...easyModeActive, state.pureUrl]
+			state = { ...state, curMode: 'easyModeActive' }
+			if (whitelist.includes(state.pureUrl))
+				newWhitelist = whitelist.filter(url => url !== state.pureUrl)
+		}
+
+		// set state
+		storageSet({
+			restoreContActive: newArr,
+			easyModeActive: newEasyMode,
+			whitelist: newWhitelist
+		})
 		state = { ...state, isRestContActive: !state.isRestContActive }
 
-		// reload current page and close popup
+		// reload current page and close popup if activated prevent content
 		if (state.isRestContActive) {
 			chrome.tabs.query({active: true, currentWindow: true}, tabs => {
 		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
