@@ -19,7 +19,6 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 		: {
 			windowArea: parseFloat(window.innerHeight * window.innerWidth)
 		}
-
 	// unmutable
 	const doc = document.documentElement
 	const body = document.body
@@ -39,14 +38,14 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 
 		const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
-		console.log(element)
-		console.log('elemOffsetTop', element.offsetTop)
+		// console.log(element)
+		// console.log('elemOffsetTop', element.offsetTop)
 		// console.log('elemOffsetLeft', element.offsetLeft)
 		// console.log('elemOffsetBot', offsetBot)
-        console.log('elemOffsetWidth ', element.offsetWidth)
+        // console.log('elemOffsetWidth ', element.offsetWidth)
 		// console.log('elemOffsetHeight', element.offsetHeight)
         // console.log('layoutArea ', layoutArea)
-        console.log('screenValue ', screenValue)
+        // console.log('screenValue ', screenValue)
 
 		if (screenValue >= .98) {
 			// case 1: overlay on the whole screen - should block
@@ -189,10 +188,16 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	}
 }
 
+// initializing
 chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'whitelist', 'restoreContActive', 'curAutoMode'], resp => {
+	// check if script is inside the iframe
+	if (window !== window.parent)
+		return
+
 	const { statsEnabled, restoreContActive, hardModeActive, whitelist, easyModeActive, curAutoMode } = resp
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
+
 	// console.log(resp)
 	// console.log(pureUrl)
 	// console.log('hard: ', hardModeActive.includes(pureUrl))
@@ -229,8 +234,12 @@ chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'wh
 	autoMode(statsEnabled, restoreCont)
 })
 
+// "change mode" listener from popup.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	// "change mode" listener from popup.js
+	// check if script is inside the iframe
+	if (window !== window.parent)
+		return
+
 	const { activeMode } = request
 	// check stats and restore content
 	chrome.storage.sync.get(['statsEnabled', 'restoreContActive'], resp => {

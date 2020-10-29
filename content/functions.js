@@ -29,6 +29,7 @@ const setNewData = state =>
     chrome.storage.sync.get(['stats'], resp => {
         // round to first decimal
         const screenValue = roundToTwo(state.cleanedArea/state.windowArea)
+        
         let newStats = {
             cleanedArea: parseFloat(resp.stats.cleanedArea) + parseFloat(screenValue),
             numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
