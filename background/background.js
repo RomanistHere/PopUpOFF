@@ -1,4 +1,4 @@
-import { ARR_OF_FORB_SITES } from '../constants/data.js'
+import { whitelistArr, preventContArr } from '../constants/data.js'
 import {
 	storageSet,
 	storageGet,
@@ -22,6 +22,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 					// thisWebsiteWork: [],
 					// thisWebsiteWorkEasy: [],
 					// supervision: true,
+					// restoreCont: false,
 					tutorial: false,
 					stats: {
 						cleanedArea: 0,
@@ -29,12 +30,11 @@ chrome.runtime.onInstalled.addListener((details) => {
 						restored: 0
 					},
 					statsEnabled: true,
-					// restoreCont: false,
 					backupData: {},
 					hardModeActive: [],
 					easyModeActive: [],
-					whitelist: [...ARR_OF_FORB_SITES],
-					restoreContActive: [],
+					whitelist: [...whitelistArr],
+					restoreContActive: [...preventContArr],
 					curAutoMode: 'easyModeActive',
 					shortCutMode: 'hardMode',
 				})
@@ -45,15 +45,18 @@ chrome.runtime.onInstalled.addListener((details) => {
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
 		// backupData()
-		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], response => {
-		// 	storageSet({
-		// 		hardModeActive: [...response.thisWebsiteWork],
-		// 		easyModeActive: [...response.thisWebsiteWorkEasy],
-		// 		whitelist: [],
-		// 		restoreContActive: [],
-		// 		curAutoMode: 'easyModeActive'
-		// 	})
-		// })
+		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'curAutoMode'], response => {
+			if (response.curAutoMode !== undefined)
+				return
+
+			storageSet({
+				hardModeActive: [...response.thisWebsiteWork],
+				easyModeActive: [...response.thisWebsiteWorkEasy],
+				whitelist: [...whitelistArr],
+				restoreContActive: [...preventContArr],
+				curAutoMode: 'easyModeActive'
+			})
+		})
     }
 })
 

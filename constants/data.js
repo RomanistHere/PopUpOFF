@@ -1,4 +1,5 @@
-const ARR_OF_FORB_SITES = [
+// list of whitelisted by default websites
+const whitelistArr = [
 	'music.youtube.com',
 	'www.youtube.com',
 	'www.linkedin.com',
@@ -10,6 +11,7 @@ const ARR_OF_FORB_SITES = [
 	'www.baidu.com',
 	'www.amazon.com',
 	'vk.com',
+	'vk.ru',
 	'www.pinterest.com',
 	'trello.com',
 	'calendar.google.com',
@@ -27,11 +29,30 @@ const ARR_OF_FORB_SITES = [
 	'www.spotify.com',
 	'zoom.us',
 	'www.netflix.com',
+	'cal.mixmax.com',
+	'romanisthere.github.io',
+	'music.yandex.com',
+	'music.yandex.ru',
+	'web.telegram.org',
+	'www.inspera.com'
+]
+
+// list of websites where prevent content feature enabled by default
+const preventContArr = [
+	'www.economist.com',
+	'www.reviewjournal.com',
+	'www.bostonglobe.com',
+	'www.theguardian.com',
+	'www.saechsische.de',
+	'sz-magazin.sueddeutsche.de',
+	'www.zeit.de',
+	'www.heise.de'
 ]
 // useful info
 const emailUrl = 'mailto:romanisthere@gmail.com'
 
 export {
-	ARR_OF_FORB_SITES,
+	whitelistArr,
+	preventContArr,
 	emailUrl,
 }
