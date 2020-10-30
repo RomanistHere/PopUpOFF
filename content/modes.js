@@ -24,8 +24,8 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 		if ((elemPosStyle == 'fixed') ||
 	    	(elemPosStyle == 'sticky')) {
 
-			// if (element.getAttribute('data-PopUpOFF') === 'notification')
-	        // 	return
+			if (element.getAttribute('data-PopUpOFF') === 'notification')
+	        	return
 
 	        if (getStyle(element, 'display') != 'none') {
 	        	element.setAttribute('data-PopUpOFFBl', 'bl')

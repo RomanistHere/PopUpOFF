@@ -147,6 +147,7 @@ const keyDownCallBack = e => {
 			}
 
 			chrome.storage.sync.set(newSync)
+			createNotification(appState.curMode)
 		})
 	}
 }
@@ -173,23 +174,28 @@ if (window.location.href === 'https://romanisthere.github.io/secrets/') {
 }
 
 // notification mechanics
-// let notifTimeout
-//
-// const createNotification = () => {
-// 	const notification = document.createElement("span")
-// 	notification.setAttribute('data-PopUpOFF', 'notification')
-// 	const text = document.createTextNode("PopUpOFF activated")
-// 	notification.className = 'PopUpOFF_notification'
-// 	notification.appendChild(text)
-// 	document.body.appendChild(notification)
-//
-// 	clearTimeout(notifTimeout)
-// 	notifTimeout = setTimeout(() => {
-// 		if (document.querySelector('.PopUpOFF_notification'))
-// 			document.querySelector('[data-PopUpOFF="notification"]').remove()
-// 	}, 5000)
-// }
-//
+let notifTimeout
+const textItems = {
+	'whitelist': 'Dormant',
+	'hardModeActive': 'Agressive',
+	'easyModeActive': 'Moderate',
+}
+
+const createNotification = curMode => {
+	const notification = document.createElement("span")
+	notification.setAttribute('data-PopUpOFF', 'notification')
+	const text = document.createTextNode(`✔ ${textItems[curMode]} mode activated`)
+	notification.className = 'PopUpOFF_notification'
+	notification.appendChild(text)
+	document.body.appendChild(notification)
+
+	clearTimeout(notifTimeout)
+	notifTimeout = setTimeout(() => {
+		if (document.querySelector('.PopUpOFF_notification'))
+			document.querySelector('[data-PopUpOFF="notification"]').remove()
+	}, 5000)
+}
+
 // const removeNotification = () => {
 // 	const prevNotification = document.querySelector('.PopUpOFF_notification')
 // 	if (prevNotification) {
