@@ -104,7 +104,7 @@ const keyDownCallBack = e => {
 		chrome.storage.sync.get(['hardModeActive', 'easyModeActive', 'whitelist', 'shortCutMode', 'statsEnabled', 'restoreContActive'], resp => {
 			const { hardModeActive, easyModeActive, whitelist, shortCutMode, statsEnabled, restoreContActive } = resp
 
-			if (appState.curMode === shortCutMode)
+			if (appState.curMode === shortCutMode || shortCutMode === null)
 				return
 
 			const pureUrl = getPureURL(window.location.href)

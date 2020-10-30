@@ -9,11 +9,11 @@
                 Automode
             </h2>
             <p class="options__desc options_text">
-                Finally! Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Moderate</span> and <span class="options_text-col">Whitelist</span>.
+                Finally! Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Moderate</span> and <span class="options_text-col">Dormant</span>.
             </p>
             <div class="options__slider slider automode">
                 <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
-                <span data-value="2" class="slider__text options_text slider__center">Whitelist</span>
+                <span data-value="2" class="slider__text options_text slider__center slider__text-def">Dormant</span>
                 <span data-value="3" class="slider__text options_text slider__right">Agressive</span>
                 <input class="slider__input" type="range" min="1" max="3" value="2">
             </div>
@@ -61,9 +61,10 @@
             </p>
             <div class="options__slider slider shortcut">
                 <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
-                <span data-value="2" class="slider__text options_text slider__center">Whitelist</span>
-                <span data-value="3" class="slider__text options_text slider__right">Agressive</span>
-                <input class="slider__input" type="range" min="1" max="3" value="2">
+                <span data-value="2" class="slider__text options_text slider__center slider__center-left">Dormant</span>
+                <span data-value="3" class="slider__text options_text slider__center slider__center-right slider__text-def">Disable</span>
+                <span data-value="4" class="slider__text options_text slider__right">Agressive</span>
+                <input class="slider__input" type="range" min="1" max="4" value="2">
             </div>
         </section>
 

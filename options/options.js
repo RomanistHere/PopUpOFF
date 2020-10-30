@@ -12,6 +12,7 @@ let state = {
 	stats: true,
 }
 
+// button checkmark -> cross animation
 querySelectorAll('.options__btn').forEach(btn => {
 	btn.addEventListener('click', function(e) {
 		e.preventDefault()
@@ -82,7 +83,8 @@ statsBtn.addEventListener('click', function(e) {
 const slider = querySelector('.shortcut .slider__input')
 const sliderTextLeft = querySelector('.shortcut .slider__left')
 const sliderTextRight = querySelector('.shortcut .slider__right')
-const sliderTextCenter = querySelector('.shortcut .slider__center')
+const sliderTextCenterLeft = querySelector('.shortcut .slider__center-left')
+const sliderTextCenterRight = querySelector('.shortcut .slider__center-right')
 const sliderTextArr = querySelectorAll('.shortcut .slider__text')
 
 sliderTextArr.forEach(item => item.addEventListener('click', (e) => {
@@ -90,37 +92,45 @@ sliderTextArr.forEach(item => item.addEventListener('click', (e) => {
 	slider.dispatchEvent(new Event('input'))
 }))
 
+const sliderSetUp = {
+	1: ['easyModeActive', sliderTextLeft],
+	2: ['whitelist', sliderTextCenterLeft],
+	3: [null, sliderTextCenterRight],
+	4: ['hardModeActive', sliderTextRight],
+}
+
 slider.oninput = (e) => {
-  if(e.target.value == 2) {
-  	// vizual
-    removeClass(slider, 'slider__input-active')
-    addClass(sliderTextCenter, 'slider__text-active')
-    sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
+	const val = e.target.value
 
-    storageSet({ "shortCutMode": "whitelist" })
-  } else {
-    addClass(slider, 'slider__input-active')
-    sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
+	sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
+	addClass(sliderSetUp[val][1], 'slider__text-active')
 
-    if (e.target.value == 1) {
-    	addClass(sliderTextLeft, 'slider__text-active')
-    	storageSet({ "shortCutMode": "easyModeActive" })
-    } else {
-    	addClass(sliderTextRight, 'slider__text-active')
-    	storageSet({ "shortCutMode": "hardModeActive" })
-    }
-  }
+	storageSet({ "shortCutMode": sliderSetUp[val][0] })
+
+	if (val == 3) {
+		removeClass(slider, 'slider__input-active')
+	} else {
+		addClass(slider, 'slider__input-active')
+	}
+}
+
+const values = {
+	'easyModeActive': [1, sliderTextLeft],
+	'whitelist': [2, sliderTextCenterLeft],
+	'hardModeActive': [4, sliderTextRight]
 }
 
 storageGet("shortCutMode", res => {
-	if (res.shortCutMode === 'whitelist') {
-		slider.value = 2
+	const { shortCutMode } = res
+	if (shortCutMode === null) {
+		slider.value = 3
+		addClass(sliderTextCenterRight, 'slider__text-active')
 	} else {
 		addClass(slider, 'slider__input-active')
     	sliderTextArr.forEach(item => removeClass(item, 'slider__text-active'))
 
-    	slider.value = (res.shortCutMode === 'easyModeActive') ? 1 : 3
-    	addClass((res.shortCutMode === 'easyModeActive') ? sliderTextLeft : sliderTextRight, 'slider__text-active')
+    	slider.value = values[shortCutMode][0]
+    	addClass(values[shortCutMode][1], 'slider__text-active')
 	}
 })
 
@@ -136,36 +146,41 @@ sliderTextArrAuto.forEach(item => item.addEventListener('click', (e) => {
 	sliderAuto.dispatchEvent(new Event('input'))
 }))
 
+const sliderAutoSetUp = {
+	1: ['easyModeActive', sliderTextLeftAuto],
+	2: ['whitelist', sliderTextCenterAuto],
+	3: ['hardModeActive', sliderTextRightAuto],
+}
+
 sliderAuto.oninput = (e) => {
-  if(e.target.value == 2) {
-  	// vizual
-    removeClass(sliderAuto, 'slider__input-active')
-    addClass(sliderTextCenterAuto, 'slider__text-active')
-    sliderTextArrAuto.forEach(item => removeClass(item, 'slider__text-active'))
+	const val = e.target.value
 
-    storageSet({ "curAutoMode": "whitelist" })
-  } else {
-    addClass(sliderAuto, 'slider__input-active')
-    sliderTextArrAuto.forEach(item => removeClass(item, 'slider__text-active'))
+	sliderTextArrAuto.forEach(item => removeClass(item, 'slider__text-active'))
+	addClass(sliderAutoSetUp[val][1], 'slider__text-active')
 
-    if (e.target.value == 1) {
-    	addClass(sliderTextLeftAuto, 'slider__text-active')
-    	storageSet({ "curAutoMode": "easyModeActive" })
-    } else {
-    	addClass(sliderTextRightAuto, 'slider__text-active')
-    	storageSet({ "curAutoMode": "hardModeActive" })
-    }
-  }
+	storageSet({ "curAutoMode": sliderAutoSetUp[val][0] })
+
+	if (val == 2) {
+		removeClass(sliderAuto, 'slider__input-active')
+	} else {
+		addClass(sliderAuto, 'slider__input-active')
+	}
+}
+
+const valuesAuto = {
+	'easyModeActive': [1, sliderTextLeftAuto],
+	'whitelist': [2, sliderTextCenterAuto],
+	'hardModeActive': [3, sliderTextRightAuto]
 }
 
 storageGet("curAutoMode", res => {
-	if (res.curAutoMode === 'whitelist') {
-		sliderAuto.value = 2
-	} else {
-		addClass(sliderAuto, 'slider__input-active')
-    	sliderTextArrAuto.forEach(item => removeClass(item, 'slider__text-active'))
+	const { curAutoMode } = res
 
-    	sliderAuto.value = (res.curAutoMode === 'easyModeActive') ? 1 : 3
-    	addClass((res.curAutoMode === 'easyModeActive') ? sliderTextLeftAuto : sliderTextRightAuto, 'slider__text-active')
+	sliderTextArrAuto.forEach(item => removeClass(item, 'slider__text-active'))
+	sliderAuto.value = valuesAuto[curAutoMode][0]
+	addClass(valuesAuto[curAutoMode][1], 'slider__text-active')
+
+	if (res.curAutoMode !== 'whitelist') {
+		addClass(sliderAuto, 'slider__input-active')
 	}
 })
