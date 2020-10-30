@@ -71,44 +71,6 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     })
 })
 
-// const checkAndRunMode = (tabId, pureUrl, sendResponse) => {
-// 	storageGet(['supervision', 'shortCutMode'], (res) => {
-// 		const mode = res.shortCutMode
-// 		if (res.supervision && ARR_OF_FORB_SITES.includes(pureUrl)) {
-// 			sendResponse({ shouldShow: false })
-// 		} else if (mode) {
-// 			storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (res) => {
-// 				// need to check both arrays
-// 				const isHard = (mode == 'thisWebsiteWork') ? true : false
-// 				const arrOfSites = res[isHard ? 'thisWebsiteWork' : 'thisWebsiteWorkEasy']
-// 				const oppArrOfSites = res[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']
-//
-// 				if (!arrOfSites.includes(pureUrl)) {
-// 					sendResponse({ shouldShow: true })
-//
-// 					const newArrOfSites = [...arrOfSites, pureUrl]
-// 					storageSet({ [mode]: newArrOfSites })
-//
-// 					activateMode(isHard)(tabId)
-// 					if (oppArrOfSites.includes(pureUrl)) {
-// 						// check if website is in opposite mode array
-// 						const newOppArrOfSites = oppArrOfSites.filter(e => e !== pureUrl)
-// 						storageSet({[isHard ? 'thisWebsiteWorkEasy' : 'thisWebsiteWork']: newOppArrOfSites})
-// 					}
-// 				} else {
-// 					sendResponse({ shouldShow: false })
-//
-// 					const newArrOfSites = arrOfSites.filter(e => e !== pureUrl)
-// 					storageSet({[mode]: newArrOfSites})
-//
-// 					executeScript(tabId)('restore')
-// 					resetBadgeText(tabId)
-// 				}
-// 			})
-// 		}
-// 	})
-// }
-
 // add context menu with options
 // chrome.contextMenus.removeAll()
 // chrome.contextMenus.create({
@@ -119,18 +81,4 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 // 		const fakeShouldResp = () => null
 // 		checkAndRunMode(tabId, pureUrl, fakeShouldResp)
 // 	}
-// })
-
-// messages from content script. Currently responsible for 'alt + x' key comb
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-// 	if (sender.tab) {
-// 		const tabId = sender.tab.id
-// 		const pureUrl = getPureURL(sender)
-// 		if (request.hardMode) {
-// 			checkAndRunMode(tabId, pureUrl, sendResponse)
-// 		} else if (request.openOptPage) {
-// 			chrome.runtime.openOptionsPage()
-// 		}
-// 	}
-// 	return true
 // })
