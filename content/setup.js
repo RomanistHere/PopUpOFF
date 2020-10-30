@@ -1,3 +1,6 @@
+let appState = {
+	curMode: null
+}
 // initialize mode
 chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'whitelist', 'restoreContActive', 'curAutoMode'], resp => {
 	// check if script is inside the iframe
@@ -14,34 +17,43 @@ chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'wh
 	// console.log('whitelist: ', whitelist.includes(pureUrl))
 
 	// check arrays with sites first of all
-	if (whitelist.includes(pureUrl))
+	if (whitelist.includes(pureUrl)) {
+		appState = { ...appState, curMode: 'whitelist' }
 		return
+	}
 
 	if (hardModeActive.includes(pureUrl)) {
 		hardMode(statsEnabled, shouldRestoreCont)
+		appState = { ...appState, curMode: 'hardModeActive' }
 		return
 	}
 
 	if (easyModeActive.includes(pureUrl)) {
 		autoMode(statsEnabled, shouldRestoreCont)
+		appState = { ...appState, curMode: 'easyModeActive' }
 		return
 	}
 
 	// if nothing check and automode
 	if (curAutoMode === 'easyModeActive') {
 		autoMode(statsEnabled, shouldRestoreCont)
+		appState = { ...appState, curMode: 'easyModeActive' }
 		return
 	}
 
-	if (curAutoMode === 'whitelist')
+	if (curAutoMode === 'whitelist') {
+		appState = { ...appState, curMode: 'whitelist' }
 		return
+	}
 
 	if (curAutoMode === 'hardModeActive') {
 		hardMode(statsEnabled, shouldRestoreCont)
+		appState = { ...appState, curMode: 'hardModeActive' }
 		return
 	}
 
 	autoMode(statsEnabled, restoreCont)
+	appState = { ...appState, curMode: 'easyModeActive' }
 })
 
 // "change mode" listener from popup.js
@@ -59,16 +71,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 	    if (activeMode === 'hardModeActive') {
 			hardMode(statsEnabled, shouldRestoreCont)
+			appState = { ...appState, curMode: 'hardModeActive' }
 			return
 		}
 
 	    if (activeMode === 'easyModeActive') {
 			autoMode(statsEnabled, shouldRestoreCont)
+			appState = { ...appState, curMode: 'easyModeActive' }
 			return
 		}
 
 	    if (activeMode === 'whitelist') {
 			// reset
+			appState = { ...appState, curMode: 'whitelist' }
 			sendResponse({ closePopup: true })
 			window.location.reload()
 			return
@@ -83,12 +98,55 @@ const keyDownCallBack = e => {
 	const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
+		// needed shortcut pressed
 		e.preventDefault()
-		chrome.runtime.sendMessage({ hardMode: true }, (response) => {
-			if (response.shouldShow)
-				createNotification()
-			else
-				removeNotification()
+
+		chrome.storage.sync.get(['hardModeActive', 'easyModeActive', 'whitelist', 'shortCutMode', 'statsEnabled', 'restoreContActive'], resp => {
+			const { hardModeActive, easyModeActive, whitelist, shortCutMode, statsEnabled, restoreContActive } = resp
+
+			if (appState.curMode === shortCutMode)
+				return
+
+			const pureUrl = getPureURL(window.location.href)
+			const shouldRestoreCont = restoreContActive.includes(pureUrl)
+			let newSync = {
+				hardModeActive: [],
+				easyModeActive: [],
+				whitelist: []
+			}
+
+			// remove previous one
+			if (whitelist.includes(pureUrl) && appState.curMode !== 'whitelist') {
+				newSync = { ...newSync, whitelist: whitelist.filter(url => url !== pureUrl) }
+			}
+
+			if (hardModeActive.includes(pureUrl) && appState.curMode !== 'hardModeActive') {
+				newSync = { ...newSync, hardModeActive: hardModeActive.filter(url => url !== pureUrl) }
+			}
+
+			if (easyModeActive.includes(pureUrl) && appState.curMode !== 'easyModeActive') {
+				newSync = { ...newSync, easyModeActive: easyModeActive.filter(url => url !== pureUrl) }
+			}
+
+			// activate new mode
+			if (shortCutMode === 'whitelist') {
+				newSync = { ...newSync, whitelist: [...whitelist, pureUrl] }
+				appState = { ...appState, curMode: 'whitelist' }
+			}
+
+			if (shortCutMode === 'easyModeActive') {
+				autoMode(statsEnabled, shouldRestoreCont)
+				newSync = { ...newSync, easyModeActive: [...easyModeActive, pureUrl] }
+				appState = { ...appState, curMode: 'easyModeActive' }
+			}
+
+			if (shortCutMode === 'hardModeActive') {
+				hardMode(statsEnabled, shouldRestoreCont)
+				newSync = { ...newSync, hardModeActive: [...hardModeActive, pureUrl] }
+				appState = { ...appState, curMode: 'hardModeActive' }
+			}
+
+			chrome.storage.sync.set(newSync)
 		})
 	}
 }

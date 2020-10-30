@@ -34,7 +34,8 @@ const whitelistArr = [
 	'music.yandex.com',
 	'music.yandex.ru',
 	'web.telegram.org',
-	'www.inspera.com'
+	'www.inspera.com',
+	'e-dostavka.by'
 ]
 
 // list of websites where prevent content feature enabled by default

@@ -11,6 +11,7 @@ import {
 	setBadgeText,
 	resetBadgeText,
 	nFormatter,
+	debounce
 } from '../constants/functions.js'
 
 let state = {
@@ -27,15 +28,13 @@ const setNewBtn = (btns, newActBtn) => {
 
 // handle clicks on buttons
 const buttons = querySelectorAll('.desc')
-buttons.forEach(item => item.addEventListener('click', function(e) {
+buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
     e.preventDefault()
 
 	const mode = getAttr(this, 'data-mode')
 
 	if (state.curMode === mode)
 		return
-
-
 
     setNewBtn(buttons, this)
 
@@ -85,7 +84,7 @@ buttons.forEach(item => item.addEventListener('click', function(e) {
     })
 
     return false
-}))
+}, 150)))
 
 // stats update
 const updStats = () => {
@@ -150,7 +149,7 @@ init()
 // prevent content
 
 const prevContBtn = querySelector('.add_opt')
-prevContBtn.addEventListener('click', function(e) {
+prevContBtn.addEventListener('click', debounce(function(e) {
 	e.preventDefault()
 	storageGet(['restoreContActive', 'easyModeActive', 'whitelist'], resp => {
 		const { restoreContActive, easyModeActive, whitelist } = resp
@@ -191,4 +190,4 @@ prevContBtn.addEventListener('click', function(e) {
 		    })
 		}
 	})
-})
+}, 500))
