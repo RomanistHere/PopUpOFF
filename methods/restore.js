@@ -4,8 +4,10 @@ var restoreFixedElems = () => {
 	elems.forEach(elem => elem.style.display = null)
 
 	try {
-		if (domObserver) domObserver.disconnect()
-		if (domObserverLight) domObserverLight.disconnect()
+		if (domObserver) {
+			domObserver.disconnect()
+			domObserver = null
+		}
 	} catch (e) {
 		// console.log(e)
 	}

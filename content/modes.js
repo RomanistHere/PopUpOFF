@@ -43,7 +43,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	// watch DOM
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1200) {
-			removeDomWatcher(domObserver, wasNotStoped, body, domObserverLight, action)
+			removeDomWatcher(domObserver, wasNotStoped, body, action)
 			return true
 		}
 		infiniteLoopPreventCounter++
@@ -59,26 +59,11 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 			})
 		}
 
-		if (window.location.href.includes('pinterest')) {
-			// cant deal with this website, i guess there will be array of this-one-like websites or I find out another solution
-			domObserverLight = new MutationObserver(mutation => {
-				mutation.map(item => {
-					state = removeOverflow(statsEnabled, state, doc, body)
-				})
-			})
-			domObserverLight.observe(doc, {
-				attributes: true
-			})
-			domObserverLight.observe(body, {
-				attributes: true
-			})
-		} else {
-			domObserver.observe(doc, {
-				childList: true,
-				subtree: true,
-				attributes: true
-			})
-		}
+		domObserver.observe(doc, {
+			childList: true,
+			subtree: true,
+			attributes: true
+		})
 	}
 
 	const action = elems => {
@@ -221,7 +206,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	// watch DOM
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1000) {
-			removeDomWatcher(domObserver, wasNotStoped, body, domObserverLight, action)
+			removeDomWatcher(domObserver, wasNotStoped, body, action)
 			return true
 		}
 		infiniteLoopPreventCounter++
@@ -237,26 +222,11 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			})
 		}
 
-		if (window.location.href.includes('pinterest')) {
-			// cant deal with this website, i guess there will be array of this-one-like websites or I find out another solution
-			domObserverLight = new MutationObserver(mutation => {
-				mutation.map(item => {
-					state = removeOverflow(statsEnabled, state, doc, body)
-				})
-			})
-			domObserverLight.observe(doc, {
-				attributes: true
-			})
-			domObserverLight.observe(body, {
-				attributes: true
-			})
-		} else {
-			domObserver.observe(doc, {
-				childList: true,
-				subtree: true,
-				attributes: true
-			})
-		}
+		domObserver.observe(doc, {
+			childList: true,
+			subtree: true,
+			attributes: true
+		})
 	}
 
 	const action = elems => {

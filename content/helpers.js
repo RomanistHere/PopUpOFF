@@ -5,7 +5,6 @@ let isCSSAppended = false
 
 // dom sobservers
 let domObserver
-let domObserverLight
 
 // prevent infinite loop
 let infiniteLoopPreventCounter = 0
@@ -46,13 +45,16 @@ const debounce = (func, wait, immediate) => {
 	}
 }
 
-const disconnectObservers = (domObserver, domObserverLight) => {
+const disconnectObservers = domObserver => {
     try {
-		if (domObserver) domObserver.disconnect()
-		if (domObserverLight) domObserverLight.disconnect()
+		if (domObserver) {
+            domObserver.disconnect()
+            domObserver = null
+        }
 	} catch (e) {
 		// console.log(e)
 	}
+    return null
 }
 
 const modeChangedToBg = () =>
@@ -227,7 +229,7 @@ const resetLoopCounter = (infiniteLoopPreventCounter, myTimer) => {
     myTimer = 0
 }
 
-const removeDomWatcher = (domObserver, wasNotStoped, body, domObserverLight, action) => {
+const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
     try {
         domObserver.disconnect()
         domObserver = false
@@ -238,7 +240,6 @@ const removeDomWatcher = (domObserver, wasNotStoped, body, domObserverLight, act
             }, 2000)
         }
         wasNotStoped = false
-        domObserverLight.disconnect()
     } catch (e) {
     }
 }
