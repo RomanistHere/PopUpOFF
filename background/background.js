@@ -75,7 +75,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 const setNewBadge = (url, tabID) =>
 	storageGet(['hardModeActive', 'easyModeActive', 'curAutoMode', 'whitelist'], resp => {
 		const { hardModeActive, easyModeActive, curAutoMode, whitelist } = resp
-		let letter = null
+		let letter = ''
 
 		if (hardModeActive.includes(url)) {
 			letter = 'A'
@@ -124,14 +124,85 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 	}
 })
 
+const subMenu = [
+	{
+		title: `Agressive`,
+		mode: 'hardModeActive'
+	},{
+		title: `Moderate`,
+		mode: 'easyModeActive'
+	},{
+		title: `Dormant`,
+		mode: 'whitelist'
+	}
+]
+
+const setNewMode = (newMode, url, tabID) => {
+	storageGet(['hardModeActive', 'easyModeActive', 'whitelist'], resp => {
+		const { hardModeActive, easyModeActive, whitelist } = resp
+		let letter = ''
+		let newSet = {
+			hardModeActive: [],
+			easyModeActive: [],
+			whitelist: []
+		}
+
+		if (hardModeActive.includes(url)) {
+			if (newMode === 'hardModeActive') {
+				return
+			} else {
+				newSet = { ...newSet, hardModeActive: hardModeActive.filter(item => item !== url) }
+			}
+		} else if (easyModeActive.includes(url)) {
+			if (newMode === 'easyModeActive') {
+				return
+			} else {
+				newSet = { ...newSet, easyModeActive: easyModeActive.filter(item => item !== url) }
+			}
+		} else if (whitelist.includes(url)) {
+			if (newMode === 'whitelist') {
+				return
+			} else {
+				newSet = { ...newSet, whitelist: whitelist.filter(item => item !== url) }
+			}
+		}
+
+		if (newMode === 'hardModeActive') {
+			newSet = { ...newSet, hardModeActive: [...hardModeActive, url] }
+			letter = 'A'
+		} else if (newMode === 'easyModeActive') {
+			newSet = { ...newSet, easyModeActive: [...easyModeActive, url] }
+			letter = 'M'
+		} else if (newMode === 'whitelist') {
+			newSet = { ...newSet, whitelist: [...whitelist, url] }
+		}
+
+		storageSet(newSet)
+		setBadgeText(letter)(tabID)
+	})
+}
+
 // add context menu with options
-// chrome.contextMenus.removeAll()
-// chrome.contextMenus.create({
-// 	title: `Toggle PopUpOFF`,
-// 	onclick: (obj, tabs) => {
-// 		const pureUrl = getPureURL(tabs)
-// 		const tabId = tabs.id
-// 		const fakeShouldResp = () => null
-// 		checkAndRunMode(tabId, pureUrl, fakeShouldResp)
-// 	}
-// })
+chrome.contextMenus.removeAll()
+subMenu.map(item =>
+	chrome.contextMenus.create({
+		title: item.title,
+		// type: 'checkbox',
+		// checked: true,
+		onclick: (obj, tabs) => {
+			const pureUrl = getPureURL(tabs)
+			const tabID = tabs.id
+			const tabURL = tabs.url
+
+			chrome.tabs.sendMessage(tabID, { activeMode: item.mode }, resp => {
+	            if (resp && resp.closePopup === true) {
+					chrome.tabs.update(tabID, { url: tabURL })
+	            }
+	        })
+
+			setNewMode(item.mode, tabURL, tabID)
+		}
+	})
+)
+
+// chrome.contextMenus.create({ type: 'separator' })
