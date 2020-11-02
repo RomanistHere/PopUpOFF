@@ -69,6 +69,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		const pureUrl = getPureURL(window.location.href)
 		const shouldRestoreCont = restoreContActive.includes(pureUrl)
 
+		disconnectObservers(domObserver, domObserverLight)
+
 	    if (activeMode === 'hardModeActive') {
 			hardMode(statsEnabled, shouldRestoreCont)
 			appState = { ...appState, curMode: 'hardModeActive' }
@@ -127,6 +129,8 @@ const keyDownCallBack = e => {
 			if (easyModeActive.includes(pureUrl) && appState.curMode !== 'easyModeActive') {
 				newSync = { ...newSync, easyModeActive: easyModeActive.filter(url => url !== pureUrl) }
 			}
+
+			disconnectObservers(domObserver, domObserverLight)
 
 			// activate new mode
 			if (shortCutMode === 'whitelist') {

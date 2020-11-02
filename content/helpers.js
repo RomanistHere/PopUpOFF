@@ -46,6 +46,15 @@ const debounce = (func, wait, immediate) => {
 	}
 }
 
+const disconnectObservers = (domObserver, domObserverLight) => {
+    try {
+		if (domObserver) domObserver.disconnect()
+		if (domObserverLight) domObserverLight.disconnect()
+	} catch (e) {
+		// console.log(e)
+	}
+}
+
 // stats
 const fixStats = stats => {
     let fixedStats = { ...stats }
