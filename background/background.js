@@ -7,6 +7,7 @@ import {
 	activateHard,
 	activateEasy,
 	executeScript,
+	setBadgeText,
 	resetBadgeText,
 	backupData
 } from '../constants/functions.js'
@@ -69,6 +70,58 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 			chrome.browserAction.disable(activeInfo.tabId)
 		}
     })
+})
+
+const setNewBadge = (url, tabID) =>
+	storageGet(['hardModeActive', 'easyModeActive', 'curAutoMode', 'whitelist'], resp => {
+		const { hardModeActive, easyModeActive, curAutoMode, whitelist } = resp
+		let letter = null
+
+		if (hardModeActive.includes(url)) {
+			letter = 'A'
+		} else if (easyModeActive.includes(url)) {
+			letter = 'M'
+		} else if (whitelist.includes(url) || curAutoMode === 'whitelist') {
+			return
+		} else if (curAutoMode === 'hardModeActive') {
+			letter = 'A'
+		} else if (curAutoMode === 'easyModeActive') {
+			letter = 'M'
+		}
+
+		setBadgeText(letter)(tabID)
+	})
+
+// handle mode changed from content script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (!sender.tab)
+		return
+
+	const { tab } = sender
+	if (request.modeChanged) {
+		// A - Agressive
+		// M - Moderate
+		const tabID = tab.id
+		const pureUrl = getPureURL(sender)
+
+		setNewBadge(pureUrl, tabID)
+	}
+
+	return true
+})
+
+chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
+	if (changeInfo.status === 'loading') {
+		const url = tab.url
+
+		if (url.includes('chrome://')) {
+			chrome.browserAction.disable(tabID)
+		} else {
+			const pureUrl = getPureURL({ url })
+
+			setNewBadge(pureUrl, tabID)
+		}
+	}
 })
 
 // add context menu with options

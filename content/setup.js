@@ -74,18 +74,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	    if (activeMode === 'hardModeActive') {
 			hardMode(statsEnabled, shouldRestoreCont)
 			appState = { ...appState, curMode: 'hardModeActive' }
+			modeChangedToBg()
 			return
 		}
 
 	    if (activeMode === 'easyModeActive') {
 			autoMode(statsEnabled, shouldRestoreCont)
 			appState = { ...appState, curMode: 'easyModeActive' }
+			modeChangedToBg()
 			return
 		}
 
 	    if (activeMode === 'whitelist') {
 			// reset
 			appState = { ...appState, curMode: 'whitelist' }
+			modeChangedToBg()
 			sendResponse({ closePopup: true })
 			window.location.reload()
 			return
@@ -151,6 +154,7 @@ const keyDownCallBack = e => {
 			}
 
 			chrome.storage.sync.set(newSync)
+			modeChangedToBg()
 			createNotification(appState.curMode)
 		})
 	}

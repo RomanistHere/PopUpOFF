@@ -55,6 +55,9 @@ const disconnectObservers = (domObserver, domObserverLight) => {
 	}
 }
 
+const modeChangedToBg = () =>
+    chrome.runtime.sendMessage({ modeChanged: true })
+
 // stats
 const fixStats = stats => {
     let fixedStats = { ...stats }
