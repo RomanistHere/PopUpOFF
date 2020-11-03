@@ -39,25 +39,14 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
     setNewBtn(buttons, this)
 
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        // check website in dif modes
-        storageGet(['hardModeActive', 'easyModeActive', 'whitelist'], resp => {
-			// can be active only one from 3
-            const { hardModeActive, easyModeActive, whitelist } = resp
+        // check website object. Change/add property
+        storageGet(['websites'], resp => {
+            const { websites } = resp
             const newUrl = getPureURL(tabs[0])
-            const modes = {
-                'hardModeActive': hardModeActive,
-                'easyModeActive': easyModeActive,
-                'whitelist': whitelist,
-            }
 
-            for (let [key, value] of Object.entries(modes)) {
-                if (key === mode)
-                    modes[key] = [...value, newUrl]
-                else
-                    modes[key] = value.filter(url => url !== newUrl)
-            }
+			newWebsites = { ...websites, [newUrl]: mode }
 
-            storageSet(modes)
+            storageSet({ websites: newWebsites })
         })
 
 		// if whitelist just enabled and prevent content active -> remove prevent content (prevent content is not working in whitelist)
@@ -94,7 +83,7 @@ const updStats = () => {
 // init popup state
 const init = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        storageGet(['hardModeActive', 'easyModeActive', 'whitelist', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
+        storageGet(['websites', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
 			// set statistics
 			if (resp.statsEnabled) {
 				addClass(querySelector('.stats'), 'stats-show')
@@ -105,14 +94,9 @@ const init = () => {
 			}
 
 			// modes init
-            const { hardModeActive, easyModeActive, restoreContActive, whitelist, curAutoMode } = resp
+            const { restoreContActive, websites, curAutoMode } = resp
             const newUrl = getPureURL(tabs[0])
 			state = { ...state, pureUrl: newUrl }
-            const modes = {
-                'hardModeActive': hardModeActive,
-                'easyModeActive': easyModeActive,
-                'whitelist': whitelist,
-            }
 
 			// check restore content array and set btn
 			if (restoreContActive.includes(newUrl)) {
@@ -121,23 +105,15 @@ const init = () => {
 			}
 
 			// if website is in one of arrays - set the proper mode
-            for (let [key, value] of Object.entries(modes)) {
-                if (value.includes(newUrl)) {
-                    const actButton = querySelector(`[data-mode="${key}"]`)
-					state = { ...state, curMode: key }
-                    setNewBtn(buttons, actButton)
-                    break
-                }
+			let curModeName = curAutoMode
+
+            if (newUrl in websites) {
+				curModeName = websites[websites]
             }
 
-			// otherwise enable automatic one
-			if (state.curMode === null) {
-				const actButton = querySelector(`[data-mode="${curAutoMode}"]`)
-				state = { ...state, curMode: curAutoMode }
-	            setNewBtn(buttons, actButton)
-			}
-
-			console.log(state)
+			const actButton = querySelector(`[data-mode="${curModeName}"]`)
+			state = { ...state, curMode: curModeName }
+			setNewBtn(buttons, actButton)
         })
     })
 }
@@ -148,11 +124,10 @@ init()
 const prevContBtn = querySelector('.add_opt')
 prevContBtn.addEventListener('click', debounce(function(e) {
 	e.preventDefault()
-	storageGet(['restoreContActive', 'easyModeActive', 'whitelist'], resp => {
-		const { restoreContActive, easyModeActive, whitelist } = resp
+	storageGet(['restoreContActive', 'websites'], resp => {
+		const { restoreContActive, websites } = resp
 		let newArr = []
-		let newEasyMode = []
-		let newWhitelist = []
+		let newWebsites = {}
 
 		// add/remove site to restore cotntent array
 		if (state.isRestContActive) {
@@ -165,17 +140,14 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 
 		// if whitelist activated, add website to easy mode (prevent content should not work in whitelist)
 		if (state.curMode === 'whitelist') {
-			newEasyMode = [...easyModeActive, state.pureUrl]
+			newWebsites = {...websites, [state.pureUrl]: 'easyModeActive' }
 			state = { ...state, curMode: 'easyModeActive' }
-			if (whitelist.includes(state.pureUrl))
-				newWhitelist = whitelist.filter(url => url !== state.pureUrl)
 		}
 
 		// set state
 		storageSet({
 			restoreContActive: newArr,
-			easyModeActive: newEasyMode,
-			whitelist: newWhitelist
+			websites: newWebsites
 		})
 		state = { ...state, isRestContActive: !state.isRestContActive }
 
