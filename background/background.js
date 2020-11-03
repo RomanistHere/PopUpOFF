@@ -76,22 +76,21 @@ chrome.tabs.onActivated.addListener(activeInfo => {
     })
 })
 
-const setNewBadge = (url, tabID) =>
-	storageGet(['hardModeActive', 'easyModeActive', 'curAutoMode', 'whitelist'], resp => {
-		const { hardModeActive, easyModeActive, curAutoMode, whitelist } = resp
-		let letter = ''
+const letters = {
+	'hardModeActive': 'A',
+	'easyModeActive': 'M',
+	'whitelist': ''
+}
 
-		if (hardModeActive.includes(url)) {
-			letter = 'A'
-		} else if (easyModeActive.includes(url)) {
-			letter = 'M'
-		} else if (whitelist.includes(url) || curAutoMode === 'whitelist') {
-			letter = ''
-		} else if (curAutoMode === 'hardModeActive') {
-			letter = 'A'
-		} else if (curAutoMode === 'easyModeActive') {
-			letter = 'M'
-		}
+const setNewBadge = (pureUrl, tabID) =>
+	storageGet(['curAutoMode', 'websites'], resp => {
+		const { websites, curAutoMode } = resp
+		let curModeName = curAutoMode
+
+		if (pureUrl in websites)
+			curModeName = websites[pureUrl]
+
+		const letter = letters[curModeName]
 
 		setBadgeText(letter)(tabID)
 
@@ -101,8 +100,8 @@ const setNewBadge = (url, tabID) =>
 			chrome.contextMenus.update(menu, {
 				type: 'checkbox',
 				checked: (letter === 'A' && key === 'hardModeActive')
-						|| (letter === 'M' && key === 'easyModeActive')
-						|| (letter === '' && key === 'whitelist')
+					|| (letter === 'M' && key === 'easyModeActive')
+					|| (letter === '' && key === 'whitelist')
 			})
 		})
 	})
@@ -158,47 +157,18 @@ const subMenuStore = {
 	whitelist: null,
 }
 
-const setNewMode = (newMode, url, tabID) => {
-	storageGet(['hardModeActive', 'easyModeActive', 'whitelist'], resp => {
-		const { hardModeActive, easyModeActive, whitelist } = resp
-		let letter = ''
-		let newSet = {
-			hardModeActive: [...hardModeActive],
-			easyModeActive: [...easyModeActive],
-			whitelist: [...whitelist]
-		}
+const setNewMode = (newMode, pureUrl, tabID) => {
+	storageGet(['websites'], resp => {
+		const { websites } = resp
+		let curModeName = null
 
-		if (hardModeActive.includes(url)) {
-			if (newMode === 'hardModeActive') {
-				return
-			} else {
-				newSet = { ...newSet, hardModeActive: hardModeActive.filter(item => item !== url) }
-			}
-		} else if (easyModeActive.includes(url)) {
-			if (newMode === 'easyModeActive') {
-				return
-			} else {
-				newSet = { ...newSet, easyModeActive: easyModeActive.filter(item => item !== url) }
-			}
-		} else if (whitelist.includes(url)) {
-			if (newMode === 'whitelist') {
-				return
-			} else {
-				newSet = { ...newSet, whitelist: whitelist.filter(item => item !== url) }
-			}
-		}
+		if (pureUrl in websites && websites[pureUrl] === newMode)
+			return
 
-		if (newMode === 'hardModeActive') {
-			newSet = { ...newSet, hardModeActive: [...hardModeActive, url] }
-			letter = 'A'
-		} else if (newMode === 'easyModeActive') {
-			newSet = { ...newSet, easyModeActive: [...easyModeActive, url] }
-			letter = 'M'
-		} else if (newMode === 'whitelist') {
-			newSet = { ...newSet, whitelist: [...whitelist, url] }
-		}
+		const newWebsites = { ...websites, [pureUrl]: newMode }
+		const letter = letters[newMode]
 
-		storageSet(newSet)
+		storageSet({ websites: newWebsites })
 		setBadgeText(letter)(tabID)
 	})
 }

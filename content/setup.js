@@ -76,22 +76,24 @@ const keyDownCallBack = e => {
 			const pureUrl = getPureURL(window.location.href)
 			const shouldRestoreCont = restoreContActive.includes(pureUrl)
 
-			let curModeName = shortCutMode
+			const curModeName = shortCutMode
 			domObserver = disconnectObservers(domObserver)
 
-			if (pureUrl in websites && websites[pureUrl] === appState.curMode) {
+			if (pureUrl in websites && websites[pureUrl] === curModeName)
 				return
-			}
 
-			websites = { ...websites, [pureUrl]: curModeName }
+			const newWebsites = { ...websites, [pureUrl]: curModeName }
 
 			const mode = modes[curModeName]
 			appState = { ...appState, curMode: curModeName }
 			mode(statsEnabled, shouldRestoreCont)
 
-			chrome.storage.sync.set({ websites: websites })
+			chrome.storage.sync.set({ websites: newWebsites })
 			modeChangedToBg()
 			createNotification(appState.curMode)
+
+			if (curModeName === 'whitelist')
+				window.location.reload()
 		})
 	}
 }

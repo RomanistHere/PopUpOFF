@@ -42,9 +42,9 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         // check website object. Change/add property
         storageGet(['websites'], resp => {
             const { websites } = resp
-            const newUrl = getPureURL(tabs[0])
+            const pureUrl = getPureURL(tabs[0])
 
-			newWebsites = { ...websites, [newUrl]: mode }
+			const newWebsites = { ...websites, [pureUrl]: mode }
 
             storageSet({ websites: newWebsites })
         })
@@ -63,7 +63,7 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         // send msg to content script with new active mode
         chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp && resp.closePopup === true) {
-				chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+				chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
                 window.close()
             }
         })
@@ -95,11 +95,11 @@ const init = () => {
 
 			// modes init
             const { restoreContActive, websites, curAutoMode } = resp
-            const newUrl = getPureURL(tabs[0])
-			state = { ...state, pureUrl: newUrl }
+            const pureUrl = getPureURL(tabs[0])
+			state = { ...state, pureUrl: pureUrl }
 
 			// check restore content array and set btn
-			if (restoreContActive.includes(newUrl)) {
+			if (restoreContActive.includes(pureUrl)) {
 				addClass(querySelector('.add_opt'), 'add_opt-active')
 				state = { ...state, isRestContActive: true }
 			}
@@ -107,8 +107,8 @@ const init = () => {
 			// if website is in one of arrays - set the proper mode
 			let curModeName = curAutoMode
 
-            if (newUrl in websites) {
-				curModeName = websites[websites]
+            if (pureUrl in websites) {
+				curModeName = websites[pureUrl]
             }
 
 			const actButton = querySelector(`[data-mode="${curModeName}"]`)
@@ -120,14 +120,13 @@ const init = () => {
 init()
 
 // prevent content
-
 const prevContBtn = querySelector('.add_opt')
 prevContBtn.addEventListener('click', debounce(function(e) {
 	e.preventDefault()
 	storageGet(['restoreContActive', 'websites'], resp => {
 		const { restoreContActive, websites } = resp
 		let newArr = []
-		let newWebsites = {}
+		let newWebsites = {...websites}
 
 		// add/remove site to restore cotntent array
 		if (state.isRestContActive) {
@@ -154,7 +153,7 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 		// reload current page and close popup if activated prevent content
 		if (state.isRestContActive) {
 			chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-		        chrome.tabs.update(tabs[0].id, {url: tabs[0].url})
+		        chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
 				window.close()
 		    })
 		}
