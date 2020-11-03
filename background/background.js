@@ -12,13 +12,9 @@ chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (response) => {
-			if (!response.thisWebsiteWork || !response.thisWebsiteWorkEasy) {
+			if (!response.websites || !response.curAutoMode) {
 				// set up start
 				storageSet({
-					// thisWebsiteWork: [],
-					// thisWebsiteWorkEasy: [],
-					// supervision: true,
-					// restoreCont: false,
 					tutorial: false,
 					stats: {
 						cleanedArea: 0,
@@ -27,9 +23,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 					},
 					statsEnabled: true,
 					backupData: {},
-					// hardModeActive: [],
-					// easyModeActive: [],
-					// whitelist: [...whitelistArr],
 					restoreContActive: [...preventContArr],
 					curAutoMode: 'easyModeActive',
 					shortCutMode: 'hardModeActive',
@@ -43,18 +36,12 @@ chrome.runtime.onInstalled.addListener((details) => {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
 		// backupData()
 
-		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'curAutoMode'], response => {
-		// 	if (response.curAutoMode !== undefined)
-		// 		return
-		//
-
 		storageSet({
 			websites: websites,
 			restoreContActive: [...preventContArr],
 			curAutoMode: 'easyModeActive',
 			shortCutMode: 'hardModeActive',
 		})
-		// })
     }
 })
 
@@ -154,7 +141,6 @@ const subMenuStore = {
 const setNewMode = (newMode, pureUrl, tabID) => {
 	storageGet(['websites'], resp => {
 		const { websites } = resp
-		let curModeName = null
 
 		if (pureUrl in websites && websites[pureUrl] === newMode)
 			return
@@ -173,7 +159,9 @@ subMenu.map((item, index) => {
  	subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
 		title: item.title,
 		type: 'checkbox',
+		// checked whitelist by default
 		checked: item.mode === 'whitelist' ? true : false,
+		// works for web pages only
 		documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
 		onclick: (obj, tabs) => {
 			const pureUrl = getPureURL(tabs)
@@ -190,5 +178,3 @@ subMenu.map((item, index) => {
 		}
 	})
 })
-
-// chrome.contextMenus.create({ type: 'separator' })
