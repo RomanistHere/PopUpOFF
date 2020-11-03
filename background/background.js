@@ -1,4 +1,4 @@
-import { whitelistArr, preventContArr } from '../constants/data.js'
+import { websites, preventContArr } from '../constants/data.js'
 import {
 	storageSet,
 	storageGet,
@@ -38,6 +38,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 					restoreContActive: [...preventContArr],
 					curAutoMode: 'easyModeActive',
 					shortCutMode: 'hardModeActive',
+					websites: websites,
 				})
 
 				// chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html' })
@@ -51,14 +52,13 @@ chrome.runtime.onInstalled.addListener((details) => {
 		// 	if (response.curAutoMode !== undefined)
 		// 		return
 		//
-		// 	storageSet({
-		// 		hardModeActive: [...response.thisWebsiteWork],
-		// 		easyModeActive: [...response.thisWebsiteWorkEasy],
-		// 		whitelist: [...whitelistArr],
-		// 		restoreContActive: [...preventContArr],
-		// 		curAutoMode: 'easyModeActive',
-		// 		shortCutMode: 'hardModeActive',
-		// 	})
+
+		storageSet({
+			websites: websites,
+			restoreContActive: [...preventContArr],
+			curAutoMode: 'easyModeActive',
+			shortCutMode: 'hardModeActive',
+		})
 		// })
     }
 })

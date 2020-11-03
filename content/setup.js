@@ -1,59 +1,31 @@
 let appState = {
 	curMode: null
 }
+
+const modes = {
+	whitelist: (arg1, arg2) => null,
+	hardModeActive: (arg1, arg2) => hardMode(arg1, arg2),
+	easyModeActive: (arg1, arg2) => autoMode(arg1, arg2),
+}
+
 // initialize mode
-chrome.storage.sync.get(['statsEnabled', 'hardModeActive', 'easyModeActive', 'whitelist', 'restoreContActive', 'curAutoMode'], resp => {
+chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAutoMode'], resp => {
 	// check if script is inside the iframe
 	if (window !== window.parent)
 		return
 
-	const { statsEnabled, restoreContActive, hardModeActive, whitelist, easyModeActive, curAutoMode } = resp
+	const { statsEnabled, restoreContActive, websites, curAutoMode } = resp
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
 
-	// console.log(resp)
-	// console.log(pureUrl)
-	// console.log('hard: ', hardModeActive.includes(pureUrl))
-	// console.log('whitelist: ', whitelist.includes(pureUrl))
+	let curModeName = curAutoMode
 
-	// check arrays with sites first of all
-	if (whitelist.includes(pureUrl)) {
-		appState = { ...appState, curMode: 'whitelist' }
-		return
-	}
+	if (pureUrl in websites)
+		curModeName = websites[pureUrl]
 
-	if (hardModeActive.includes(pureUrl)) {
-		hardMode(statsEnabled, shouldRestoreCont)
-		appState = { ...appState, curMode: 'hardModeActive' }
-		return
-	}
-
-	if (easyModeActive.includes(pureUrl)) {
-		autoMode(statsEnabled, shouldRestoreCont)
-		appState = { ...appState, curMode: 'easyModeActive' }
-		return
-	}
-
-	// if nothing check and automode
-	if (curAutoMode === 'easyModeActive') {
-		autoMode(statsEnabled, shouldRestoreCont)
-		appState = { ...appState, curMode: 'easyModeActive' }
-		return
-	}
-
-	if (curAutoMode === 'whitelist') {
-		appState = { ...appState, curMode: 'whitelist' }
-		return
-	}
-
-	if (curAutoMode === 'hardModeActive') {
-		hardMode(statsEnabled, shouldRestoreCont)
-		appState = { ...appState, curMode: 'hardModeActive' }
-		return
-	}
-
-	autoMode(statsEnabled, restoreCont)
-	appState = { ...appState, curMode: 'easyModeActive' }
+	const mode = modes[curModeName]
+	appState = { ...appState, curMode: curModeName }
+	mode(statsEnabled, shouldRestoreCont)
 })
 
 // "change mode" listener from popup.js
@@ -62,7 +34,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (window !== window.parent)
 		return
 
-	const { activeMode } = request
+	const curModeName = request.activeMode
 	// check stats and restore content
 	chrome.storage.sync.get(['statsEnabled', 'restoreContActive'], resp => {
 		const { statsEnabled, restoreContActive } = resp
@@ -71,34 +43,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 		domObserver = disconnectObservers(domObserver)
 
-	    if (activeMode === 'hardModeActive') {
-			hardMode(statsEnabled, shouldRestoreCont)
-			appState = { ...appState, curMode: 'hardModeActive' }
-			modeChangedToBg()
-			return
-		}
+		const mode = modes[curModeName]
+		appState = { ...appState, curMode: curModeName }
+		mode(statsEnabled, shouldRestoreCont)
+		modeChangedToBg()
 
-	    if (activeMode === 'easyModeActive') {
-			if (appState.curMode) {
-				restoreFixedElems()
-			}
-			autoMode(statsEnabled, shouldRestoreCont)
-			appState = { ...appState, curMode: 'easyModeActive' }
-			modeChangedToBg()
-			return
-		}
-
-	    if (activeMode === 'whitelist') {
-			// reset
-			appState = { ...appState, curMode: 'whitelist' }
-			modeChangedToBg()
+		if (curModeName === 'whitelist') {
 			sendResponse({ closePopup: true })
 			window.location.reload()
-			return
+		} else if (curModeName === 'easyModeActive' && appState.curMode) {
+			restoreFixedElems()
 		}
 	})
 
-    return true
+	return true
 })
 
 // shortcut (keycomb: "Alt + x") from browser listener
@@ -109,54 +67,29 @@ const keyDownCallBack = e => {
 		// needed shortcut pressed
 		e.preventDefault()
 
-		chrome.storage.sync.get(['hardModeActive', 'easyModeActive', 'whitelist', 'shortCutMode', 'statsEnabled', 'restoreContActive'], resp => {
-			const { hardModeActive, easyModeActive, whitelist, shortCutMode, statsEnabled, restoreContActive } = resp
+		chrome.storage.sync.get(['shortCutMode', 'statsEnabled', 'restoreContActive', 'websites'], resp => {
+			const { shortCutMode, statsEnabled, restoreContActive, websites } = resp
 
 			if (appState.curMode === shortCutMode || shortCutMode === null)
 				return
 
 			const pureUrl = getPureURL(window.location.href)
 			const shouldRestoreCont = restoreContActive.includes(pureUrl)
-			let newSync = {
-				hardModeActive: [],
-				easyModeActive: [],
-				whitelist: []
-			}
 
-			// remove previous one
-			if (whitelist.includes(pureUrl) && appState.curMode !== 'whitelist') {
-				newSync = { ...newSync, whitelist: whitelist.filter(url => url !== pureUrl) }
-			}
-
-			if (hardModeActive.includes(pureUrl) && appState.curMode !== 'hardModeActive') {
-				newSync = { ...newSync, hardModeActive: hardModeActive.filter(url => url !== pureUrl) }
-			}
-
-			if (easyModeActive.includes(pureUrl) && appState.curMode !== 'easyModeActive') {
-				newSync = { ...newSync, easyModeActive: easyModeActive.filter(url => url !== pureUrl) }
-			}
-
+			let curModeName = shortCutMode
 			domObserver = disconnectObservers(domObserver)
 
-			// activate new mode
-			if (shortCutMode === 'whitelist') {
-				newSync = { ...newSync, whitelist: [...whitelist, pureUrl] }
-				appState = { ...appState, curMode: 'whitelist' }
+			if (pureUrl in websites && websites[pureUrl] === appState.curMode) {
+				return
 			}
 
-			if (shortCutMode === 'easyModeActive') {
-				autoMode(statsEnabled, shouldRestoreCont)
-				newSync = { ...newSync, easyModeActive: [...easyModeActive, pureUrl] }
-				appState = { ...appState, curMode: 'easyModeActive' }
-			}
+			websites = { ...websites, [pureUrl]: curModeName }
 
-			if (shortCutMode === 'hardModeActive') {
-				hardMode(statsEnabled, shouldRestoreCont)
-				newSync = { ...newSync, hardModeActive: [...hardModeActive, pureUrl] }
-				appState = { ...appState, curMode: 'hardModeActive' }
-			}
+			const mode = modes[curModeName]
+			appState = { ...appState, curMode: curModeName }
+			mode(statsEnabled, shouldRestoreCont)
 
-			chrome.storage.sync.set(newSync)
+			chrome.storage.sync.set({ websites: websites })
 			modeChangedToBg()
 			createNotification(appState.curMode)
 		})
