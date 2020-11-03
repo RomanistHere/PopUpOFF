@@ -7,7 +7,8 @@ const preventContArr = [
 	'www.saechsische.de',
 	'sz-magazin.sueddeutsche.de',
 	'www.zeit.de',
-	'www.heise.de'
+	'www.heise.de',
+	'www.theladders.com'
 ]
 
 const websites = {
