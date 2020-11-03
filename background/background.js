@@ -46,28 +46,32 @@ chrome.runtime.onInstalled.addListener((details) => {
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
 		// backupData()
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'curAutoMode'], response => {
-			if (response.curAutoMode !== undefined)
-				return
 
-			storageSet({
-				hardModeActive: [...response.thisWebsiteWork],
-				easyModeActive: [...response.thisWebsiteWorkEasy],
-				whitelist: [...whitelistArr],
-				restoreContActive: [...preventContArr],
-				curAutoMode: 'easyModeActive',
-				shortCutMode: 'hardModeActive',
-			})
-		})
+		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'curAutoMode'], response => {
+		// 	if (response.curAutoMode !== undefined)
+		// 		return
+		//
+		// 	storageSet({
+		// 		hardModeActive: [...response.thisWebsiteWork],
+		// 		easyModeActive: [...response.thisWebsiteWorkEasy],
+		// 		whitelist: [...whitelistArr],
+		// 		restoreContActive: [...preventContArr],
+		// 		curAutoMode: 'easyModeActive',
+		// 		shortCutMode: 'hardModeActive',
+		// 	})
+		// })
     }
 })
 
 // handle tab switch(focus)
-chrome.tabs.onActivated.addListener((activeInfo) => {
+chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.query({ 'active': true }, (info) => {
     	const url = info[0].url
 	    if (url.includes('chrome://')) {
 			chrome.browserAction.disable(activeInfo.tabId)
+		} else {
+			const pureUrl = getPureURL(info[0])
+			setNewBadge(pureUrl, activeInfo.tabId)
 		}
     })
 })
@@ -82,7 +86,7 @@ const setNewBadge = (url, tabID) =>
 		} else if (easyModeActive.includes(url)) {
 			letter = 'M'
 		} else if (whitelist.includes(url) || curAutoMode === 'whitelist') {
-			return
+			letter = ''
 		} else if (curAutoMode === 'hardModeActive') {
 			letter = 'A'
 		} else if (curAutoMode === 'easyModeActive') {
@@ -90,6 +94,17 @@ const setNewBadge = (url, tabID) =>
 		}
 
 		setBadgeText(letter)(tabID)
+
+		Object.keys(subMenuStore).forEach(key => {
+			const menu = subMenuStore[key]
+
+			chrome.contextMenus.update(menu, {
+				type: 'checkbox',
+				checked: (letter === 'A' && key === 'hardModeActive')
+						|| (letter === 'M' && key === 'easyModeActive')
+						|| (letter === '' && key === 'whitelist')
+			})
+		})
 	})
 
 // handle mode changed from content script
@@ -137,8 +152,15 @@ const subMenu = [
 	}
 ]
 
+const subMenuStore = {
+	hardModeActive: null,
+	easyModeActive: null,
+	whitelist: null,
+}
+
 const setNewMode = (newMode, url, tabID) => {
 	storageGet(['hardModeActive', 'easyModeActive', 'whitelist'], resp => {
+		console.log(resp)
 		const { hardModeActive, easyModeActive, whitelist } = resp
 		let letter = ''
 		let newSet = {
@@ -177,6 +199,8 @@ const setNewMode = (newMode, url, tabID) => {
 			newSet = { ...newSet, whitelist: [...whitelist, url] }
 		}
 
+		console.log(newSet)
+
 		storageSet(newSet)
 		setBadgeText(letter)(tabID)
 	})
@@ -184,11 +208,11 @@ const setNewMode = (newMode, url, tabID) => {
 
 // add context menu with options
 chrome.contextMenus.removeAll()
-subMenu.map(item =>
-	chrome.contextMenus.create({
+subMenu.map((item, index) => {
+ 	subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
 		title: item.title,
-		// type: 'checkbox',
-		// checked: true,
+		type: 'checkbox',
+		checked: item.mode === 'whitelist' ? true : false,
 		onclick: (obj, tabs) => {
 			const pureUrl = getPureURL(tabs)
 			const tabID = tabs.id
@@ -203,6 +227,6 @@ subMenu.map(item =>
 			setNewMode(item.mode, pureUrl, tabID)
 		}
 	})
-)
+})
 
 // chrome.contextMenus.create({ type: 'separator' })
