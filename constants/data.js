@@ -10,6 +10,7 @@ const whitelistArr = [
 	'www.instagram.com',
 	'www.baidu.com',
 	'www.amazon.com',
+	'www.amazon.co.uk',
 	'vk.com',
 	'vk.ru',
 	'www.pinterest.com',
@@ -35,7 +36,11 @@ const whitelistArr = [
 	'music.yandex.ru',
 	'web.telegram.org',
 	'www.inspera.com',
-	'e-dostavka.by'
+	'e-dostavka.by',
+	'a.goodtime.io',
+	'catalog.onliner.by',
+	'www.onliner.by',
+	'app.hubspot.com',
 ]
 
 // list of websites where prevent content feature enabled by default

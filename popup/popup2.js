@@ -70,9 +70,6 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
 			})
 		}
 
-		if (state.curMode === 'hardModeActive' && mode === 'easyModeActive')
-			executeScriptHere('restore')
-
 		state = { ...state, curMode: mode }
         // send msg to content script with new active mode
         chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {

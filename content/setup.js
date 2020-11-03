@@ -79,6 +79,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		}
 
 	    if (activeMode === 'easyModeActive') {
+			if (appState.curMode) {
+				restoreFixedElems()
+			}
 			autoMode(statsEnabled, shouldRestoreCont)
 			appState = { ...appState, curMode: 'easyModeActive' }
 			modeChangedToBg()

@@ -142,9 +142,9 @@ const setNewMode = (newMode, url, tabID) => {
 		const { hardModeActive, easyModeActive, whitelist } = resp
 		let letter = ''
 		let newSet = {
-			hardModeActive: [],
-			easyModeActive: [],
-			whitelist: []
+			hardModeActive: [...hardModeActive],
+			easyModeActive: [...easyModeActive],
+			whitelist: [...whitelist]
 		}
 
 		if (hardModeActive.includes(url)) {
@@ -200,7 +200,7 @@ subMenu.map(item =>
 	            }
 	        })
 
-			setNewMode(item.mode, tabURL, tabID)
+			setNewMode(item.mode, pureUrl, tabID)
 		}
 	})
 )

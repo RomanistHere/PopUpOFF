@@ -57,6 +57,11 @@ const disconnectObservers = domObserver => {
     return null
 }
 
+const restoreFixedElems = () => {
+	const elems = document.querySelectorAll('[data-PopUpOFFBl]')
+	elems.forEach(elem => elem.style.display = null)
+}
+
 const modeChangedToBg = () =>
     chrome.runtime.sendMessage({ modeChanged: true })
 
