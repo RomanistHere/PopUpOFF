@@ -160,7 +160,6 @@ const subMenuStore = {
 
 const setNewMode = (newMode, url, tabID) => {
 	storageGet(['hardModeActive', 'easyModeActive', 'whitelist'], resp => {
-		console.log(resp)
 		const { hardModeActive, easyModeActive, whitelist } = resp
 		let letter = ''
 		let newSet = {
@@ -199,8 +198,6 @@ const setNewMode = (newMode, url, tabID) => {
 			newSet = { ...newSet, whitelist: [...whitelist, url] }
 		}
 
-		console.log(newSet)
-
 		storageSet(newSet)
 		setBadgeText(letter)(tabID)
 	})
@@ -213,6 +210,7 @@ subMenu.map((item, index) => {
 		title: item.title,
 		type: 'checkbox',
 		checked: item.mode === 'whitelist' ? true : false,
+		documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
 		onclick: (obj, tabs) => {
 			const pureUrl = getPureURL(tabs)
 			const tabID = tabs.id
