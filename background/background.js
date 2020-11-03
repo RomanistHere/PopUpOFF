@@ -3,12 +3,7 @@ import {
 	storageSet,
 	storageGet,
 	getPureURL,
-	activateMode,
-	activateHard,
-	activateEasy,
-	executeScript,
 	setBadgeText,
-	resetBadgeText,
 	backupData
 } from '../constants/functions.js'
 
@@ -32,9 +27,9 @@ chrome.runtime.onInstalled.addListener((details) => {
 					},
 					statsEnabled: true,
 					backupData: {},
-					hardModeActive: [],
-					easyModeActive: [],
-					whitelist: [...whitelistArr],
+					// hardModeActive: [],
+					// easyModeActive: [],
+					// whitelist: [...whitelistArr],
 					restoreContActive: [...preventContArr],
 					curAutoMode: 'easyModeActive',
 					shortCutMode: 'hardModeActive',
@@ -111,11 +106,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (!sender.tab)
 		return
 
-	const { tab } = sender
 	if (request.modeChanged) {
-		// A - Agressive
-		// M - Moderate
-		const tabID = tab.id
+		const tabID = sender.tab.id
 		const pureUrl = getPureURL(sender)
 
 		setNewBadge(pureUrl, tabID)
@@ -124,6 +116,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	return true
 })
 
+// handle updating to set new badge and context menu
 chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 	if (changeInfo.status === 'loading') {
 		const url = tab.url
@@ -138,6 +131,7 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 	}
 })
 
+// content menu (right click) mechanics
 const subMenu = [
 	{
 		title: `Agressive`,

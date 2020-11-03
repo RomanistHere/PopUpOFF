@@ -6,10 +6,7 @@ import {
     getAttr,
 	storageSet,
 	storageGet,
-	executeScriptHere,
 	getPureURL,
-	setBadgeText,
-	resetBadgeText,
 	nFormatter,
 	debounce
 } from '../constants/functions.js'

@@ -8,6 +8,16 @@ const modes = {
 	easyModeActive: (arg1, arg2) => autoMode(arg1, arg2),
 }
 
+const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
+	// check if we switch from hard to easy one
+	if (curModeName === 'easyModeActive' && appState.curMode === 'hardModeActive')
+		restoreFixedElems()
+	// start new mode and upd state
+	const mode = modes[curModeName]
+	appState = { ...appState, curMode: curModeName }
+	mode(statsEnabled, shouldRestoreCont)
+}
+
 // initialize mode
 chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAutoMode'], resp => {
 	// check if script is inside the iframe
@@ -23,9 +33,7 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 	if (pureUrl in websites)
 		curModeName = websites[pureUrl]
 
-	const mode = modes[curModeName]
-	appState = { ...appState, curMode: curModeName }
-	mode(statsEnabled, shouldRestoreCont)
+	startMode(curModeName, statsEnabled, shouldRestoreCont)
 })
 
 // "change mode" listener from popup.js
@@ -43,16 +51,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 		domObserver = disconnectObservers(domObserver)
 
-		const mode = modes[curModeName]
-		appState = { ...appState, curMode: curModeName }
-		mode(statsEnabled, shouldRestoreCont)
+		startMode(curModeName, statsEnabled, shouldRestoreCont)
 		modeChangedToBg()
 
 		if (curModeName === 'whitelist') {
 			sendResponse({ closePopup: true })
 			window.location.reload()
-		} else if (curModeName === 'easyModeActive' && appState.curMode) {
-			restoreFixedElems()
 		}
 	})
 
@@ -84,10 +88,7 @@ const keyDownCallBack = e => {
 
 			const newWebsites = { ...websites, [pureUrl]: curModeName }
 
-			const mode = modes[curModeName]
-			appState = { ...appState, curMode: curModeName }
-			mode(statsEnabled, shouldRestoreCont)
-
+			startMode(curModeName, statsEnabled, shouldRestoreCont)
 			chrome.storage.sync.set({ websites: newWebsites })
 			modeChangedToBg()
 			createNotification(appState.curMode)

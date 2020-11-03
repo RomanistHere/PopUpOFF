@@ -1,7 +1,6 @@
 // DOM searching
 const querySelector = (selector) => document.querySelector(selector)
 const querySelectorAll = (selector) => document.querySelectorAll(selector)
-const isChecked = (node) => node.checked
 // Get root url of website
 const getPureURL = ({ url }) => url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8))
 // DOM manipulating
@@ -20,15 +19,6 @@ const setBadgeText = (text) =>
 		})
 		chrome.browserAction.setBadgeBackgroundColor({ color: "#222831" })
 	}
-const resetBadgeText = setBadgeText('')
-// Curried execute script
-const executeScript = (tabId) =>
-	(methodName) =>
-		chrome.tabs.executeScript(
-			tabId,
-		  	{file: 'methods/' + methodName + '.js'}
-		)
-const executeScriptHere = executeScript(null)
 
 const nFormatter = (num, digits) => {
 	const si = [
@@ -49,15 +39,6 @@ const nFormatter = (num, digits) => {
 	}
 	return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
 }
-
-const activateMode = (isHard) =>
-	(tabId) => {
-		setBadgeText(isHard ? 'H' : 'E')(tabId)
-		executeScript(tabId)(isHard ? 'removeHard' : 'removeEasy')
-		executeScript(tabId)('showAll')
-	}
-const activateHard = activateMode(true)
-const activateEasy = activateMode(false)
 
 const backupData = () =>
 	storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'stats'], response => {
@@ -88,21 +69,14 @@ const debounce = (func, wait, immediate) => {
 export {
 	querySelector,
 	querySelectorAll,
-	isChecked,
 	addClass,
 	removeClass,
 	getAttr,
 	storageSet,
 	storageGet,
-	executeScript,
-	executeScriptHere,
 	getPureURL,
 	setBadgeText,
-	resetBadgeText,
 	nFormatter,
-	activateMode,
-	activateHard,
-	activateEasy,
 	backupData,
 	debounce,
 }
