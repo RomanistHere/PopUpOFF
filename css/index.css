@@ -20,92 +20,6 @@ body {
     font-weight: 300;
 }
 
-.string:hover .toggle--btn:after {
-    background-color: #777
-}
-
-.slider{
-    position: relative;
-
-    text-align: center;
-    transform: rotateZ(90deg);
-    position: absolute;
-    left: -65px;
-    top: 122px;
-    width: 244px;
-}
-
-.slider__text{
-    position: absolute;
-
-    transition: all ease .5s;
-
-    cursor: pointer;
-}
-
-.slider__text:hover{
-    color: var(--yellow-col);
-}
-
-.slider__text-active,
-.slider__text-active:hover{
-    color: #6bb756;
-    cursor: default;
-}
-
-.slider__input{
-    width: 100%;
-
-    background-color: var(--yellow-col);
-    height: 10px;
-    margin-top: 8px;
-    border-radius: 5px;
-
-    outline: 0;
-    -webkit-appearance: none;
-
-    transition: all ease .5s;
-}
-
-.slider__input-active{
-    background-color: #6bb756;
-}
-
-.slider__input::-webkit-slider-thumb {
-    width: 62px;
-    height: 62px;
-
-    border: 10px solid var(--yellow-col);
-    border-radius: 50%;
-
-    background: var(--dark-col);
-
-    -webkit-appearance: none;
-    appearance: none;
-    cursor: pointer;
-
-    transition: all ease .5s;
-}
-
-.slider__input-active::-webkit-slider-thumb {
-    border-color: #6bb756;
-}
-
-.slider__left{
-    left: calc(50% - var(--slider-width)/2 - 10px);
-    transform: translateX(-100%);
-}
-
-.slider__right{
-    left: calc(50% + var(--slider-width)/2 + 10px);
-}
-
-.slider__center{
-    left: 50%;
-    top: 30px;
-    transform: translateX(-50%);
-}
-
 .icon {
     position: absolute;
     opacity: 0;
@@ -208,7 +122,6 @@ body {
     cursor: default;
 
     --arr-col: var(--green-col);
-    /* font-weight: normal; */
 }
 
 .desc__mark {
@@ -290,25 +203,6 @@ body {
     color: #6bb756;
 }
 
-.side {
-    position: absolute;
-
-    width: 100%;
-    height: 150px;
-    top: -150px;
-    left: 0;
-
-    box-sizing: border-box;
-
-    transition: all ease .5s;
-    background-color: var(--white-col);
-}
-
-.stats_cont:hover .side {
-    z-index: 2;
-    top: 27px;
-}
-
 .tooltip {
     position: absolute;
     pointer-events: none;
@@ -334,8 +228,16 @@ body {
 .tooltip-top {
     z-index: 10;
 
-    top: 22px;
-    left: 0;
+    top: 33px;
+    left: 3px;
+    width: 230px;
+    padding: 5px;
+}
+
+.tooltip-right {
+    left: auto;
+    right: 0;
+    width: 105px;
 }
 
 .tooltip::after {
@@ -359,10 +261,22 @@ body {
     border-color: transparent transparent var(--dark-col) transparent;
 }
 
+.tooltip-right::after {
+    left: auto;
+    right: 30px;
+}
+
 .desc__mark:hover .tooltip {
     opacity: 1;
 
-    animation: popping .2s ease-out;
+    animation: popping .4s ease-out;
+}
+
+.add_opt:hover .tooltip-top,
+.stats:hover .tooltip-right{
+    opacity: 1;
+
+    animation: poppingDel 2s ease-out;
 }
 
 .desc__mark-top {
@@ -370,23 +284,25 @@ body {
 }
 
 @keyframes popping {
-    from {
+    0%, 50% {
         transform: translateY(-10px);
         opacity: 0;
     }
-    to {
+    100% {
         transform: none;
         opacity: 1;
     }
 }
 
-.PopUpOFF-forb_site .desc{
-    cursor: default;
-}
-
-.PopUpOFF-forb_site .desc:hover,
-.PopUpOFF-forb_site .toggle:hover+.desc {
-    color: var(--white-col)
+@keyframes poppingDel {
+    0%, 85% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    100% {
+        transform: none;
+        opacity: 1;
+    }
 }
 
 .link {
