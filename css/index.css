@@ -481,4 +481,20 @@ body {
     transform: translate(0, 0) rotateZ(90deg);
 }
 
+.add_opt:hover .cross {
+    animation: crossMove .6s ease-out;
+}
+
+@keyframes crossMove {
+    0%, 100% {
+        transform: translateY(-50%);
+    }
+    50% {
+        transform: translateY(-50%) scale(.7, .7) rotateZ(10deg);
+    }
+    95% {
+        transform: translateY(-50%) scale(1.1, 1.1);
+    }
+}
+
 /* // cross end // */
