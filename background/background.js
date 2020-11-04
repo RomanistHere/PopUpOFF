@@ -16,6 +16,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 				// set up start
 				storageSet({
 					tutorial: true,
+					update: false,
 					stats: {
 						cleanedArea: 0,
 						numbOfItems: 0,
@@ -42,6 +43,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 			curAutoMode: 'easyModeActive',
 			shortCutMode: 'hardModeActive',
 			tutorial: true,
+			update: true,
 		})
     }
 })

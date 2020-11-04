@@ -413,6 +413,21 @@ body {
 
 .tutorial__link {
     padding: 10px 5px;
+
+    transition: all ease .3s;
+}
+
+.tutorial__link-in_text {
+    padding: 0;
+}
+
+.tutorial__read:hover,
+.tutorial__link-in_text:hover {
+    color: var(--green-col);
+}
+
+.tutorial__skip:hover {
+    color: var(--white-col);
 }
 
 /* // tutorial end // */

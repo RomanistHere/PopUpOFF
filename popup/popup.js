@@ -77,11 +77,13 @@ const updStats = () => {
 	})
 }
 
-// set up tutorial screen
-const initTutorial = () => {
+// setup tutorial screen
+const initTutorial = (updated = false) => {
 	const tutorialWrap = querySelector('.tutorial')
 	const tutorialRead = querySelector('.tutorial__read')
 	const tutorialSkip = querySelector('.tutorial__skip')
+	if (updated === true)
+		querySelector('.tutorial__head').textContent="Automode!"
 	// open tutorial
  	removeClass(tutorialWrap, 'tutorial-non')
 
@@ -103,10 +105,10 @@ const initTutorial = () => {
 // init popup state
 const init = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        storageGet(['tutorial', 'websites', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
+        storageGet(['update', 'tutorial', 'websites', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
 			// setup tutorial
 			if (resp.tutorial)
-				initTutorial()
+				initTutorial(resp.update)
 
 			// set statistics
 			if (resp.statsEnabled) {
