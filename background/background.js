@@ -15,7 +15,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 			if (!response.websites || !response.curAutoMode) {
 				// set up start
 				storageSet({
-					tutorial: false,
+					tutorial: true,
 					stats: {
 						cleanedArea: 0,
 						numbOfItems: 0,
@@ -41,6 +41,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 			restoreContActive: [...preventContArr],
 			curAutoMode: 'easyModeActive',
 			shortCutMode: 'hardModeActive',
+			tutorial: true,
 		})
     }
 })

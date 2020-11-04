@@ -20,6 +20,8 @@ body {
     font-weight: 300;
 }
 
+/* // arrow icon // */
+
 .icon {
     position: absolute;
     opacity: 0;
@@ -89,6 +91,8 @@ body {
     top: 5px;
     transform: rotate(-45deg);
 }
+
+/* // arrow icon end // */
 
 .desc {
     position: relative;
@@ -203,6 +207,8 @@ body {
     color: #6bb756;
 }
 
+/* // tooltip // */
+
 .tooltip {
     position: absolute;
     pointer-events: none;
@@ -305,275 +311,28 @@ body {
     }
 }
 
+/* // tooltip end // */
+
+/* // bottom link // */
+
 .link {
-    background-color: var(--white-col2);
-    text-align: center;
-    justify-content: center;
-    padding: 0
-}
-
-.message {
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    width: 80%;
-    height: 46px;
-    transition: all ease 1s;
-    transform: translateY(100%)
-}
-
-.message__link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    color: var(--white-col);
-    font-size: 16px;
-    text-decoration: none;
-    transition: all ease .4s;
-    background-color: var(--dark-col);
-    border: 1px solid var(--yellow-col);
-    border-radius: 6px
-}
-
-.message-color{
-    color: var(--yellow-col);
-
-    padding-left: 3px;
-
-    transition: all ease 1s;
-}
-
-.message__link:hover {
-    color: var(--yellow-col);
-    border-color: var(--white-col)
-}
-
-.message__link:hover .message-color{
-    color: var(--white-col);
-}
-
-.message-visible {
-    transform: translateY(-8px)
-}
-
-.tutorial-trs{
-    transition: all ease .6s;
-}
-.tutorial-trs_del{
-    transition: all ease 1s .3s;
-}
-.tutorial{
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    background-color: var(--dark-col);
-
-    font-size: 16px;
-}
-.tutorial-transp{
-    background-color: transparent;
-}
-.tutorial-hid{
-    opacity: 0;
-}
-.tutorial-non{
-    display: none;
-}
-.tutorial__title{
-    margin: 0;
-    padding: 50px 40px;
-
-    text-align: center;
-}
-.tutorial__title-low{
-    margin: 0;
-
-    font-size: 14px;
-    color: var(--white-col);
-}
-.tutorial-color{
-    color: var(--yellow-col);
-    font-weight: 300;
-}
-.tutorial__links{
-    display: flex;
-    justify-content: space-around;
-}
-.tutorial_link{
-    color: var(--white-col);
-    text-decoration: none;
-
-    padding: 10px 20px;
-    display: block;
-}
-.tutorial_to_options{
-    display: inline;
-
     padding: 0;
 
-    color: var(--yellow-col);
-    transition: all ease 1s;
-}
-.tutorial_link-inline {
-    display: inline;
+    background-color: var(--white-col2);
 
-    text-decoration: none;
-    color: var(--yellow-col);
-    transition: all ease 1s;
-}
-.tutorial__no_marg_top{
-    margin-top: 0;
-}
-.tutorial__text{
-    font-weight: 300;
-    color: var(--white-col);
-
-    margin: 0;
     text-align: center;
-
-    transition: opacity ease .6s;
-}
-.tutorial__finish{
-    display: none;
-    opacity: 0;
-
-    z-index: -1;
-    position: absolute;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0;
-    padding: 29px;
-
-    color: var(--white-col);
-    text-align: center;
-}
-.tutorial__contact,
-.tutorial__agree:hover,
-.tutorial_link-finish:hover,
-.tutorial__next:hover{
-    color: var(--yellow-col);
-}
-.tutorial__skip:hover{
-    color: brown;
-}
-.tutorial__next{
-    color: var(--yellow-col);
-}
-.tutorial__next:hover,
-.tutorial_link-inline:hover,
-.tutorial_to_options:hover{
-    color: var(--white-col);
-}
-.tutorial_link-finish{
-    margin-top: 25px;
-}
-.tutorial__layout{
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 80px;
-    height: 80px;
-
-    display: flex;
-    align-items: center;
     justify-content: center;
-
-    opacity: 0;
-    z-index: -1;
-
-    background-color: var(--dark-col);
-}
-.tutorial__layout_bot{
-    top: 160px;
-}
-.tutorial__step_2_text,
-.tutorial__step_3_text,
-.tutorial__step_4_text{
-    opacity: 0;
-    z-index: -1;
-
-    width: 0;
-}
-/*step1*/
-.tutorial-step_1 .tutorial__title{
-    opacity: 0;
-    z-index: -1;
-}
-.tutorial-step_1 .tutorial__links{
-    opacity: 0;
-    z-index: -1;
-}
-.tutorial-step_1 .tutorial__layout{
-    opacity: 1;
-    z-index: 1;
-}
-/*step2*/
-.tutorial-step_2 .tutorial__layout_top{
-    top: 0;
-}
-.tutorial-step_2 .tutorial__step_1_text{
-    display: none;
-}
-.tutorial-step_2 .tutorial__step_2_text{
-    opacity: 1;
-    z-index: 1;
-
-    width: 100%;
-    padding: 0 20px;
-}
-/*step3*/
-.tutorial-step_3 .tutorial__step_3_text{
-    opacity: 1;
-    z-index: 1;
-
-    width: 100%;
-    padding: 0 20px;
-}
-.tutorial-step_3 .tutorial__step_2_text{
-    display: none;
-}
-.tutorial-step_3 .tutorial__layout_bot{
-    top: 80px;
-}
-/*step4*/
-.tutorial-step_4 .tutorial__step_4_text{
-    opacity: 1;
-    z-index: 1;
-
-    width: 100%;
-    padding: 0 20px;
-}
-.tutorial-step_4 .tutorial__step_3_text{
-    display: none;
-}
-.tutorial-step_4 .tutorial__finish{
-    display: block;
-}
-/*finish*/
-.tutorial-finish .tutorial__layout{
-    opacity: 0;
-    z-index: -1;
-}
-.tutorial-finish .tutorial__finish{
-    opacity: 1;
-    z-index: 1;
 }
 
 .insturctions {
-    color: var(--dark-col);
-    font-weight: normal;
+    display: block;
     padding: 6px 0;
     width: 100%;
+
+    color: var(--dark-col);
+    font-weight: normal;
     font-size: 16px;
-    display: block;
+
     transition: all ease .4s
 }
 
@@ -581,7 +340,84 @@ body {
     color: var(--green-col);
 }
 
-/* //cross// */
+/* // bottom link end // */
+
+/* // tutorial // */
+.PopUpOFF {
+    position: relative;
+}
+
+.tutorial {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 10px;
+
+    background-color: var(--dark-col);
+    border: 5px solid var(--yellow-col);
+
+    font-size: 18px;
+    line-height: 25px;
+    color: var(--white-col);
+
+    transition: all ease .5s;
+}
+
+.tutorial-hide {
+    opacity: 0;
+}
+
+.tutorial-non {
+    display: none;
+}
+
+.tutorial-col {
+    color: var(--yellow-col);
+}
+
+.tutorial__title {
+    margin: 0;
+    padding: 25px 0 9px;
+
+    font-weight: normal;
+    font-size: 22px;
+    line-height: 31px;
+    text-align: center;
+}
+
+.tutorial__title-low {
+    padding: 0 0 25px;
+
+    font-size: 18px;
+}
+
+.tutorial__list {
+    margin: 0;
+    padding: 0 0 0 30px;
+}
+
+.tutorial__item {
+    margin-bottom: 9px;
+}
+
+.tutorial__str {
+    display: block;
+
+    width: 100%;
+    margin-top: 25px;
+
+    text-align: center;
+}
+
+.tutorial__link {
+    padding: 10px 5px;
+}
+
+/* // tutorial end // */
+
+/* // cross // */
 
 .cross {
     position: absolute;
@@ -630,4 +466,4 @@ body {
     transform: translate(0, 0) rotateZ(90deg);
 }
 
-/* //cross// */
+/* // cross end // */
