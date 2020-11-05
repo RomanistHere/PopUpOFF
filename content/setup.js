@@ -36,7 +36,7 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 	startMode(curModeName, statsEnabled, shouldRestoreCont)
 })
 
-// "change mode" listener from popup.js
+// "change mode" listener from popup.js and bg.js
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	// check if script is inside the iframe
 	if (window !== window.parent)
@@ -142,11 +142,3 @@ const createNotification = curMode => {
 			document.querySelector('[data-PopUpOFF="notification"]').remove()
 	}, 5000)
 }
-
-// const removeNotification = () => {
-// 	const prevNotification = document.querySelector('.PopUpOFF_notification')
-// 	if (prevNotification) {
-// 		clearTimeout(notifTimeout)
-// 		prevNotification.remove()
-// 	}
-// }

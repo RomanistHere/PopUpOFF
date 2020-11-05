@@ -8,10 +8,10 @@ import {
 } from '../constants/functions.js'
 
 // handle install
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener(details => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], (response) => {
+		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], response => {
 			if (!response.websites || !response.curAutoMode) {
 				// set up start
 				storageSet({
@@ -42,15 +42,15 @@ chrome.runtime.onInstalled.addListener((details) => {
 		// 	restoreContActive: [...preventContArr],
 		// 	curAutoMode: 'easyModeActive',
 		// 	shortCutMode: 'hardModeActive',
-			// tutorial: true,
-			// update: true,
+		// 	tutorial: true,
+		// 	update: true,
 		// })
     }
 })
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
-    chrome.tabs.query({ 'active': true }, (info) => {
+    chrome.tabs.query({ 'active': true }, info => {
     	const url = info[0].url
 	    if (url.includes('chrome://')) {
 			chrome.browserAction.disable(activeInfo.tabId)

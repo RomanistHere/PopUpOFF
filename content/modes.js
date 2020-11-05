@@ -51,6 +51,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 		}
 		return false
 	}
+	
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
@@ -102,29 +103,32 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	const body = document.body
 	const elems = body.getElementsByTagName("*")
 
+	// methods
 	const videoCheck = element => {
+		// traverse through the element and its children recursively till find <video> tag or block the element
 		const nodeName = element.nodeName
 		const childNodes = element.childNodes
 
 		if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO')
 			return false
 
+		// contains shadow dom
 		if (element.shadowRoot)
 	        return videoCheck(element.shadowRoot)
 
+		// is iframe
 		if (element.contentDocument)
 			return videoCheck(element.contentDocument)
 
-		for(let i=0; i < childNodes.length; i++) {
-			if (childNodes[i].nodeType == 1 && !videoCheck(childNodes[i])) {
+		// check all the children
+		for (let i = 0; i < childNodes.length; i++) {
+			if (childNodes[i].nodeType == 1 && !videoCheck(childNodes[i]))
 				return false
-			}
 		}
 
 		return true
 	}
 
-	// methods
 	const positionCheck = element => {
 		if (element.offsetHeight === 0 || element.offsetWidth === 0) {
 			// console.warn('Zero')
@@ -196,6 +200,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 
         return true
 	}
+
 	const checkElem = element => {
 		if (!isDecentElem(element)) return
 
@@ -234,6 +239,7 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 		}
 		return false
 	}
+
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
