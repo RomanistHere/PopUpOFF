@@ -52,7 +52,19 @@ const websites = {
 	'www.walmart.com': 'whitelist',
 	'www.youtube.com': 'whitelist',
 	'zoom.us': 'whitelist',
-	'store.steampowered.com': 'whitelist'
+	'store.steampowered.com': 'whitelist',
+	'www.hackerrank.com': 'whitelist',
+	'www.coursera.org': 'whitelist',
+	// moderate by default
+	'www.economist.com': 'easyModeActive',
+	'www.reviewjournal.com': 'easyModeActive',
+	'www.bostonglobe.com': 'easyModeActive',
+	'www.theguardian.com': 'easyModeActive',
+	'www.saechsische.de': 'easyModeActive',
+	'sz-magazin.sueddeutsche.de': 'easyModeActive',
+	'www.zeit.de': 'easyModeActive',
+	'www.heise.de': 'easyModeActive',
+	'www.theladders.com': 'easyModeActive'
 }
 
 export {

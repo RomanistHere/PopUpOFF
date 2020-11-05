@@ -34,7 +34,6 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 			if (statsEnabled) state = addItemToStats(element, state)
 
 	        setPropImp(element, "display", "none")
-			// setTimeout(() => element ? setPropImp(element, "display", "none") : false, 10)
 	    }
 
 	    state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem)
@@ -103,7 +102,27 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 	const body = document.body
 	const elems = body.getElementsByTagName("*")
 
-	const videoCheck = element => true
+	const videoCheck = element => {
+		const nodeName = element.nodeName
+		const childNodes = element.childNodes
+
+		if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO')
+			return false
+
+		if (element.shadowRoot)
+	        return videoCheck(element.shadowRoot)
+
+		if (element.contentDocument)
+			return videoCheck(element.contentDocument)
+
+		for(let i=0; i < childNodes.length; i++) {
+			if (childNodes[i].nodeType == 1 && !videoCheck(childNodes[i])) {
+				return false
+			}
+		}
+
+		return true
+	}
 
 	// methods
 	const positionCheck = element => {
@@ -139,8 +158,8 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 			return false
 		}
 
-		if (element.offsetLeft <= 0 && element.offsetWidth <= 300) {
-			// youtube sidebar
+		if (element.offsetLeft <= 0 && element.offsetWidth <= 360) {
+			// youtube/facebook sidebar
 			// console.warn('SideBar!')
 			return false
 		}

@@ -40,7 +40,7 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	// check if script is inside the iframe
 	if (window !== window.parent)
-		return
+		return true
 
 	const curModeName = request.activeMode
 	// check stats and restore content

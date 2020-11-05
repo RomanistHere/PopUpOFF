@@ -83,20 +83,26 @@ const initTutorial = (updated = false) => {
 	const tutorialRead = querySelector('.tutorial__read')
 	const tutorialSkip = querySelector('.tutorial__skip')
 	if (updated === true)
-		querySelector('.tutorial__head').textContent="Automode!"
+		querySelector('.tutorial__head').textContent='Automode!'
 	// open tutorial
  	removeClass(tutorialWrap, 'tutorial-non')
 
 	// open the link
 	tutorialRead.addEventListener('click', () => {
-		storageSet({ "tutorial": false })
+		storageSet({
+			'tutorial': false,
+			'update': false
+		})
 		window.close()
 	})
 
 	// close tutorial
 	tutorialSkip.addEventListener('click', e => {
 		e.preventDefault()
-		storageSet({ "tutorial": false })
+		storageSet({
+			'tutorial': false,
+			'update': false
+		})
 		addClass(tutorialWrap, 'tutorial-hide')
 		setTimeout(() => { addClass(tutorialWrap, 'tutorial-non') }, 500)
 	})
@@ -137,7 +143,7 @@ const init = () => {
 				curModeName = websites[pureUrl]
             }
 
-			const actButton = querySelector(`[data-mode="${curModeName}"]`)
+			const actButton = querySelector(`[data-mode='${curModeName}']`)
 			state = { ...state, curMode: curModeName }
 			setNewBtn(buttons, actButton)
         })
