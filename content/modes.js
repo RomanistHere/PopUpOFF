@@ -51,7 +51,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 		}
 		return false
 	}
-	
+
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
@@ -157,6 +157,10 @@ const autoMode = (statsEnabled, shouldRestoreCont) => {
 		}
 
 		if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
+			// popular notification
+			if (element.id === 'onesignal-slidedown-container')
+				return true
+				
 			// it's a header!
 			// console.warn('Header!')
 			return false

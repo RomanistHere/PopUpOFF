@@ -165,6 +165,9 @@ const findHidden = (state, statsEnabled, doc) => {
         ...doc.querySelectorAll('.article-teaser-overflow'),
     ]
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
+    // custom ID theguardian
+    document.querySelector('#sign-in-gate').remove()
+
     return state
 }
 
