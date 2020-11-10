@@ -38,9 +38,9 @@ chrome.runtime.onInstalled.addListener(details => {
 		// backupData()
 
 		// storageSet({
-		// 	websites: websites,
-		// 	restoreContActive: [...preventContArr],
-		// 	curAutoMode: 'easyModeActive',
+		// 	websites: {},
+		// 	restoreContActive: [],
+		// 	curAutoMode: 'casualModeActive',
 		// 	shortCutMode: 'hardModeActive',
 		// 	tutorial: true,
 		// 	update: true,
@@ -64,6 +64,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 const letters = {
 	'hardModeActive': 'A',
 	'easyModeActive': 'M',
+	'casualModeActive': 'C',
 	'whitelist': ''
 }
 

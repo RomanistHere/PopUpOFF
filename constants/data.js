@@ -147,6 +147,9 @@ const websites = {
 	'www.lg.com': 'whitelist',
 	'www.realme.com': 'whitelist',
 	'www.vivo.com': 'whitelist',
+	'lolesports.com': 'whitelist',
+	'aliexpress.ru': 'whitelist',
+	'www.aliexpress.com': 'whitelist',
 	// moderate by default
 	'www.economist.com': 'easyModeActive',
 	'www.reviewjournal.com': 'easyModeActive',

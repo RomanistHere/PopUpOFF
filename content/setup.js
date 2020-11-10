@@ -6,11 +6,13 @@ const modes = {
 	whitelist: (arg1, arg2) => null,
 	hardModeActive: (arg1, arg2) => hardMode(arg1, arg2),
 	easyModeActive: (arg1, arg2) => autoMode(arg1, arg2),
+	casualModeActive: (arg1, arg2) => casualMode(arg1, arg2),
 }
 
 const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
 	// check if we switch from hard to easy one
-	if (curModeName === 'easyModeActive' && appState.curMode === 'hardModeActive')
+	if ((curModeName === 'easyModeActive' || curModeName === 'casualModeActive') &&
+		(appState.curMode === 'hardModeActive' || curModeName === 'easyModeActive'))
 		restoreFixedElems()
 	// start new mode and upd state
 	const mode = modes[curModeName]
@@ -126,6 +128,7 @@ const textItems = {
 	'whitelist': 'Dormant',
 	'hardModeActive': 'Agressive',
 	'easyModeActive': 'Moderate',
+	'casualModeActive': 'Casual',
 }
 
 const createNotification = curMode => {
