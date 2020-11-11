@@ -6,13 +6,12 @@ const modes = {
 	whitelist: (arg1, arg2) => null,
 	hardModeActive: (arg1, arg2) => hardMode(arg1, arg2),
 	easyModeActive: (arg1, arg2) => autoMode(arg1, arg2),
-	casualModeActive: (arg1, arg2) => casualMode(arg1, arg2),
+	casualMode: (arg1, arg2) => casualMode(arg1, arg2),
 }
 
 const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
 	// check if we switch from hard to easy one
-	if ((curModeName === 'easyModeActive' || curModeName === 'casualModeActive') &&
-		(appState.curMode === 'hardModeActive' || curModeName === 'easyModeActive'))
+	if (curModeName === 'easyModeActive' && appState.curMode === 'hardModeActive')
 		restoreFixedElems()
 	// start new mode and upd state
 	const mode = modes[curModeName]
@@ -21,12 +20,12 @@ const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
 }
 
 // initialize mode
-chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAutoMode'], resp => {
+chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAutoMode', 'autoModeAggr'], resp => {
 	// check if script is inside the iframe
 	if (window !== window.parent)
 		return
 
-	const { statsEnabled, restoreContActive, websites, curAutoMode } = resp
+	const { statsEnabled, restoreContActive, websites, curAutoMode, autoModeAggr } = resp
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
 
@@ -34,6 +33,9 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 
 	if (pureUrl in websites)
 		curModeName = websites[pureUrl]
+
+	if (curModeName === 'easyModeActive' && autoModeAggr === 'easy')
+		curModeName = 'casualMode'
 
 	startMode(curModeName, statsEnabled, shouldRestoreCont)
 })
@@ -46,12 +48,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 	const curModeName = request.activeMode
 	// check stats and restore content
-	chrome.storage.sync.get(['statsEnabled', 'restoreContActive'], resp => {
-		const { statsEnabled, restoreContActive } = resp
+	chrome.storage.sync.get(['statsEnabled', 'restoreContActive', 'autoModeAggr'], resp => {
+		const { statsEnabled, restoreContActive, autoModeAggr } = resp
 		const pureUrl = getPureURL(window.location.href)
 		const shouldRestoreCont = restoreContActive.includes(pureUrl)
 
 		domObserver = disconnectObservers(domObserver)
+
+		if (curModeName === 'easyModeActive' && autoModeAggr === 'easy')
+			curModeName = 'casualMode'
 
 		startMode(curModeName, statsEnabled, shouldRestoreCont)
 		modeChangedToBg()
@@ -128,7 +133,6 @@ const textItems = {
 	'whitelist': 'Dormant',
 	'hardModeActive': 'Agressive',
 	'easyModeActive': 'Moderate',
-	'casualModeActive': 'Casual',
 }
 
 const createNotification = curMode => {

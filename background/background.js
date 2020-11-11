@@ -37,14 +37,15 @@ chrome.runtime.onInstalled.addListener(details => {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
 		// backupData()
 
-		// storageSet({
-		// 	websites: {},
-		// 	restoreContActive: [],
-		// 	curAutoMode: 'casualModeActive',
-		// 	shortCutMode: 'hardModeActive',
-		// 	tutorial: true,
-		// 	update: true,
-		// })
+		storageSet({
+			websites: {},
+			restoreContActive: [],
+			curAutoMode: 'easyModeActive',
+			autoModeAggr: 'easy',
+			shortCutMode: 'hardModeActive',
+			tutorial: true,
+			update: true,
+		})
     }
 })
 
@@ -64,7 +65,6 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 const letters = {
 	'hardModeActive': 'A',
 	'easyModeActive': 'M',
-	'casualModeActive': 'C',
 	'whitelist': ''
 }
 

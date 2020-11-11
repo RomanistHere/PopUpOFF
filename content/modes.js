@@ -324,20 +324,17 @@ const casualMode = (statsEnabled, shouldRestoreCont) => {
 
 	const contentCheck = element => {
 		const textCont = element.innerHTML.toLowerCase()
-		const forbWords = ['cookie', 'policy', 'subscri', 'off', 'sale', 'notificat', 'updates', 'value', 'privacy', 'miss', 'turn', 'disable', 'ad block', 'adblock', 'advertis', 'bloqueador de anuncios', 'подписаться']
+		const forbWords = ['cookie', 'policy', 'subscri', 'off', 'sale', 'notificat', 'updates', 'member', 'value', 'privacy', 'miss', 'turn', 'disable', 'ad block', 'adblock', 'advertis', 'theguardian', 'bloqueador de anuncios', 'подписаться']
 
-		// console.log(textCont)
 		console.log('contentCheck: ', forbWords.some(v => textCont.includes(v)))
-
 		return forbWords.some(v => textCont.includes(v))
 	}
 
 	const contentUnlockCheck = element => {
 		const textCont = element.innerHTML.toLowerCase()
-		const allWords = ['language', 'log in', 'basket', 'delivery', 'price']
+		const allWords = ['sign in', 'language', 'basket', 'delivery', 'price', 'google meet', 'корзина', 'resume', 'apply']
 
 		const shouldBlock = allWords.some(v => textCont.includes(v))
-
 		console.log('contentUnlockCheck: ', !shouldBlock)
 		return !shouldBlock
 	}
@@ -346,6 +343,10 @@ const casualMode = (statsEnabled, shouldRestoreCont) => {
 		if (element.offsetHeight === 0 || element.offsetWidth === 0) {
 			// console.warn('Zero')
 			// return true
+			if (contentCheck(element))
+				return { shouldRemove: true, shouldMemo: true }
+			else
+				return { shouldRemove: false, shouldMemo: false }
 		}
 
         const layoutArea = element.offsetHeight * element.offsetWidth
@@ -366,50 +367,50 @@ const casualMode = (statsEnabled, shouldRestoreCont) => {
 			// case 1: overlay on the whole screen - should block
 			// case 2: video in full screen mode - should not
 			console.warn('Full screen!')
-			return contentUnlockCheck(element) && (videoCheck(element) || contentCheck(element))
+			return { shouldRemove: contentUnlockCheck(element) && (videoCheck(element) || contentCheck(element)), shouldMemo: true }
 		}
 
 		if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
 			// popular notification
 			if (element.id === 'onesignal-slidedown-container')
-				return true
+				return { shouldRemove: true, shouldMemo: true }
 
 			// it's a header!
 			console.warn('Header!')
-			return false
+			return { shouldRemove: false, shouldMemo: true }
 		}
 
-		if (element.offsetLeft <= 0 && element.offsetWidth <= 360) {
+		if (element.offsetLeft <= 0 && element.offsetWidth <= 360 && screenValue >= .1) {
 			// youtube/facebook sidebar
 			console.warn('SideBar!')
-			return false
+			return { shouldRemove: false, shouldMemo: true }
 		}
 
 		if (screenValue < .98 && screenValue >= .1) {
 			// overlays
 			console.warn('Overlay')
-			return contentUnlockCheck(element) && contentCheck(element)
-		}
-
-		if (screenValue <= .03 && element.offsetTop > 100) {
-			// buttons and side/social menus
-			console.warn('Super small')
-			return false
+			return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
 		}
 
 		if (offsetBot <= 100) {
 			// bottom notification
 			console.warn('Bottom notification')
-			return contentUnlockCheck(element) && contentCheck(element)
+			return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
+		}
+
+		if (screenValue <= .03 && element.offsetTop > 100) {
+			// buttons and side/social menus
+			console.warn('Super small')
+			return { shouldRemove: false, shouldMemo: true }
 		}
 
 		if (screenValue <= .1 && element.offsetTop > 100) {
 			// buttons and side/social menus
 			console.warn('nothing special')
-			return false
+			return { shouldRemove: false, shouldMemo: true }
 		}
 
-        return true
+        return { shouldRemove: true, shouldMemo: false }
 	}
 
 	const checkElem = element => {
@@ -423,7 +424,7 @@ const casualMode = (statsEnabled, shouldRestoreCont) => {
 	        	return
 
 			const memoized = memoize.has(element)
-			const shouldRemove = memoized ? memoize.get(element) : positionCheck(element)
+			const { shouldRemove, shouldMemo } = memoized ? { shouldRemove: memoize.get(element), shouldMemo: false } : positionCheck(element)
 
             if (shouldRemove) {
                 if (statsEnabled) state = addItemToStats(element, state)
@@ -431,7 +432,7 @@ const casualMode = (statsEnabled, shouldRestoreCont) => {
                 setPropImp(element, "display", "none")
             }
 
-			if (!memoized)
+			if (!memoized && shouldMemo)
 				memoize.set(element, shouldRemove)
 	    }
 
