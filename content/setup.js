@@ -5,16 +5,17 @@ let appState = {
 const modes = {
 	whitelist: (arg1, arg2) => null,
 	hardModeActive: (arg1, arg2) => hardMode(arg1, arg2),
-	easyModeActive: (arg1, arg2) => autoMode(arg1, arg2),
-	casualMode: (arg1, arg2) => casualMode(arg1, arg2),
+	easyModeActive_typeI: (arg1, arg2) => easyMode(arg1, arg2, positionCheckTypeI),
+	easyModeActive_typeII: (arg1, arg2) => easyMode(arg1, arg2, positionCheckTypeII),
+	easyModeActive_typeIII: (arg1, arg2) => easyMode(arg1, arg2, positionCheckTypeIII),
 }
 
-const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
+const startMode = (curModeName, statsEnabled, shouldRestoreCont, autoModeAggr) => {
 	// check if we switch from hard to easy one
-	if (curModeName === 'easyModeActive' && appState.curMode === 'hardModeActive')
+	if (appState.curMode === 'hardModeActive')
 		restoreFixedElems()
 	// start new mode and upd state
-	const mode = modes[curModeName]
+	const mode = modes[curModeName === 'easyModeActive' ? `${curModeName}_${autoModeAggr}` : curModeName]
 	appState = { ...appState, curMode: curModeName }
 	mode(statsEnabled, shouldRestoreCont)
 }
@@ -28,16 +29,9 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 	const { statsEnabled, restoreContActive, websites, curAutoMode, autoModeAggr } = resp
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
+	const curModeName = pureUrl in websites ? websites[pureUrl] : curAutoMode
 
-	let curModeName = curAutoMode
-
-	if (pureUrl in websites)
-		curModeName = websites[pureUrl]
-
-	if (curModeName === 'easyModeActive' && autoModeAggr === 'easy')
-		curModeName = 'casualMode'
-
-	startMode(curModeName, statsEnabled, shouldRestoreCont)
+	startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
 })
 
 // "change mode" listener from popup.js and bg.js
@@ -55,10 +49,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 		domObserver = disconnectObservers(domObserver)
 
-		if (curModeName === 'easyModeActive' && autoModeAggr === 'easy')
-			curModeName = 'casualMode'
-
-		startMode(curModeName, statsEnabled, shouldRestoreCont)
+		startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
 		modeChangedToBg()
 
 		if (curModeName === 'whitelist') {
@@ -78,8 +69,8 @@ const keyDownCallBack = e => {
 		// needed shortcut pressed
 		e.preventDefault()
 
-		chrome.storage.sync.get(['shortCutMode', 'statsEnabled', 'restoreContActive', 'websites'], resp => {
-			const { shortCutMode, statsEnabled, restoreContActive, websites } = resp
+		chrome.storage.sync.get(['shortCutMode', 'statsEnabled', 'restoreContActive', 'websites', 'autoModeAggr'], resp => {
+			const { shortCutMode, statsEnabled, restoreContActive, websites, autoModeAggr } = resp
 
 			if (appState.curMode === shortCutMode || shortCutMode === null)
 				return
@@ -95,7 +86,7 @@ const keyDownCallBack = e => {
 
 			const newWebsites = { ...websites, [pureUrl]: curModeName }
 
-			startMode(curModeName, statsEnabled, shouldRestoreCont)
+			startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
 			chrome.storage.sync.set({ websites: newWebsites })
 			modeChangedToBg()
 			createNotification(appState.curMode)

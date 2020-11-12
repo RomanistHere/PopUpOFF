@@ -38,13 +38,13 @@ chrome.runtime.onInstalled.addListener(details => {
 		// backupData()
 
 		storageSet({
-			websites: {},
-			restoreContActive: [],
-			curAutoMode: 'easyModeActive',
-			autoModeAggr: 'easy',
-			shortCutMode: 'hardModeActive',
-			tutorial: true,
-			update: true,
+			// websites: {},
+			// restoreContActive: [],
+			// curAutoMode: 'easyModeActive',
+			autoModeAggr: 'typeII',
+			// shortCutMode: 'hardModeActive',
+			// tutorial: true,
+			// update: true,
 		})
     }
 })
