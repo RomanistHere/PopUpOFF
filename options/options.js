@@ -184,3 +184,45 @@ storageGet("curAutoMode", res => {
 		addClass(sliderAuto, 'slider__input-active')
 	}
 })
+
+// aggression //
+const sliderAggr = querySelector('.aggression .slider__input')
+const sliderTextLeftAggr = querySelector('.aggression .slider__left')
+const sliderTextRightAggr = querySelector('.aggression .slider__right')
+const sliderTextCenterAggr = querySelector('.aggression .slider__center')
+const sliderTextArrAggr = querySelectorAll('.aggression .slider__text')
+
+sliderTextArrAggr.forEach(item => item.addEventListener('click', (e) => {
+	sliderAggr.value = e.target.dataset.value
+	sliderAggr.dispatchEvent(new Event('input'))
+}))
+
+const sliderAggrSetUp = {
+	1: ['typeI', sliderTextLeftAggr],
+	2: ['typeII', sliderTextCenterAggr],
+	3: ['typeIII', sliderTextRightAggr],
+}
+
+sliderAggr.oninput = (e) => {
+	const val = e.target.value
+
+	sliderTextArrAggr.forEach(item => removeClass(item, 'slider__text-active'))
+	addClass(sliderAggrSetUp[val][1], 'slider__text-active')
+
+	storageSet({ "autoModeAggr": sliderAggrSetUp[val][0] })
+	addClass(sliderAggr, 'slider__input-active')
+}
+
+const valuesAggr = {
+	'typeI': [1, sliderTextLeftAggr],
+	'typeII': [2, sliderTextCenterAggr],
+	'typeIII': [3, sliderTextRightAggr]
+}
+
+storageGet("autoModeAggr", res => {
+	const { autoModeAggr } = res
+
+	sliderAggr.value = valuesAggr[autoModeAggr][0]
+	addClass(valuesAggr[autoModeAggr][1], 'slider__text-active')
+	addClass(sliderAggr, 'slider__input-active')
+})
