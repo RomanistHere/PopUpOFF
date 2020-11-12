@@ -239,6 +239,14 @@ const videoCheck = element => {
     return true
 }
 
+const contentEasyCheck = element => {
+    const textCont = element.innerHTML.toLowerCase()
+    const forbWords = ['cookies', 'disable', 'policy', 'miss', 'privacy', 'install', 'adblock', 'ad block', 'blocker', 'theguardian', 'bloqueador de anuncios']
+
+    console.log('contentEasyCheck(should block): ', forbWords.some(v => textCont.includes(v)))
+    return forbWords.some(v => textCont.includes(v))
+}
+
 const contentCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
     const forbWords = ['cookie', 'policy', 'subscri', 'off', 'sale', 'notificat', 'updates', 'member', 'value', 'privacy', 'miss', 'turn', 'disable', 'ad block', 'adblock', 'advertis', 'theguardian', 'bloqueador de anuncios', 'подписаться', 'install']
@@ -263,9 +271,7 @@ const contentUnlockCheck = element => {
 
 const positionCheckTypeI = (element, windowArea) => {
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        // console.warn('Zero')
-        // return true
-        if (contentCheck(element))
+        if (contentEasyCheck(element))
             return { shouldRemove: true, shouldMemo: true }
         else
             return { shouldRemove: false, shouldMemo: false }
@@ -274,61 +280,33 @@ const positionCheckTypeI = (element, windowArea) => {
     const layoutArea = element.offsetHeight * element.offsetWidth
     const screenValue = roundToTwo(layoutArea/windowArea)
 
-    const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
-
-    console.log(element)
-    // console.log('elemOffsetTop', element.offsetTop)
-    // console.log('elemOffsetLeft', element.offsetLeft)
-    // console.log('elemOffsetBot', offsetBot)
-    // console.log('elemOffsetWidth ', element.offsetWidth)
-    // console.log('elemOffsetHeight', element.offsetHeight)
-    // console.log('layoutArea ', layoutArea)
-    console.log('screenValue ', screenValue)
-
     if (screenValue >= .98) {
         // case 1: overlay on the whole screen - should block
         // case 2: video in full screen mode - should not
-        console.warn('Full screen!')
-        return { shouldRemove: contentUnlockCheck(element) && (videoCheck(element) || contentCheck(element)), shouldMemo: true }
+        return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
     }
 
-    if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
+    if (element.offsetTop <= 100 && element.offsetHeight <= 250) {
         // popular notification
         if (element.id === 'onesignal-slidedown-container')
             return { shouldRemove: true, shouldMemo: true }
 
         // it's a header!
-        console.warn('Header!')
         return { shouldRemove: false, shouldMemo: true }
     }
 
     if (element.offsetLeft <= 0 && element.offsetWidth <= 360 && screenValue >= .1) {
         // youtube/facebook sidebar
-        console.warn('SideBar!')
         return { shouldRemove: false, shouldMemo: true }
     }
 
     if (screenValue < .98 && screenValue >= .1) {
         // overlays
-        console.warn('Overlay')
-        return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
-    }
-
-    if (offsetBot <= 100) {
-        // bottom notification
-        console.warn('Bottom notification')
-        return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
-    }
-
-    if (screenValue <= .03 && element.offsetTop > 100) {
-        // buttons and side/social menus
-        console.warn('Super small')
-        return { shouldRemove: false, shouldMemo: true }
+        return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
     }
 
     if (screenValue <= .1 && element.offsetTop > 100) {
         // buttons and side/social menus
-        console.warn('nothing special')
         return { shouldRemove: false, shouldMemo: true }
     }
 
@@ -337,8 +315,6 @@ const positionCheckTypeI = (element, windowArea) => {
 
 const positionCheckTypeII = (element, windowArea) => {
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        // console.warn('Zero')
-        // return true
         if (contentCheck(element))
             return { shouldRemove: true, shouldMemo: true }
         else
@@ -347,7 +323,6 @@ const positionCheckTypeII = (element, windowArea) => {
 
     const layoutArea = element.offsetHeight * element.offsetWidth
     const screenValue = roundToTwo(layoutArea/windowArea)
-
     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
     console.log(element)
@@ -411,28 +386,16 @@ const positionCheckTypeII = (element, windowArea) => {
 
 const positionCheckTypeIII = (element, windowArea) => {
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        // console.warn('Zero')
         return { shouldRemove: true, shouldMemo: false }
     }
 
     const layoutArea = element.offsetHeight * element.offsetWidth
     const screenValue = roundToTwo(layoutArea/windowArea)
-
     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
-
-    // console.log(element)
-    // console.log('elemOffsetTop', element.offsetTop)
-    // console.log('elemOffsetLeft', element.offsetLeft)
-    // console.log('elemOffsetBot', offsetBot)
-    // console.log('elemOffsetWidth ', element.offsetWidth)
-    // console.log('elemOffsetHeight', element.offsetHeight)
-    // console.log('layoutArea ', layoutArea)
-    // console.log('screenValue ', screenValue)
 
     if (screenValue >= .98) {
         // case 1: overlay on the whole screen - should block
         // case 2: video in full screen mode - should not
-        // console.warn('Full screen!')
         return { shouldRemove: videoCheck(element), shouldMemo: true }
     }
 
@@ -442,43 +405,36 @@ const positionCheckTypeIII = (element, windowArea) => {
             return { shouldRemove: true, shouldMemo: true }
 
         // it's a header!
-        // console.warn('Header!')
         return { shouldRemove: false, shouldMemo: true }
     }
 
     if (element.offsetLeft <= 0 && element.offsetWidth <= 360) {
         // youtube/facebook sidebar
-        // console.warn('SideBar!')
         return { shouldRemove: false, shouldMemo: true }
     }
 
     if (screenValue < .98 && screenValue >= .1) {
         // overlays
-        // console.warn('Overlay')
         return { shouldRemove: true, shouldMemo: true }
     }
 
     if (screenValue <= .03 && element.offsetTop > 100) {
         // buttons and side/social menus
-        // console.warn('Super small')
         return { shouldRemove: false, shouldMemo: true }
     }
 
     if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
         // scrolling videos in the articles
-        // console.warn('Scrolling video!')
         return { shouldRemove: true, shouldMemo: true }
     }
 
     if (offsetBot <= 100) {
         // bottom notification
-        // console.warn('Bottom notification')
         return { shouldRemove: true, shouldMemo: true }
     }
 
     if (screenValue <= .1 && element.offsetTop > 100) {
         // buttons and side/social menus
-        // console.warn('nothing special')
         return { shouldRemove: false, shouldMemo: true }
     }
 
