@@ -4,17 +4,21 @@
         <link rel="stylesheet" href="../css/options.css">
     </head>
     <body>
+        <h2 class="options__title options_text ">
+            Basic settings:
+        </h2>
+
         <section class="options__section">
-            <h2 class="options__header options_text options__header-big">
+            <h2 class="options__header options_text">
                 Automode
             </h2>
             <p class="options__desc options_text">
-                Finally! Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Moderate</span> and <span class="options_text-col">Dormant</span>.
+                Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Moderate</span> and <span class="options_text-col">Dormant</span>.
             </p>
             <div class="options__slider slider automode">
                 <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
                 <span data-value="2" class="slider__text options_text slider__center slider__text-def">Dormant</span>
-                <span data-value="3" class="slider__text options_text slider__right">Agressive</span>
+                <span data-value="3" class="slider__text options_text slider__right">Aggressive</span>
                 <input class="slider__input" type="range" min="1" max="3" value="2">
             </div>
         </section>
@@ -39,7 +43,7 @@
                 Statistics
             </h2>
             <p class="options__desc options_text">
-                I can't see or collect your statistics. It's just a little bit of fun for you. Screenshot it, tag me, share via socials - I will comment it! <span class="options_text-col">Enjoy :)</span>
+                I can't see or collect your statistics. It's just a little bit of fun for you. Screenshot it, tag me, share via socials - I will comment on it! <span class="options_text-col">Enjoy :)</span>
             </p>
             <div class="options__desc">
                 <a href="#" class="options__btn stats">
@@ -52,6 +56,10 @@
             </div>
         </section>
 
+        <h2 class="options__title options_text ">
+            Advanced settings:
+        </h2>
+
         <section class="options__section">
             <h2 class="options__header options_text">
                 Keyboard shortcut
@@ -63,22 +71,25 @@
                 <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
                 <span data-value="2" class="slider__text options_text slider__center slider__center-left">Dormant</span>
                 <span data-value="3" class="slider__text options_text slider__center slider__center-right slider__text-def">Disable</span>
-                <span data-value="4" class="slider__text options_text slider__right">Agressive</span>
+                <span data-value="4" class="slider__text options_text slider__right">Aggressive</span>
                 <input class="slider__input" type="range" min="1" max="4" value="2">
             </div>
         </section>
 
         <section class="options__section">
             <h2 class="options__header options_text">
-                Chose how aggressive automode is
+                Chose how aggressive Moderate mode is
             </h2>
             <p class="options__desc options_text">
-
+                We all desire different things. Just not to see cookie notifications or don't get distracted while reading your favorite newspaper online. Customize PopUpOFF to fit your needs: </br>
+                - <span class="options_text-col">Rare</span> - remove only most annoying elements (like cookie notifications);</br>
+                - <span class="options_text-col">Medium</span> - average solution (could hid parts of content - email me if so!);</br>
+                - <span class="options_text-col">Well-done</span> - leaves only headers and nav bars (sign up popups could be hidden);</br>
             </p>
             <div class="options__slider slider aggression">
-                <span data-value="1" class="slider__text options_text slider__left">Not agressive</span>
+                <span data-value="1" class="slider__text options_text slider__left">Rare</span>
                 <span data-value="2" class="slider__text options_text slider__center">Medium</span>
-                <span data-value="3" class="slider__text options_text slider__right">Agressive</span>
+                <span data-value="3" class="slider__text options_text slider__right">Well-done</span>
                 <input class="slider__input" type="range" min="1" max="3" value="2">
             </div>
         </section>

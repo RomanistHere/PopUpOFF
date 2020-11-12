@@ -126,7 +126,7 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 // content menu (right click) mechanics
 const subMenu = [
 	{
-		title: `Agressive`,
+		title: `Aggressive`,
 		mode: 'hardModeActive'
 	},{
 		title: `Moderate`,

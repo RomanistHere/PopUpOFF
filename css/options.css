@@ -40,13 +40,21 @@ body {
     font-weight: normal;
 }
 
+.options__title {
+    padding: 40px 20px 0;
+    margin-bottom: -10px;
+
+    font-weight: normal;
+    font-size: 20px;
+}
+
 .options__header-big {
     font-size: 36px;
     font-weight: normal;
 }
 
 .options__section {
-    padding-bottom: 40px;
+    padding-bottom: 20px;
 }
 
 .options__btn {
@@ -91,6 +99,8 @@ body {
 
 .slider{
     position: relative;
+
+    padding-bottom: 40px;
 
     text-align: center;
 }

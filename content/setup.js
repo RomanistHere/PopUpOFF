@@ -122,7 +122,7 @@ if (window.location.href === 'https://romanisthere.github.io/secrets/') {
 let notifTimeout
 const textItems = {
 	'whitelist': 'Dormant',
-	'hardModeActive': 'Agressive',
+	'hardModeActive': 'Aggressive',
 	'easyModeActive': 'Moderate',
 }
 
