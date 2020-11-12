@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(details => {
 					curAutoMode: 'easyModeActive',
 					shortCutMode: 'hardModeActive',
 					websites: websites,
-					autoModeAggr: 'typeII'
+					autoModeAggr: 'typeI'
 				})
 
 				// chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html' })
