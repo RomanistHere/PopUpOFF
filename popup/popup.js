@@ -105,12 +105,9 @@ const initTutorial = (updated = false) => {
 			storageSet({
 				curAutoMode: curAutoMode,
 				autoModeAggr: autoModeAggr,
-				tutorial: false,
-				update: false
 			})
 
-			addClass(tutorialWrap, 'tutorial-hide')
-			setTimeout(() => { addClass(tutorialWrap, 'tutorial-non') }, 500)
+			setTimeout(() => { removeClass(tutorialWrap, 'tutorial-setup') }, 300)
 		}))
 	})
 
