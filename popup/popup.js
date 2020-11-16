@@ -93,6 +93,7 @@ const initTutorial = (updated = false) => {
 	// open tutorial
  	removeClass(tutorialWrap, 'tutorial-non')
 
+	// one-click setup
 	tutorialSetup.addEventListener('click', e => {
 		e.preventDefault()
 		addClass(tutorialWrap, 'tutorial-setup')

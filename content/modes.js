@@ -69,6 +69,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	const action = elems => {
 		state = removeOverflow(statsEnabled, state, doc, body)
 		checkElems(elems, checkElem)
+		removeListeners()
 		if (shouldRestoreCont)
 			state = findHidden(state, statsEnabled, doc)
 		watchDOM()
@@ -161,6 +162,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	const action = elems => {
 		state = removeOverflow(statsEnabled, state, doc, body)
 		checkElems(elems, checkElem)
+		removeListeners()
 		if (shouldRestoreCont)
 			state = findHidden(state, statsEnabled, doc)
 		watchDOM()

@@ -137,6 +137,14 @@ const removeOverflow = (statsEnabled, state, doc, body) => {
     return state
 }
 
+const removeListeners = () => {
+    if (window.location.href.includes('glassdoor')) {
+        window.addEventListener('scroll', e => {
+            e.stopPropagation()
+        }, true)
+    }
+}
+
 const checkElems = (elems, checkElem) => {
     const arr = [...elems]
     arr.map(checkElem)
