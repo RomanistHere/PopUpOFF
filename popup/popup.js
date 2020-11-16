@@ -1,4 +1,9 @@
 import {
+	websites,
+	preventContArr
+} from '../constants/data.js'
+
+import {
 	querySelector,
     querySelectorAll,
 	addClass,
@@ -82,16 +87,38 @@ const initTutorial = (updated = false) => {
 	const tutorialWrap = querySelector('.tutorial')
 	const tutorialRead = querySelector('.tutorial__read')
 	const tutorialSkip = querySelector('.tutorial__skip')
+	const tutorialSetup = querySelector('.tutorial__setup')
 	if (updated === true)
 		querySelector('.tutorial__head').textContent='Automode!'
 	// open tutorial
  	removeClass(tutorialWrap, 'tutorial-non')
 
+	tutorialSetup.addEventListener('click', e => {
+		e.preventDefault()
+		addClass(tutorialWrap, 'tutorial-setup')
+
+		querySelectorAll('.setings__btn').forEach(elem => elem.addEventListener('click', function() {
+			const preset = getAttr(this, 'data-preset')
+			const curAutoMode = preset === 'presetManual' ? 'whitelist' : 'easyModeActive'
+			const autoModeAggr = preset === 'presetManual' ? 'typeIII' : 'typeI'
+
+			storageSet({
+				curAutoMode: curAutoMode,
+				autoModeAggr: autoModeAggr,
+				tutorial: false,
+				update: false
+			})
+
+			addClass(tutorialWrap, 'tutorial-hide')
+			setTimeout(() => { addClass(tutorialWrap, 'tutorial-non') }, 500)
+		}))
+	})
+
 	// open the link
 	tutorialRead.addEventListener('click', () => {
 		storageSet({
-			'tutorial': false,
-			'update': false
+			tutorial: false,
+			update: false
 		})
 		window.close()
 	})
@@ -100,8 +127,8 @@ const initTutorial = (updated = false) => {
 	tutorialSkip.addEventListener('click', e => {
 		e.preventDefault()
 		storageSet({
-			'tutorial': false,
-			'update': false
+			tutorial: false,
+			update: false
 		})
 		addClass(tutorialWrap, 'tutorial-hide')
 		setTimeout(() => { addClass(tutorialWrap, 'tutorial-non') }, 500)

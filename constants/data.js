@@ -162,6 +162,18 @@ const websites = {
 	'www.theladders.com': 'easyModeActive'
 }
 
+// This is what presets are:
+//
+// const presetCasual = {
+// 	curAutoMode: 'easyModeActive',
+// 	autoModeAggr: 'typeI',
+// }
+//
+// const presetManual = {
+// 	curAutoMode: 'whitelist',
+// 	autoModeAggr: 'typeIII',
+// }
+
 export {
 	websites,
 	preventContArr
