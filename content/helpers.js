@@ -249,9 +249,15 @@ const videoCheck = element => {
 
 const contentEasyCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
-    const forbWords = ['cookies', 'disable', 'policy', 'miss', 'privacy', 'install', 'adblock', 'ad block', 'blocker', 'theguardian', 'bloqueador de anuncios']
+    const forbWords = ['cookies', 'policy', 'miss', 'your privacy', 'adblock', 'ad block', 'blocker', 'theguardian', 'bloqueador de anuncios', 'to continue using']
 
-    console.log('contentEasyCheck(should block): ', forbWords.some(v => textCont.includes(v)))
+    console.log('contentEasyCheck(should block): ', forbWords.some(v => {
+        if (textCont.includes(v)) {
+            console.warn(v)
+        }
+        return textCont.includes(v)
+    }))
+    // return false
     return forbWords.some(v => textCont.includes(v))
 }
 
@@ -278,6 +284,8 @@ const contentUnlockCheck = element => {
 }
 
 const positionCheckTypeI = (element, windowArea) => {
+    console.log(element)
+
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
         if (contentEasyCheck(element))
             return { shouldRemove: true, shouldMemo: true }
@@ -287,11 +295,14 @@ const positionCheckTypeI = (element, windowArea) => {
 
     const layoutArea = element.offsetHeight * element.offsetWidth
     const screenValue = roundToTwo(layoutArea/windowArea)
+    const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
+
+    console.log(screenValue)
 
     if (screenValue >= .98) {
         // case 1: overlay on the whole screen - should block
         // case 2: video in full screen mode - should not
-        return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
+        return { shouldRemove: contentEasyCheck(element) || videoCheck(element), shouldMemo: true }
     }
 
     if (element.offsetTop <= 100 && element.offsetHeight <= 250) {
@@ -310,6 +321,11 @@ const positionCheckTypeI = (element, windowArea) => {
 
     if (screenValue < .98 && screenValue >= .1) {
         // overlays
+        return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
+    }
+
+    if (offsetBot <= 100) {
+        // bottom notification
         return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
     }
 
