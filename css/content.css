@@ -27,3 +27,7 @@
 	0%, 100% { opacity: 0; }
 	30%, 80% { opacity: 1; }
 }
+
+div[id='fusion-app'] {
+	opacity: 1 !important;
+}

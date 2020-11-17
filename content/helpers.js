@@ -249,7 +249,7 @@ const videoCheck = element => {
 
 const contentEasyCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
-    const forbWords = ['cookies', 'policy', 'miss', 'your privacy', 'adblock', 'ad block', 'blocker', 'theguardian', 'bloqueador de anuncios', 'to continue using']
+    const forbWords = ['cookie', 'never miss', 't miss', 'your privacy', 'adblock', 'ad block', 'blocker', 'theguardian', 'bloqueador de anuncios', 'to continue using', 'unlimited access', 'exclusive access', 'left this month', 'be the first', 'enable notification']
 
     console.log('contentEasyCheck(should block): ', forbWords.some(v => {
         if (textCont.includes(v)) {
@@ -297,8 +297,6 @@ const positionCheckTypeI = (element, windowArea) => {
     const screenValue = roundToTwo(layoutArea/windowArea)
     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
-    console.log(screenValue)
-
     if (screenValue >= .98) {
         // case 1: overlay on the whole screen - should block
         // case 2: video in full screen mode - should not
@@ -324,7 +322,12 @@ const positionCheckTypeI = (element, windowArea) => {
         return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
     }
 
-    if (offsetBot <= 100) {
+    if (screenValue <= .02 && element.offsetTop > 100) {
+        // buttons and side/social menus
+        return { shouldRemove: false, shouldMemo: true }
+    }
+
+    if (offsetBot <= 212) {
         // bottom notification
         return { shouldRemove: contentEasyCheck(element), shouldMemo: true }
     }
@@ -349,14 +352,14 @@ const positionCheckTypeII = (element, windowArea) => {
     const screenValue = roundToTwo(layoutArea/windowArea)
     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
-    console.log(element)
+    // console.log(element)
     // console.log('elemOffsetTop', element.offsetTop)
     // console.log('elemOffsetLeft', element.offsetLeft)
     // console.log('elemOffsetBot', offsetBot)
     // console.log('elemOffsetWidth ', element.offsetWidth)
     // console.log('elemOffsetHeight', element.offsetHeight)
     // console.log('layoutArea ', layoutArea)
-    console.log('screenValue ', screenValue)
+    // console.log('screenValue ', screenValue)
 
     if (screenValue >= .98) {
         // case 1: overlay on the whole screen - should block
@@ -387,7 +390,7 @@ const positionCheckTypeII = (element, windowArea) => {
         return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
     }
 
-    if (offsetBot <= 100) {
+    if (offsetBot <= 212) {
         // bottom notification
         console.warn('Bottom notification')
         return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
@@ -452,7 +455,7 @@ const positionCheckTypeIII = (element, windowArea) => {
         return { shouldRemove: true, shouldMemo: true }
     }
 
-    if (offsetBot <= 100) {
+    if (offsetBot <= 212) {
         // bottom notification
         return { shouldRemove: true, shouldMemo: true }
     }
