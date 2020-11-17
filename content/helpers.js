@@ -247,39 +247,36 @@ const videoCheck = element => {
     return true
 }
 
+const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time']
+
+const forbWords = [...forbWordsEasy, 'policy', 'subscri', 'sale', 'updates', 'member', 'value', 'advertis', 'подписаться', 'install']
+
+const allowedWords = ['sign in', 'language', 'basket', 'delivery', 'price', 'google meet', 'корзина', 'resume', 'apply', 'drive']
+
 const contentEasyCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
-    const forbWords = ['cookie', 'never miss', 't miss', 'your privacy', 'adblock', 'ad block', 'blocker', 'theguardian', 'bloqueador de anuncios', 'to continue using', 'unlimited access', 'exclusive access', 'left this month', 'be the first', 'enable notification']
 
-    console.log('contentEasyCheck(should block): ', forbWords.some(v => {
-        if (textCont.includes(v)) {
-            console.warn(v)
-        }
-        return textCont.includes(v)
-    }))
-    // return false
-    return forbWords.some(v => textCont.includes(v))
+    // console.log('contentEasyCheck(should block): ', forbWordsEasy.some(v => {
+    //     if (textCont.includes(v)) {
+    //         console.warn(v)
+    //     }
+    //     return textCont.includes(v)
+    // }))
+    return forbWordsEasy.some(v => textCont.includes(v))
 }
 
 const contentCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
-    const forbWords = ['cookie', 'policy', 'subscri', 'off', 'sale', 'notificat', 'updates', 'member', 'value', 'privacy', 'miss', 'turn', 'disable', 'ad block', 'adblock', 'advertis', 'theguardian', 'bloqueador de anuncios', 'подписаться', 'install']
 
-    console.log('contentCheck(should block): ', forbWords.some(v => textCont.includes(v)))
+    // console.log('contentCheck(should block): ', forbWords.some(v => textCont.includes(v)))
     return forbWords.some(v => textCont.includes(v))
 }
 
 const contentUnlockCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
-    const allWords = ['sign in', 'language', 'basket', 'delivery', 'price', 'google meet', 'корзина', 'resume', 'apply', 'drive']
 
-    const shouldNotBlock = allWords.some(v => {
-        if (textCont.includes(v)) {
-            console.log('INCLUDES: ', v)
-        }
-        return textCont.includes(v)
-    })
-    console.log('contentUnlockCheck(should block): ', !shouldNotBlock)
+    const shouldNotBlock = allowedWords.some(v => textCont.includes(v))
+    // console.log('contentUnlockCheck(should block): ', !shouldNotBlock)
     return !shouldNotBlock
 }
 
@@ -297,13 +294,15 @@ const positionCheckTypeI = (element, windowArea) => {
     const screenValue = roundToTwo(layoutArea/windowArea)
     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
 
+    // console.log(screenValue)
+
     if (screenValue >= .98) {
         // case 1: overlay on the whole screen - should block
         // case 2: video in full screen mode - should not
         return { shouldRemove: contentEasyCheck(element) || videoCheck(element), shouldMemo: true }
     }
 
-    if (element.offsetTop <= 100 && element.offsetHeight <= 250) {
+    if (element.offsetTop <= 100 && element.offsetHeight <= 250 && element.offsetWidth > 640) {
         // popular notification
         if (element.id === 'onesignal-slidedown-container')
             return { shouldRemove: true, shouldMemo: true }
