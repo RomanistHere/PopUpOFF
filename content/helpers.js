@@ -284,7 +284,7 @@ const contentUnlockCheck = element => {
 }
 
 const positionCheckTypeI = (element, windowArea) => {
-    console.log(element)
+    // console.log(element)
 
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
         if (contentEasyCheck(element))
@@ -338,77 +338,6 @@ const positionCheckTypeI = (element, windowArea) => {
     }
 
     return { shouldRemove: false, shouldMemo: false }
-}
-
-const positionCheckTypeII = (element, windowArea) => {
-    if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        if (contentCheck(element))
-            return { shouldRemove: true, shouldMemo: true }
-        else
-            return { shouldRemove: false, shouldMemo: false }
-    }
-
-    const layoutArea = element.offsetHeight * element.offsetWidth
-    const screenValue = roundToTwo(layoutArea/windowArea)
-    const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
-
-    // console.log(element)
-    // console.log('elemOffsetTop', element.offsetTop)
-    // console.log('elemOffsetLeft', element.offsetLeft)
-    // console.log('elemOffsetBot', offsetBot)
-    // console.log('elemOffsetWidth ', element.offsetWidth)
-    // console.log('elemOffsetHeight', element.offsetHeight)
-    // console.log('layoutArea ', layoutArea)
-    // console.log('screenValue ', screenValue)
-
-    if (screenValue >= .98) {
-        // case 1: overlay on the whole screen - should block
-        // case 2: video in full screen mode - should not
-        console.warn('Full screen!')
-        return { shouldRemove: contentUnlockCheck(element) && (videoCheck(element) || contentCheck(element)), shouldMemo: true }
-    }
-
-    if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
-        // popular notification
-        if (element.id === 'onesignal-slidedown-container')
-            return { shouldRemove: true, shouldMemo: true }
-
-        // it's a header!
-        console.warn('Header!')
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    if (element.offsetLeft <= 0 && element.offsetWidth <= 360 && screenValue >= .1) {
-        // youtube/facebook sidebar
-        console.warn('SideBar!')
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    if (screenValue < .98 && screenValue >= .1) {
-        // overlays
-        console.warn('Overlay')
-        return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
-    }
-
-    if (offsetBot <= 212) {
-        // bottom notification
-        console.warn('Bottom notification')
-        return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
-    }
-
-    if (screenValue <= .03 && element.offsetTop > 100) {
-        // buttons and side/social menus
-        console.warn('Super small')
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    if (screenValue <= .1 && element.offsetTop > 100) {
-        // buttons and side/social menus
-        console.warn('nothing special')
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    return { shouldRemove: true, shouldMemo: false }
 }
 
 const positionCheckTypeIII = (element, windowArea) => {
@@ -602,3 +531,76 @@ const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, 
     }
     return state
 }
+
+// archieved //
+
+// const positionCheckTypeII = (element, windowArea) => {
+//     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
+//         if (contentCheck(element))
+//             return { shouldRemove: true, shouldMemo: true }
+//         else
+//             return { shouldRemove: false, shouldMemo: false }
+//     }
+//
+//     const layoutArea = element.offsetHeight * element.offsetWidth
+//     const screenValue = roundToTwo(layoutArea/windowArea)
+//     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
+//
+//     // console.log(element)
+//     // console.log('elemOffsetTop', element.offsetTop)
+//     // console.log('elemOffsetLeft', element.offsetLeft)
+//     // console.log('elemOffsetBot', offsetBot)
+//     // console.log('elemOffsetWidth ', element.offsetWidth)
+//     // console.log('elemOffsetHeight', element.offsetHeight)
+//     // console.log('layoutArea ', layoutArea)
+//     // console.log('screenValue ', screenValue)
+//
+//     if (screenValue >= .98) {
+//         // case 1: overlay on the whole screen - should block
+//         // case 2: video in full screen mode - should not
+//         console.warn('Full screen!')
+//         return { shouldRemove: contentUnlockCheck(element) && (videoCheck(element) || contentCheck(element)), shouldMemo: true }
+//     }
+//
+//     if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
+//         // popular notification
+//         if (element.id === 'onesignal-slidedown-container')
+//             return { shouldRemove: true, shouldMemo: true }
+//
+//         // it's a header!
+//         console.warn('Header!')
+//         return { shouldRemove: false, shouldMemo: true }
+//     }
+//
+//     if (element.offsetLeft <= 0 && element.offsetWidth <= 360 && screenValue >= .1) {
+//         // youtube/facebook sidebar
+//         console.warn('SideBar!')
+//         return { shouldRemove: false, shouldMemo: true }
+//     }
+//
+//     if (screenValue < .98 && screenValue >= .1) {
+//         // overlays
+//         console.warn('Overlay')
+//         return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
+//     }
+//
+//     if (offsetBot <= 212) {
+//         // bottom notification
+//         console.warn('Bottom notification')
+//         return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
+//     }
+//
+//     if (screenValue <= .03 && element.offsetTop > 100) {
+//         // buttons and side/social menus
+//         console.warn('Super small')
+//         return { shouldRemove: false, shouldMemo: true }
+//     }
+//
+//     if (screenValue <= .1 && element.offsetTop > 100) {
+//         // buttons and side/social menus
+//         console.warn('nothing special')
+//         return { shouldRemove: false, shouldMemo: true }
+//     }
+//
+//     return { shouldRemove: true, shouldMemo: false }
+// }

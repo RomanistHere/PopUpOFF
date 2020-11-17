@@ -189,7 +189,7 @@ storageGet("curAutoMode", res => {
 const sliderAggr = querySelector('.aggression .slider__input')
 const sliderTextLeftAggr = querySelector('.aggression .slider__left')
 const sliderTextRightAggr = querySelector('.aggression .slider__right')
-const sliderTextCenterAggr = querySelector('.aggression .slider__center')
+// const sliderTextCenterAggr = querySelector('.aggression .slider__center')
 const sliderTextArrAggr = querySelectorAll('.aggression .slider__text')
 
 sliderTextArrAggr.forEach(item => item.addEventListener('click', (e) => {
@@ -199,8 +199,8 @@ sliderTextArrAggr.forEach(item => item.addEventListener('click', (e) => {
 
 const sliderAggrSetUp = {
 	1: ['typeI', sliderTextLeftAggr],
-	2: ['typeII', sliderTextCenterAggr],
-	3: ['typeIII', sliderTextRightAggr],
+	// 2: ['typeII', sliderTextCenterAggr],
+	2: ['typeIII', sliderTextRightAggr],
 }
 
 sliderAggr.oninput = (e) => {
@@ -215,8 +215,8 @@ sliderAggr.oninput = (e) => {
 
 const valuesAggr = {
 	'typeI': [1, sliderTextLeftAggr],
-	'typeII': [2, sliderTextCenterAggr],
-	'typeIII': [3, sliderTextRightAggr]
+	// 'typeII': [2, sliderTextCenterAggr],
+	'typeIII': [2, sliderTextRightAggr]
 }
 
 storageGet("autoModeAggr", res => {
