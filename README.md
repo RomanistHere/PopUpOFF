@@ -93,5 +93,5 @@ Some newspapers are showing you an article you want to read and then remove half
 - release version - do not ask why</br></br>
 
 There is nothing I can add to this description about technical part of mine project. I will work on it if someone will need it. I can't stand searching internet without my tool right now, though, it was worth it. </br></br>
-If you have something to say to me, offer, complaint or just thank you, write to me right here: RomanistHere@gmail.com
+If you have something to say to me, offer, complaint or just thank you, write to me right here: RomanistHere@gmail.com </br></br>
 Donate: https://www.donationalerts.com/r/romanisthere
