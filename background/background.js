@@ -36,7 +36,7 @@ chrome.runtime.onInstalled.addListener(details => {
 					preset: 'presetCasual',
 				})
 
-				// chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html' })
+				chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
 			}
 		})
     } else if (details.reason == 'update') {
