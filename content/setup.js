@@ -53,8 +53,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		modeChangedToBg()
 
 		if (curModeName === 'whitelist') {
+			if (shouldRestoreCont) {
+				const newContActive = restoreContActive.filter(url => url !== pureUrl)
+				chrome.storage.sync.set({ restoreContActive: newContActive })
+			}
+
 			sendResponse({ closePopup: true })
 			window.location.reload()
+		} else {
+			sendResponse({ closePopup: false })
 		}
 	})
 

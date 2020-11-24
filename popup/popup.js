@@ -52,14 +52,8 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         })
 
 		// if whitelist just enabled and prevent content active -> remove prevent content (prevent content is not working in whitelist)
-		if (mode === 'whitelist' && state.isRestContActive) {
-			storageGet(['restoreContActive'], resp => {
-				const { restoreContActive } = resp
-				const newContActive = restoreContActive.filter(url => url !== state.pureUrl)
-				storageSet({ restoreContActive: newContActive })
-				state = { ...state, isRestContActive: false }
-			})
-		}
+		if (mode === 'whitelist' && state.isRestContActive)
+			state = { ...state, isRestContActive: false }
 
 		state = { ...state, curMode: mode }
         // send msg to content script with new active mode
@@ -190,7 +184,7 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 			newArr = restoreContActive.filter(url => url !== state.pureUrl)
 			removeClass(this, 'add_opt-active')
 		} else {
-			newArr = [...newArr, state.pureUrl]
+			newArr = [...restoreContActive, state.pureUrl]
 			addClass(this, 'add_opt-active')
 		}
 

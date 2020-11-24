@@ -452,7 +452,7 @@ const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {
     return removeOverflow(statsEnabled, state, doc, body)
 }
 
-const unsetHeight = ({ target }, statsEnabled, state, memoize) => {
+const unsetHeight = ({ target }, statsEnabled, state, memoize = new WeakMap()) => {
     if (target.getAttribute('data-popupoffextension') === 'hello')
         return state
 

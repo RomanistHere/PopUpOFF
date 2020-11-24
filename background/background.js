@@ -30,7 +30,8 @@ chrome.runtime.onInstalled.addListener(details => {
 					backupData: {},
 					restoreContActive: [...preventContArr],
 					curAutoMode: 'easyModeActive',
-					shortCutMode: 'hardModeActive',
+					shortCutMode: null,
+					// shortCutMode: 'hardModeActive',
 					websites: websites,
 					autoModeAggr: 'typeI',
 					preset: 'presetCasual',
@@ -102,7 +103,7 @@ const setNewBadge = (pureUrl, tabID) =>
 // handle mode changed from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (!sender.tab)
-		return
+		return true
 
 	if (request.modeChanged) {
 		const tabID = sender.tab.id
