@@ -62,7 +62,7 @@ chrome.runtime.onInstalled.addListener(details => {
 				websites: newWebsites,
 				restoreContActive: [...preventContArr],
 				curAutoMode: 'whitelist',
-				autoModeAggr: 'typeI',
+				autoModeAggr: 'typeIII',
 				shortCutMode: newShortCut,
 				tutorial: true,
 				update: true,
