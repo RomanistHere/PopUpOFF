@@ -42,20 +42,38 @@ chrome.runtime.onInstalled.addListener(details => {
 		})
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
-		// backupData()
+		backupData()
 
-		// storageSet({
-		// 	websites: {},
-		// 	restoreContActive: [],
-		// 	curAutoMode: 'easyModeActive',
-		// 	autoModeAggr: 'typeI',
-		// 	shortCutMode: 'hardModeActive',
-		// 	tutorial: true,
-		// 	update: true,
-		//  	preset: 'presetManual',
-		// })
+		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'], response => {
+			// shortcut converting
+			// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
+			const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
+			const newShortCut = shortCutMode === 'thisWebsiteWorkEasy' ? 'easyModeActive' :
+								shortCutMode === 'thisWebsiteWork' ? 'hardModeActive' : null
+
+			// websites converting
+			const newWebsites = {
+				...websites,
+				...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
+				...arrayToObj(thisWebsiteWork, 'hardModeActive')
+			}
+
+			storageSet({
+				websites: newWebsites,
+				restoreContActive: [...preventContArr],
+				curAutoMode: 'whitelist',
+				autoModeAggr: 'typeI',
+				shortCutMode: newShortCut,
+				tutorial: true,
+				update: true,
+			 	preset: 'presetManual',
+			})
+		})
     }
 })
+
+const arrayToObj = (arr, prop) =>
+	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {})
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
