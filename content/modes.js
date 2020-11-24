@@ -148,7 +148,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
-				state = watchMutations(mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem)
+				state = watchMutations(mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem, memoize)
 			})
 		}
 

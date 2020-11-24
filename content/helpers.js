@@ -452,7 +452,7 @@ const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {
     return removeOverflow(statsEnabled, state, doc, body)
 }
 
-const unsetHeight = ({ target }, statsEnabled, state) => {
+const unsetHeight = ({ target }, statsEnabled, state, memoize) => {
     if (target.getAttribute('data-popupoffextension') === 'hello')
         return state
 
@@ -461,7 +461,7 @@ const unsetHeight = ({ target }, statsEnabled, state) => {
     (target.nodeName == 'STYLE'))
         return state
 
-    if (getStyle(target, 'display') == 'none') {
+    if (!memoize.has(target) && getStyle(target, 'display') == 'none') {
         setPropImp(target, "display", "unset")
         if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
     }
@@ -492,23 +492,18 @@ const restoreNode = (mutation, statsEnabled, state) => {
     return state
 }
 
-const checkForRestore = (mutation, statsEnabled, state) => {
-    state = unsetHeight(mutation, statsEnabled, state)
-
-    if (mutation.removedNodes) {
-        console.log(mutation.removedNodes)
-    }
+const checkForRestore = (mutation, statsEnabled, state, memoize) => {
+    state = unsetHeight(mutation, statsEnabled, state, memoize)
 
     if (mutation.type === 'childList' &&
     mutation.removedNodes.length) {
-        console.log(mutation)
         state = restoreNode(mutation, statsEnabled, state)
     }
 
     return state
 }
 
-const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem) => {
+const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem, memoize) => {
     let processedElems = []
     const len = mutations.length
     for (let i = 0; i < len; i++) {
@@ -527,7 +522,7 @@ const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, 
             else
                 processedElems = [...processedElems, mutation.target]
         } else {
-            state = checkForRestore(mutation, statsEnabled, state)
+            state = checkForRestore(mutation, statsEnabled, state, memoize)
         }
 
         // check element and its siblings
