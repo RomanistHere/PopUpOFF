@@ -247,7 +247,7 @@ const videoCheck = element => {
     return true
 }
 
-const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet']
+const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre']
 
 const forbWords = [...forbWordsEasy, 'policy', 'subscri', 'sale', 'updates', 'member', 'value', 'advertis', 'подписаться', 'install']
 
@@ -495,8 +495,13 @@ const restoreNode = (mutation, statsEnabled, state) => {
 const checkForRestore = (mutation, statsEnabled, state) => {
     state = unsetHeight(mutation, statsEnabled, state)
 
+    if (mutation.removedNodes) {
+        console.log(mutation.removedNodes)
+    }
+
     if (mutation.type === 'childList' &&
     mutation.removedNodes.length) {
+        console.log(mutation)
         state = restoreNode(mutation, statsEnabled, state)
     }
 
