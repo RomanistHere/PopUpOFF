@@ -15,7 +15,7 @@ import {
 chrome.runtime.onInstalled.addListener(details => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy'], response => {
+		storageGet(['websites', 'curAutoMode'], response => {
 			if (!response.websites || !response.curAutoMode) {
 				// set up start
 				storageSet({
