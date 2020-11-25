@@ -113,7 +113,8 @@ document.addEventListener('openOptPage', (e) => {
 // send stats to website
 const sendStats = () =>
 	chrome.storage.sync.get(['stats'], resp => {
-		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: resp.stats }))
+		const clonedDetail = cloneInto(resp.stats, document.defaultView)
+		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: clonedDetail }))
 	})
 
 if (window.location.href === 'https://romanisthere.github.io/secrets/') {
