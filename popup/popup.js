@@ -40,7 +40,7 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
 
     setNewBtn(buttons, this)
 
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    browser.tabs.query({ active: true, currentWindow: true }, tabs => {
         // check website object. Change/add property
         storageGet(['websites'], resp => {
             const { websites } = resp
@@ -57,9 +57,9 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
 
 		state = { ...state, curMode: mode }
         // send msg to content script with new active mode
-        chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
+        browser.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp && resp.closePopup === true) {
-				chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
+				browser.tabs.update(tabs[0].id, { url: tabs[0].url })
                 window.close()
             }
         })
@@ -129,7 +129,7 @@ const initTutorial = (updated = false) => {
 
 // init popup state
 const init = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    browser.tabs.query({ active: true, currentWindow: true }, tabs => {
         storageGet(['update', 'tutorial', 'websites', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
 			// setup tutorial
 			if (resp.tutorial)
@@ -203,8 +203,8 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 
 		// reload current page and close popup if activated prevent content
 		if (state.isRestContActive) {
-			chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-		        chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
+			browser.tabs.query({active: true, currentWindow: true}, tabs => {
+		        browser.tabs.update(tabs[0].id, { url: tabs[0].url })
 				window.close()
 		    })
 		}

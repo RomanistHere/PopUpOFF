@@ -12,11 +12,11 @@ import {
 } from '../constants/functions.js'
 
 // handle install
-chrome.runtime.onInstalled.addListener(details => {
+browser.runtime.onInstalled.addListener(details => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['websites', 'curAutoMode'], response => {
-			if (!response.websites || !response.curAutoMode) {
+			// if (!response.websites || !response.curAutoMode) {
 				// set up start
 				storageSet({
 					tutorial: true,
@@ -37,38 +37,38 @@ chrome.runtime.onInstalled.addListener(details => {
 					preset: 'presetCasual',
 				})
 
-				chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
-			}
+				browser.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
+			// }
 		})
     } else if (details.reason == 'update') {
-    	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
-		backupData()
-
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'], response => {
-			// shortcut converting
-			// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
-			const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
-			const newShortCut = shortCutMode === 'thisWebsiteWorkEasy' ? 'easyModeActive' :
-								shortCutMode === 'thisWebsiteWork' ? 'hardModeActive' : null
-
-			// websites converting
-			const newWebsites = {
-				...websites,
-				...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
-				...arrayToObj(thisWebsiteWork, 'hardModeActive')
-			}
-
-			storageSet({
-				websites: newWebsites,
-				restoreContActive: [...preventContArr],
-				curAutoMode: 'whitelist',
-				autoModeAggr: 'typeIII',
-				shortCutMode: newShortCut,
-				tutorial: true,
-				update: true,
-			 	preset: 'presetManual',
-			})
-		})
+    	// browser.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
+		// backupData()
+		//
+		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'], response => {
+		// 	// shortcut converting
+		// 	// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
+		// 	const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
+		// 	const newShortCut = shortCutMode === 'thisWebsiteWorkEasy' ? 'easyModeActive' :
+		// 						shortCutMode === 'thisWebsiteWork' ? 'hardModeActive' : null
+		//
+		// 	// websites converting
+		// 	const newWebsites = {
+		// 		...websites,
+		// 		...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
+		// 		...arrayToObj(thisWebsiteWork, 'hardModeActive')
+		// 	}
+		//
+		// 	storageSet({
+		// 		websites: newWebsites,
+		// 		restoreContActive: [...preventContArr],
+		// 		curAutoMode: 'whitelist',
+		// 		autoModeAggr: 'typeIII',
+		// 		shortCutMode: newShortCut,
+		// 		tutorial: true,
+		// 		update: true,
+		// 	 	preset: 'presetManual',
+		// 	})
+		// })
     }
 })
 
@@ -76,11 +76,11 @@ const arrayToObj = (arr, prop) =>
 	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {})
 
 // handle tab switch(focus)
-chrome.tabs.onActivated.addListener(activeInfo => {
-    chrome.tabs.query({ 'active': true }, info => {
+browser.tabs.onActivated.addListener(activeInfo => {
+    browser.tabs.query({ 'active': true }, info => {
     	const url = info[0].url
-	    if (url.includes('chrome://')) {
-			chrome.browserAction.disable(activeInfo.tabId)
+	    if (url.includes('about:')) {
+			browser.browserAction.disable(activeInfo.tabId)
 		} else {
 			const pureUrl = getPureURL(info[0])
 			setNewBadge(pureUrl, activeInfo.tabId)
@@ -109,7 +109,7 @@ const setNewBadge = (pureUrl, tabID) =>
 		Object.keys(subMenuStore).forEach(key => {
 			const menu = subMenuStore[key]
 
-			chrome.contextMenus.update(menu, {
+			browser.contextMenus.update(menu, {
 				type: 'checkbox',
 				checked: (letter === 'A' && key === 'hardModeActive')
 					|| (letter === 'M' && key === 'easyModeActive')
@@ -119,7 +119,7 @@ const setNewBadge = (pureUrl, tabID) =>
 	})
 
 // handle mode changed from content script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (!sender.tab)
 		return true
 
@@ -134,12 +134,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 // handle updating to set new badge and context menu
-chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
+browser.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 	if (changeInfo.status === 'loading') {
 		const url = tab.url
 
 		if (url.includes('chrome://')) {
-			chrome.browserAction.disable(tabID)
+			browser.browserAction.disable(tabID)
 		} else {
 			const pureUrl = getPureURL({ url })
 
@@ -184,9 +184,9 @@ const setNewMode = (newMode, pureUrl, tabID) => {
 }
 
 // add context menu with options
-chrome.contextMenus.removeAll()
+browser.contextMenus.removeAll()
 subMenu.map((item, index) => {
- 	subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
+ 	subMenuStore[Object.keys(subMenuStore)[index]] = browser.contextMenus.create({
 		title: item.title,
 		type: 'checkbox',
 		// checked whitelist by default
@@ -198,9 +198,9 @@ subMenu.map((item, index) => {
 			const tabID = tabs.id
 			const tabURL = tabs.url
 
-			chrome.tabs.sendMessage(tabID, { activeMode: item.mode }, resp => {
+			browser.tabs.sendMessage(tabID, { activeMode: item.mode }, resp => {
 	            if (resp && resp.closePopup === true) {
-					chrome.tabs.update(tabID, { url: tabURL })
+					browser.tabs.update(tabID, { url: tabURL })
 	            }
 	        })
 

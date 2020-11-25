@@ -35,7 +35,7 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 })
 
 // "change mode" listener from popup.js and bg.js
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	// check if script is inside the iframe
 	if (window !== window.parent)
 		return true
@@ -107,7 +107,7 @@ document.onkeydown = debounce(keyDownCallBack, 100)
 
 // open option page programmatically from websites
 document.addEventListener('openOptPage', (e) => {
-	chrome.runtime.sendMessage({ openOptPage: true })
+	browser.runtime.sendMessage({ openOptPage: true })
 })
 
 // send stats to website

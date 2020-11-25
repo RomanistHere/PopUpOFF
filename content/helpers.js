@@ -60,7 +60,7 @@ const restoreFixedElems = () => {
 }
 
 const modeChangedToBg = () =>
-    chrome.runtime.sendMessage({ modeChanged: true })
+    browser.runtime.sendMessage({ modeChanged: true })
 
 // stats
 const fixStats = stats => {

@@ -13,11 +13,11 @@ const storageGet = (request, f) => chrome.storage.sync.get(request, f)
 // Browser actions. Badge - text at right bottom corner of extension's icon
 const setBadgeText = (text) =>
 	(tabID) => {
-		chrome.browserAction.setBadgeText({
+		browser.browserAction.setBadgeText({
 			text: text ? text : "",
 			tabId: tabID ? tabID : null
 		})
-		chrome.browserAction.setBadgeBackgroundColor({ color: "#222831" })
+		browser.browserAction.setBadgeBackgroundColor({ color: "#222831" })
 	}
 
 const nFormatter = (num, digits) => {
