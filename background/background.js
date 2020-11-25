@@ -138,7 +138,7 @@ browser.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 	if (changeInfo.status === 'loading') {
 		const url = tab.url
 
-		if (url.includes('chrome://')) {
+		if (url.includes('about:')) {
 			browser.browserAction.disable(tabID)
 		} else {
 			const pureUrl = getPureURL({ url })
