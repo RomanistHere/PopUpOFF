@@ -60,7 +60,6 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         browser.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp && resp.closePopup === true) {
 				browser.tabs.update(tabs[0].id, { url: tabs[0].url })
-                window.close()
             }
         })
     })
@@ -112,7 +111,6 @@ const initTutorial = (updated = false) => {
 			tutorial: false,
 			update: false
 		})
-		window.close()
 	})
 
 	// close tutorial
@@ -205,7 +203,6 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 		if (state.isRestContActive) {
 			browser.tabs.query({active: true, currentWindow: true}, tabs => {
 		        browser.tabs.update(tabs[0].id, { url: tabs[0].url })
-				window.close()
 		    })
 		}
 	})
