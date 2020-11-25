@@ -147,23 +147,23 @@ body {
     background-color: var(--green-col);
 }
 
-.slider__input::-webkit-slider-thumb{
-    width: 34px;
-    height: 34px;
+.slider__input::-moz-range-thumb{
+    width: 24px;
+    height: 24px;
 
     border: 6px solid var(--yellow-col);
     border-radius: 50%;
 
     background: var(--dark-col);
 
-    -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
     cursor: pointer;
 
     transition: all ease .5s;
 }
 
-.slider__input-active::-webkit-slider-thumb{
+.slider__input-active::-moz-range-thumb{
     border-color: var(--green-col);
 }
 

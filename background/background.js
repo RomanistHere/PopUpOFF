@@ -42,33 +42,33 @@ browser.runtime.onInstalled.addListener(details => {
 		})
     } else if (details.reason == 'update') {
     	// browser.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
-		// backupData()
-		//
-		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'], response => {
-		// 	// shortcut converting
-		// 	// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
-		// 	const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
-		// 	const newShortCut = shortCutMode === 'thisWebsiteWorkEasy' ? 'easyModeActive' :
-		// 						shortCutMode === 'thisWebsiteWork' ? 'hardModeActive' : null
-		//
-		// 	// websites converting
-		// 	const newWebsites = {
-		// 		...websites,
-		// 		...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
-		// 		...arrayToObj(thisWebsiteWork, 'hardModeActive')
-		// 	}
-		//
-		// 	storageSet({
-		// 		websites: newWebsites,
-		// 		restoreContActive: [...preventContArr],
-		// 		curAutoMode: 'whitelist',
-		// 		autoModeAggr: 'typeIII',
-		// 		shortCutMode: newShortCut,
-		// 		tutorial: true,
-		// 		update: true,
-		// 	 	preset: 'presetManual',
-		// 	})
-		// })
+		backupData()
+
+		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'], response => {
+			// shortcut converting
+			// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
+			const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
+			const newShortCut = shortCutMode === 'thisWebsiteWorkEasy' ? 'easyModeActive' :
+								shortCutMode === 'thisWebsiteWork' ? 'hardModeActive' : null
+
+			// websites converting
+			const newWebsites = {
+				...websites,
+				...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
+				...arrayToObj(thisWebsiteWork, 'hardModeActive')
+			}
+
+			storageSet({
+				websites: newWebsites,
+				restoreContActive: [...preventContArr],
+				curAutoMode: 'whitelist',
+				autoModeAggr: 'typeIII',
+				shortCutMode: newShortCut,
+				tutorial: true,
+				update: true,
+			 	preset: 'presetManual',
+			})
+		})
     }
 })
 
