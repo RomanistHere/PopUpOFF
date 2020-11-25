@@ -16,7 +16,7 @@ browser.runtime.onInstalled.addListener(details => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['websites', 'curAutoMode'], response => {
-			// if (!response.websites || !response.curAutoMode) {
+			if (!response.websites || !response.curAutoMode) {
 				// set up start
 				storageSet({
 					tutorial: true,
@@ -38,7 +38,7 @@ browser.runtime.onInstalled.addListener(details => {
 				})
 
 				browser.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
-			// }
+			}
 		})
     } else if (details.reason == 'update') {
     	// browser.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
