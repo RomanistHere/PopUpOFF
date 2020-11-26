@@ -26,6 +26,21 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 	if (window !== window.parent)
 		return
 
+	if (resp.restoreContActive == null) {
+		chrome.storage.sync.set({ restoreContActive: [] })
+		return
+	}
+
+	if (resp.autoModeAggr == null) {
+		chrome.storage.sync.set({ autoModeAggr: 'typeI' })
+		return
+	}
+
+	if (resp.statsEnabled == null) {
+		chrome.storage.sync.set({ statsEnabled: false })
+		return
+	}
+
 	const { statsEnabled, restoreContActive, websites, curAutoMode, autoModeAggr } = resp
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)

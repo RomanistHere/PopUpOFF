@@ -66,6 +66,9 @@ const debounce = (func, wait, immediate) => {
 	}
 }
 
+const arrayToObj = (arr, prop) =>
+	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {})
+
 export {
 	querySelector,
 	querySelectorAll,
@@ -79,4 +82,5 @@ export {
 	nFormatter,
 	backupData,
 	debounce,
+	arrayToObj
 }

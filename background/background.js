@@ -8,7 +8,8 @@ import {
 	storageGet,
 	getPureURL,
 	setBadgeText,
-	backupData
+	backupData,
+	arrayToObj
 } from '../constants/functions.js'
 
 // handle install
@@ -16,7 +17,7 @@ chrome.runtime.onInstalled.addListener(details => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['websites', 'curAutoMode'], response => {
-			if (!response.websites || !response.curAutoMode) {
+			if (response.websites == null || response.curAutoMode == null) {
 				// set up start
 				storageSet({
 					tutorial: true,
@@ -42,38 +43,55 @@ chrome.runtime.onInstalled.addListener(details => {
 		})
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
-		backupData()
+		// backupData()
 
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'], response => {
-			// shortcut converting
-			// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
-			const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
-			const newShortCut = shortCutMode === 'thisWebsiteWorkEasy' ? 'easyModeActive' :
-								shortCutMode === 'thisWebsiteWork' ? 'hardModeActive' : null
+		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode', 'restoreContActive', 'websites', 'curAutoMode', 'statsEnabled', 'autoModeAggr'], response => {
+			if (response.websites == null || response.restoreContActive == null || response.curAutoMode == null) {
+				if (response.thisWebsiteWork == null || response.thisWebsiteWorkEasy == null) {
+					response.thisWebsiteWork = []
+					response.thisWebsiteWorkEasy = []
+				}
+				// shortcut converting
+				// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
+				const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
+				const newShortCut = (shortCutMode == 'thisWebsiteWorkEasy') ? 'easyModeActive' :
+									(shortCutMode == 'thisWebsiteWork') ? 'hardModeActive' : null
 
-			// websites converting
-			const newWebsites = {
-				...websites,
-				...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
-				...arrayToObj(thisWebsiteWork, 'hardModeActive')
+				// websites converting
+				const newWebsites = {
+					...websites,
+					...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
+					...arrayToObj(thisWebsiteWork, 'hardModeActive')
+				}
+
+				const restCont = [...preventContArr]
+
+				storageSet({
+					websites: newWebsites,
+					restoreContActive: restCont,
+					curAutoMode: 'whitelist',
+					autoModeAggr: 'typeIII',
+					shortCutMode: newShortCut,
+					tutorial: true,
+					update: true,
+				 	preset: 'presetManual',
+				})
 			}
 
-			storageSet({
-				websites: newWebsites,
-				restoreContActive: [...preventContArr],
-				curAutoMode: 'whitelist',
-				autoModeAggr: 'typeIII',
-				shortCutMode: newShortCut,
-				tutorial: true,
-				update: true,
-			 	preset: 'presetManual',
-			})
+			if (response.autoModeAggr == null) {
+				storageSet({ autoModeAggr: 'typeI' })
+			}
+
+			if (response.statsEnabled == null) {
+				storageSet({ statsEnabled: false })
+			}
+
+			if (typeof response.shortCutMode == 'undefined') {
+				storageSet({ shortCutMode: null })
+			}
 		})
     }
 })
-
-const arrayToObj = (arr, prop) =>
-	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {})
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
@@ -96,6 +114,16 @@ const letters = {
 
 const setNewBadge = (pureUrl, tabID) =>
 	storageGet(['curAutoMode', 'websites'], resp => {
+		if (resp.curAutoMode == null) {
+			storageSet({ curAutoMode: 'easyModeActive' })
+			return
+		}
+
+		if (resp.websites == null) {
+			storageSet({ websites: {} })
+			return
+		}
+
 		const { websites, curAutoMode } = resp
 		let curModeName = curAutoMode
 
