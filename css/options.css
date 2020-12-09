@@ -32,6 +32,15 @@ body {
     font-size: 18px;
 }
 
+.options__link {
+    color: var(--white-col);
+    transition: all ease .3s;
+}
+
+.options__link:hover {
+    color: var(--yellow-col);
+}
+
 .options__header{
     text-align: center;
 

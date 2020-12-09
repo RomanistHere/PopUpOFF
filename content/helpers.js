@@ -226,8 +226,9 @@ const videoCheck = element => {
     // traverse through the element and its children recursively till find <video> tag or block the element
     const nodeName = element.nodeName
     const childNodes = element.childNodes
+    console.log(nodeName)
 
-    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG')
+    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON')
         return false
 
     // contains shadow dom
@@ -247,7 +248,7 @@ const videoCheck = element => {
     return true
 }
 
-const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube']
+const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube', 'ble deal', 'started for fre', 'tart fre']
 
 const forbWords = [...forbWordsEasy, 'policy', 'subscri', 'sale', 'updates', 'member', 'value', 'advertis', 'подписаться', 'install']
 
@@ -256,12 +257,12 @@ const allowedWords = ['sign in', 'language', 'basket', 'delivery', 'price', 'goo
 const contentEasyCheck = element => {
     const textCont = element.innerHTML.toLowerCase()
 
-    // console.log('contentEasyCheck(should block): ', forbWordsEasy.some(v => {
-    //     if (textCont.includes(v)) {
-    //         console.warn(v)
-    //     }
-    //     return textCont.includes(v)
-    // }))
+    console.log('contentEasyCheck(should block): ', forbWordsEasy.some(v => {
+        if (textCont.includes(v)) {
+            console.warn(v)
+        }
+        return textCont.includes(v)
+    }))
     return forbWordsEasy.some(v => textCont.includes(v))
 }
 
@@ -281,7 +282,7 @@ const contentUnlockCheck = element => {
 }
 
 const positionCheckTypeI = (element, windowArea) => {
-    // console.log(element)
+    console.log(element)
 
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
         if (contentEasyCheck(element))

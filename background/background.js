@@ -45,53 +45,66 @@ chrome.runtime.onInstalled.addListener(details => {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
 		// backupData()
 
-		storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode', 'restoreContActive', 'websites', 'curAutoMode', 'statsEnabled', 'autoModeAggr'], response => {
-			if (response.websites == null || response.restoreContActive == null || response.curAutoMode == null) {
-				if (response.thisWebsiteWork == null || response.thisWebsiteWorkEasy == null) {
-					response.thisWebsiteWork = []
-					response.thisWebsiteWorkEasy = []
-				}
-				// shortcut converting
-				// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
-				const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
-				const newShortCut = (shortCutMode == 'thisWebsiteWorkEasy') ? 'easyModeActive' :
-									(shortCutMode == 'thisWebsiteWork') ? 'hardModeActive' : null
+		chrome.storage.sync.getBytesInUse(null, resp => {
+            console.log('all: ', resp)
+        })
+		chrome.storage.sync.getBytesInUse(['websites'], resp => {
+            console.log('websites: ', resp)
+        })
+        chrome.storage.sync.get(null, resp => {
+            console.log(resp)
+        })
+        console.log(chrome.storage.sync)
 
-				// websites converting
-				const newWebsites = {
-					...websites,
-					...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
-					...arrayToObj(thisWebsiteWork, 'hardModeActive')
-				}
-
-				const restCont = [...preventContArr]
-
-				storageSet({
-					websites: newWebsites,
-					restoreContActive: restCont,
-					curAutoMode: 'whitelist',
-					autoModeAggr: 'typeIII',
-					shortCutMode: newShortCut,
-					tutorial: true,
-					update: true,
-				 	preset: 'presetManual',
-				})
-			}
-
-			if (response.autoModeAggr == null) {
-				storageSet({ autoModeAggr: 'typeI' })
-			}
-
-			if (response.statsEnabled == null) {
-				storageSet({ statsEnabled: false })
-			}
-
-			if (typeof response.shortCutMode == 'undefined') {
-				storageSet({ shortCutMode: null })
-			}
-		})
+		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode', 'restoreContActive', 'websites', 'curAutoMode', 'statsEnabled', 'autoModeAggr'], response => {
+		// 	if (response.websites == null || response.restoreContActive == null || response.curAutoMode == null) {
+		// 		if (response.thisWebsiteWork == null || response.thisWebsiteWorkEasy == null) {
+		// 			response.thisWebsiteWork = []
+		// 			response.thisWebsiteWorkEasy = []
+		// 		}
+		// 		// shortcut converting
+		// 		// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
+		// 		const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
+		// 		const newShortCut = (shortCutMode == 'thisWebsiteWorkEasy') ? 'easyModeActive' :
+		// 							(shortCutMode == 'thisWebsiteWork') ? 'hardModeActive' : null
+		//
+		// 		// websites converting
+		// 		const newWebsites = {
+		// 			...websites,
+		// 			...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
+		// 			...arrayToObj(thisWebsiteWork, 'hardModeActive')
+		// 		}
+		//
+		// 		const restCont = [...preventContArr]
+		//
+		// 		storageSet({
+		// 			websites: newWebsites,
+		// 			restoreContActive: restCont,
+		// 			curAutoMode: 'whitelist',
+		// 			autoModeAggr: 'typeIII',
+		// 			shortCutMode: newShortCut,
+		// 			tutorial: true,
+		// 			update: true,
+		// 		 	preset: 'presetManual',
+		// 		})
+		// 	}
+		//
+		// 	if (response.autoModeAggr == null) {
+		// 		storageSet({ autoModeAggr: 'typeI' })
+		// 	}
+		//
+		// 	if (response.statsEnabled == null) {
+		// 		storageSet({ statsEnabled: false })
+		// 	}
+		//
+		// 	if (typeof response.shortCutMode == 'undefined') {
+		// 		storageSet({ shortCutMode: null })
+		// 	}
+		// })
     }
 })
+
+chrome.runtime.setUninstallURL("https://romanisthere.github.io/PopUpOFF-Website/pages/delete.html")
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
