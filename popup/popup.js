@@ -1,6 +1,6 @@
 import {
-	websites,
-	preventContArr
+	defWebsites,
+	defPreventContArr
 } from '../constants/data.js'
 
 import {
@@ -157,9 +157,10 @@ const init = () => {
 
 			// if website is in one of arrays - set the proper mode
 			let curModeName = curAutoMode
+			const fullWebsites = { ...defWebsites, ...websites }
 
-            if (pureUrl in websites) {
-				curModeName = websites[pureUrl]
+            if (pureUrl in fullWebsites) {
+				curModeName = fullWebsites[pureUrl]
             }
 
 			const actButton = querySelector(`[data-mode='${curModeName}']`)
@@ -177,9 +178,9 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 	storageGet(['restoreContActive', 'websites'], resp => {
 		const { restoreContActive, websites } = resp
 		let newArr = []
-		let newWebsites = {...websites}
+		let newWebsites = { ...websites }
 
-		// add/remove site to restore cotntent array
+		// add/remove site to restore content array
 		if (state.isRestContActive) {
 			newArr = restoreContActive.filter(url => url !== state.pureUrl)
 			removeClass(this, 'add_opt-active')
@@ -190,7 +191,7 @@ prevContBtn.addEventListener('click', debounce(function(e) {
 
 		// if whitelist activated, add website to easy mode (prevent content should not work in whitelist)
 		if (state.curMode === 'whitelist') {
-			newWebsites = {...websites, [state.pureUrl]: 'easyModeActive' }
+			newWebsites = { ...websites, [state.pureUrl]: 'easyModeActive' }
 			state = { ...state, curMode: 'easyModeActive' }
 		}
 

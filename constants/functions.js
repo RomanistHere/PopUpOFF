@@ -41,13 +41,9 @@ const nFormatter = (num, digits) => {
 }
 
 const backupData = () =>
-	storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'stats'], response => {
+	storageGet(['websites', 'curAutoMode', 'stats', 'statsEnabled', 'restoreContActive', 'shortCutMode', 'autoModeAggr'], response => {
 		storageSet({
-			backupData: {
-				hard: response.thisWebsiteWork,
-				easy: response.thisWebsiteWorkEasy,
-				stats: response.stats
-			}
+			backupData: { ...response }
 		})
 	})
 

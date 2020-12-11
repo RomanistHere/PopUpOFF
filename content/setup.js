@@ -42,9 +42,10 @@ chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAu
 	}
 
 	const { statsEnabled, restoreContActive, websites, curAutoMode, autoModeAggr } = resp
+	const fullWebsites = { ...defWebsites, ...websites }
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
-	const curModeName = pureUrl in websites ? websites[pureUrl] : curAutoMode
+	const curModeName = pureUrl in fullWebsites ? fullWebsites[pureUrl] : curAutoMode
 
 	startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
 })
@@ -93,6 +94,7 @@ const keyDownCallBack = e => {
 
 		chrome.storage.sync.get(['shortCutMode', 'statsEnabled', 'restoreContActive', 'websites', 'autoModeAggr'], resp => {
 			const { shortCutMode, statsEnabled, restoreContActive, websites, autoModeAggr } = resp
+			const fullWebsites = { ...defWebsites, ...websites }
 
 			if (appState.curMode === shortCutMode || shortCutMode === null)
 				return
@@ -103,7 +105,7 @@ const keyDownCallBack = e => {
 			const curModeName = shortCutMode
 			domObserver = disconnectObservers(domObserver)
 
-			if (pureUrl in websites && websites[pureUrl] === curModeName)
+			if (pureUrl in fullWebsites && fullWebsites[pureUrl] === curModeName)
 				return
 
 			const newWebsites = { ...websites, [pureUrl]: curModeName }

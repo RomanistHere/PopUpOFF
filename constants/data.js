@@ -1,18 +1,14 @@
 // list of websites where prevent content feature enabled by default
-const preventContArr = [
+const defPreventContArr = [
 	'www.economist.com',
 	'www.reviewjournal.com',
 	'www.bostonglobe.com',
 	'www.theguardian.com',
-	'www.saechsische.de',
-	'sz-magazin.sueddeutsche.de',
-	'www.zeit.de',
-	'www.heise.de',
 	'www.theladders.com'
 ]
 
 // other default settings
-const websites = {
+const defWebsites = {
 	'a.goodtime.io': 'whitelist',
 	'about.google': 'whitelist',
 	'app.hubspot.com': 'whitelist',
@@ -155,26 +151,10 @@ const websites = {
 	'www.reviewjournal.com': 'easyModeActive',
 	'www.bostonglobe.com': 'easyModeActive',
 	'www.theguardian.com': 'easyModeActive',
-	'www.saechsische.de': 'easyModeActive',
-	'sz-magazin.sueddeutsche.de': 'easyModeActive',
-	'www.zeit.de': 'easyModeActive',
-	'www.heise.de': 'easyModeActive',
 	'www.theladders.com': 'easyModeActive'
 }
 
-// This is what presets are:
-//
-// const presetCasual = {
-// 	curAutoMode: 'easyModeActive',
-// 	autoModeAggr: 'typeI',
-// }
-//
-// const presetManual = {
-// 	curAutoMode: 'whitelist',
-// 	autoModeAggr: 'typeIII',
-// }
-
 export {
-	websites,
-	preventContArr
+	defWebsites,
+	defPreventContArr
 }

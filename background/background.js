@@ -1,6 +1,6 @@
 import {
-	websites,
-	preventContArr
+	defWebsites,
+	defPreventContArr
 } from '../constants/data.js'
 
 import {
@@ -29,13 +29,13 @@ chrome.runtime.onInstalled.addListener(details => {
 					},
 					statsEnabled: true,
 					backupData: {},
-					restoreContActive: [...preventContArr],
-					curAutoMode: 'easyModeActive',
+					restoreContActive: [...defPreventContArr],
+					curAutoMode: 'whitelist',
 					shortCutMode: null,
 					// shortCutMode: 'hardModeActive',
-					websites: websites,
+					websites: {},
 					autoModeAggr: 'typeI',
-					preset: 'presetCasual',
+					preset: 'presetManual',
 				})
 
 				chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
@@ -43,6 +43,26 @@ chrome.runtime.onInstalled.addListener(details => {
 		})
     } else if (details.reason == 'update') {
     	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
+		storageGet(['websites'], response => {
+			let newWebsites = {}
+
+			if (response.websites) {
+				newWebsites = response.websites
+				const keys = Object.keys(defWebsites)
+				try {
+					keys.forEach(key => {
+						delete newWebsites[key]
+					})
+				} catch (e) {
+					console.log(e)
+				}
+			}
+
+			storageSet({
+				websites: newWebsites
+			})
+		})
+
 		// backupData()
 
 		chrome.storage.sync.getBytesInUse(null, resp => {
@@ -54,7 +74,6 @@ chrome.runtime.onInstalled.addListener(details => {
         chrome.storage.sync.get(null, resp => {
             console.log(resp)
         })
-        console.log(chrome.storage.sync)
 
 		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode', 'restoreContActive', 'websites', 'curAutoMode', 'statsEnabled', 'autoModeAggr'], response => {
 		// 	if (response.websites == null || response.restoreContActive == null || response.curAutoMode == null) {
@@ -138,10 +157,11 @@ const setNewBadge = (pureUrl, tabID) =>
 		}
 
 		const { websites, curAutoMode } = resp
+		const fullWebsites = { ...defWebsites, ...websites }
 		let curModeName = curAutoMode
 
-		if (pureUrl in websites)
-			curModeName = websites[pureUrl]
+		if (pureUrl in fullWebsites)
+			curModeName = fullWebsites[pureUrl]
 
 		const letter = letters[curModeName]
 
@@ -212,8 +232,9 @@ const subMenuStore = {
 const setNewMode = (newMode, pureUrl, tabID) => {
 	storageGet(['websites'], resp => {
 		const { websites } = resp
+		const fullWebsites = { ...defWebsites, ...websites }
 
-		if (pureUrl in websites && websites[pureUrl] === newMode)
+		if (pureUrl in fullWebsites && fullWebsites[pureUrl] === newMode)
 			return
 
 		const newWebsites = { ...websites, [pureUrl]: newMode }
