@@ -142,10 +142,6 @@ const defWebsites = {
 	'www.reviewjournal.com': 'easyModeActive',
 	'www.bostonglobe.com': 'easyModeActive',
 	'www.theguardian.com': 'easyModeActive',
-	'www.saechsische.de': 'easyModeActive',
-	'sz-magazin.sueddeutsche.de': 'easyModeActive',
-	'www.zeit.de': 'easyModeActive',
-	'www.heise.de': 'easyModeActive',
 	'www.theladders.com': 'easyModeActive'
 }
 // "global" variables //
