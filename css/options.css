@@ -253,3 +253,21 @@ body {
 }
 
 /* //cross// */
+
+.options__button {
+    display: inline-block;
+
+    padding: 4px 20px;
+    margin: 10px 20px 0 0;
+    border: 2px solid var(--yellow-col);
+
+    font-size: 22px;
+    color: var(--yellow-col);
+    text-decoration: none;
+
+    transition: all ease .3s;
+}
+
+.options__button:hover {
+    text-decoration: underline;
+}
