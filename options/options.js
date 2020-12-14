@@ -219,6 +219,7 @@ const valuesAggr = {
 	'typeIII': [2, sliderTextRightAggr]
 }
 
+// resetting //
 storageGet("autoModeAggr", res => {
 	const { autoModeAggr } = res
 
@@ -226,3 +227,16 @@ storageGet("autoModeAggr", res => {
 	addClass(valuesAggr[autoModeAggr][1], 'slider__text-active')
 	addClass(sliderAggr, 'slider__input-active')
 })
+
+const resetButtons = document.querySelectorAll('.options__button')
+resetButtons.forEach(item => item.addEventListener('click', (e) => {
+	e.preventDefault()
+	const label = e.currentTarget.getAttribute('data-label')
+
+	firePopUp(label)
+}))
+
+const firePopUp = label => {
+	const popup = document.querySelector('.popup')
+	addClass(popup, 'popup-show')
+}

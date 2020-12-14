@@ -125,14 +125,22 @@
                 Something is not working properly? Seeing errors or "undefined"? I'm sorry, give the buttons below a try:
             </p>
             <div class="options__desc">
-                <a href="#" class="options__button options__stats_btn">Stats only</a>
-                <a href="#" class="options__button options__settings_btn">Settings only</a>
-                <a href="#" class="options__button options__stats_btn">Everything</a>
+                <a href="#" data-label="stats" class="options__button">Stats only</a>
+                <a href="#" data-label="settings" class="options__button">Settings only</a>
+                <a href="#" data-label="all" class="options__button">Everything</a>
             </div>
             <p class="options__desc options_text">
                 I would be happy if you contacted me about it as well though :)
             </p>
         </section>
+
+        <div class="popup">
+            Are you sure?
+            <div class="popup__pick">
+                <a href="#" class="popup__link delete">Reset</a>
+                <a href="#" class="popup__link notDelete">No</a>
+            </div>
+        </div>
 
         <script type="module" src="options.js"></script>
     </body>

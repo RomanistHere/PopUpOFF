@@ -130,7 +130,7 @@ chrome.runtime.setUninstallURL("https://romanisthere.github.io/PopUpOFF-Website/
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.query({ 'active': true }, info => {
     	const url = info[0].url
-	    if (url.includes('chrome://')) {
+	    if (url.includes('chrome://') || url.includes('chrome-extension://')) {
 			chrome.browserAction.disable(activeInfo.tabId)
 		} else {
 			const pureUrl = getPureURL(info[0])
@@ -200,7 +200,7 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 	if (changeInfo.status === 'loading') {
 		const url = tab.url
 
-		if (url.includes('chrome://')) {
+		if (url.includes('chrome://') || url.includes('chrome-extension://')) {
 			chrome.browserAction.disable(tabID)
 		} else {
 			const pureUrl = getPureURL({ url })

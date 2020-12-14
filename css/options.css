@@ -271,3 +271,44 @@ body {
 .options__button:hover {
     text-decoration: underline;
 }
+
+.popup {
+    display: none;
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 170px;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+
+    background-color: var(--white-col);
+    box-shadow: 5px 5px 10px 0 rgba(0,0,0,.75);
+
+    animation: appear 1s ease;
+
+    justify-content: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+
+    font-size: 30px;
+}
+
+.popup-show {
+    display: flex;
+}
+
+.popup__pick {
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+
+    justify-content: space-around;
+
+    width: 100%;
+}
