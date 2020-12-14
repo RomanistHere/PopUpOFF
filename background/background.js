@@ -46,21 +46,22 @@ chrome.runtime.onInstalled.addListener(details => {
 		storageGet(['websites'], response => {
 			let newWebsites = {}
 
-			if (response.websites) {
-				newWebsites = response.websites
-				const keys = Object.keys(defWebsites)
-				try {
-					keys.forEach(key => {
-						delete newWebsites[key]
-					})
-				} catch (e) {
-					console.log(e)
-				}
-			}
-
-			storageSet({
-				websites: newWebsites
-			})
+			// if (response.websites) {
+			// 	newWebsites = response.websites
+			// 	const keys = Object.keys(defWebsites)
+			// 	try {
+			// 		keys.forEach(key => {
+			// 			delete newWebsites[key]
+			// 		})
+			// 	} catch (e) {
+			// 		console.log(e)
+			// 	}
+			// }
+			//
+			// storageSet({
+			// 	websites: newWebsites
+			// })
+			console.log(response.websites)
 		})
 
 		// backupData()

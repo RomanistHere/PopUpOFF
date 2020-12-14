@@ -374,7 +374,7 @@ const videoCheck = element => {
     const childNodes = element.childNodes
     // console.log(nodeName)
 
-    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON')
+    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'IFRAME')
         return false
 
     // contains shadow dom
@@ -428,7 +428,7 @@ const contentUnlockCheck = element => {
 }
 
 const positionCheckTypeI = (element, windowArea) => {
-    console.log(element)
+    // console.log(element)
 
     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
         if (contentEasyCheck(element))
