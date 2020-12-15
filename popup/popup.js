@@ -28,6 +28,27 @@ const setNewBtn = (btns, newActBtn) => {
     addClass(newActBtn, 'desc-active')
 }
 
+const reloadPage = (id, url) => {
+	chrome.tabs.update(id, { url: url })
+	window.close()
+}
+
+const showReloadPopUp = ({ id, url }) => {
+	const popupReloadBtn = querySelector('.popup_reload')
+	popupReloadBtn.addEventListener('click', e => {
+		e.preventDefault()
+		reloadPage(id, url)
+	})
+
+	const popupReload = querySelector('.popup')
+	addClass(popupReload, 'popup-show')
+	setTimeout(() => {
+		removeClass(popupReload, 'popup-show')
+		addClass(popupReload, 'popup-fade')
+	}, 2000)
+	setTimeout(() => { removeClass(popupReload, 'popup-fade') }, 3000)
+}
+
 // handle clicks on buttons
 const buttons = querySelectorAll('.desc')
 buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
@@ -59,14 +80,7 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         // send msg to content script with new active mode
         chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp && resp.closePopup === true) {
-				addClass(querySelector('.popup'), 'popup-show')
-				setTimeout(() => {
-					removeClass(querySelector('.popup'), 'popup-show')
-					addClass(querySelector('.popup'), 'popup-fade')
-				}, 2000)
-				setTimeout(() => { removeClass(querySelector('.popup'), 'popup-fade') }, 3000)
-				// chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
-                // window.close()
+				showReloadPopUp(tabs[0])
             }
         })
     })
