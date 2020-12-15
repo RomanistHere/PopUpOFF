@@ -59,8 +59,14 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         // send msg to content script with new active mode
         chrome.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp && resp.closePopup === true) {
-				chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
-                window.close()
+				addClass(querySelector('.popup'), 'popup-show')
+				setTimeout(() => {
+					removeClass(querySelector('.popup'), 'popup-show')
+					addClass(querySelector('.popup'), 'popup-fade')
+				}, 2000)
+				setTimeout(() => { removeClass(querySelector('.popup'), 'popup-fade') }, 3000)
+				// chrome.tabs.update(tabs[0].id, { url: tabs[0].url })
+                // window.close()
             }
         })
     })

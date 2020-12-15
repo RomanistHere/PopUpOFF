@@ -577,3 +577,57 @@ body {
 }
 
 /* // cross end // */
+
+/* // popup // */
+
+.popup {
+    position: fixed;
+    display: none;
+
+    bottom: 11px;
+    left: 20px;
+    right: 20px;
+    padding: 10px 0;
+
+    background-color: var(--dark-col);
+    border: 2px solid var(--yellow-col);
+    transition: all ease .3s;
+    animation: popping 1s ease;
+
+    text-align: center;
+    text-decoration: none;
+    font-size: 22px;
+    color: var(--white-col);
+
+    will-change: auto;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    --arr-col: var(--yellow-col);
+}
+
+.popup:hover {
+    transform: translateZ(0) perspective(1px) scale(1.04, 1.04);
+}
+
+.popup-show {
+    display: block;
+}
+
+.popup-fade {
+    display: block;
+
+    animation: popupFade 1s ease;
+}
+
+@keyframes popupFade {
+    0%, 60% {
+        transform: none;
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+}
+
+/* // popup end // */

@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				chrome.storage.sync.set({ restoreContActive: newContActive })
 			}
 
-			sendResponse({ closePopup: false })
+			sendResponse({ closePopup: true })
 			// window.location.reload()
 		} else {
 			sendResponse({ closePopup: false })
