@@ -7,6 +7,8 @@ import {
 	removeClass
 } from '../constants/functions.js'
 
+import { defPreventContArr } from '../constants/data.js'
+
 let state = {
 	tutorial: false,
 	stats: true,
@@ -228,7 +230,7 @@ storageGet("autoModeAggr", res => {
 	addClass(sliderAggr, 'slider__input-active')
 })
 
-const resetButtons = document.querySelectorAll('.options__button')
+const resetButtons = querySelectorAll('.options__button')
 resetButtons.forEach(item => item.addEventListener('click', (e) => {
 	e.preventDefault()
 	const label = e.currentTarget.getAttribute('data-label')
@@ -236,7 +238,79 @@ resetButtons.forEach(item => item.addEventListener('click', (e) => {
 	firePopUp(label)
 }))
 
+const popup = querySelector('.popup')
+const popupCloseBtn = querySelector('.notDelete')
+const popupDeleteBtn = querySelector('.delete')
+
+popupCloseBtn.addEventListener('click', e => {
+	e.preventDefault()
+
+	popupDeleteBtn.removeEventListener('click', resetStats)
+	popupDeleteBtn.removeEventListener('click', resetSettings)
+	popupDeleteBtn.removeEventListener('click', resetAll)
+
+	closePopUp()
+})
+
+const resetStats = e => {
+	e.preventDefault()
+	storageSet({
+		stats: {
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0
+		}
+	})
+	window.location.reload()
+}
+
+const resetSettings = e => {
+	e.preventDefault()
+	storageSet({
+		tutorial: true,
+		update: false,
+		statsEnabled: true,
+		backupData: {},
+		curAutoMode: 'whitelist',
+		shortCutMode: null,
+		autoModeAggr: 'typeI',
+		preset: 'presetManual',
+	})
+	window.location.reload()
+}
+
+const resetAll = e => {
+	e.preventDefault()
+	storageSet({
+		tutorial: true,
+		update: false,
+		stats: {
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0
+		},
+		statsEnabled: true,
+		backupData: {},
+		restoreContActive: [...defPreventContArr],
+		curAutoMode: 'whitelist',
+		shortCutMode: null,
+		websites: {},
+		autoModeAggr: 'typeI',
+		preset: 'presetManual',
+	})
+	window.location.reload()
+}
+
+const closePopUp = () =>
+	removeClass(popup, 'popup-show')
+
 const firePopUp = label => {
-	const popup = document.querySelector('.popup')
 	addClass(popup, 'popup-show')
+
+	if (label === 'stats')
+		popupDeleteBtn.addEventListener('click', resetStats)
+	else if (label === 'settings')
+		popupDeleteBtn.addEventListener('click', resetSettings)
+	else if (label === 'all')
+		popupDeleteBtn.addEventListener('click', resetAll)
 }
