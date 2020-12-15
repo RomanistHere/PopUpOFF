@@ -12,7 +12,7 @@ const modes = {
 
 const startMode = (curModeName, statsEnabled, shouldRestoreCont, autoModeAggr) => {
 	// check if we switch from hard to easy one
-	if (appState.curMode === 'hardModeActive')
+	if (appState.curMode === 'hardModeActive' || appState.curMode === 'easyModeActive')
 		restoreFixedElems()
 	// start new mode and upd state
 	const mode = modes[curModeName === 'easyModeActive' ? `${curModeName}_${autoModeAggr}` : curModeName]
@@ -74,8 +74,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				chrome.storage.sync.set({ restoreContActive: newContActive })
 			}
 
-			sendResponse({ closePopup: true })
-			window.location.reload()
+			sendResponse({ closePopup: false })
+			// window.location.reload()
 		} else {
 			sendResponse({ closePopup: false })
 		}
@@ -115,8 +115,8 @@ const keyDownCallBack = e => {
 			modeChangedToBg()
 			createNotification(appState.curMode)
 
-			if (curModeName === 'whitelist')
-				window.location.reload()
+			// if (curModeName === 'whitelist')
+			// 	window.location.reload()
 		})
 	}
 }

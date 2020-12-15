@@ -27,9 +27,8 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 			if (element.getAttribute('data-PopUpOFF') === 'notification')
 	        	return
 
-	        if (getStyle(element, 'display') != 'none') {
+	        if (getStyle(element, 'display') != 'none')
 	        	element.setAttribute('data-PopUpOFFBl', 'bl')
-	        }
 
 			if (statsEnabled) state = addItemToStats(element, state)
 
@@ -114,6 +113,9 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 
 	    	if (element.getAttribute('data-PopUpOFF') === 'notification')
 	        	return
+
+			if (getStyle(element, 'display') != 'none')
+	        	element.setAttribute('data-PopUpOFFBl', 'bl')
 
 			const memoized = memoize.has(element)
 			const { shouldRemove, shouldMemo } = memoized
