@@ -146,6 +146,11 @@ const defWebsites = {
 	'lolesports.com': 'whitelist',
 	'aliexpress.ru': 'whitelist',
 	'www.aliexpress.com': 'whitelist',
+	'localhost:4200': 'whitelist',
+	'localhost:3000': 'whitelist',
+	'localhost:8000': 'whitelist',
+	'localhost:5000': 'whitelist',
+	'localhost:8080': 'whitelist',
 	// moderate by default
 	'www.economist.com': 'easyModeActive',
 	'www.reviewjournal.com': 'easyModeActive',

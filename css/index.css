@@ -616,11 +616,15 @@ body {
 .popup-fade {
     display: block;
 
-    animation: popupFade 1s ease;
+    animation: popupFade .2s ease .8s;
+}
+
+.popup-underline {
+    text-decoration: underline;
 }
 
 @keyframes popupFade {
-    0%, 60% {
+    0% {
         transform: none;
         opacity: 1;
     }
