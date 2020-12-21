@@ -8,12 +8,33 @@ import {
 	storageGet,
 	getPureURL,
 	setBadgeText,
-	backupData,
+	splitIntoChunks,
+	setWebsites,
+	getWebsites,
+	getStorageData,
+	setStorageData,
 	arrayToObj
 } from '../constants/functions.js'
 
+const websitesStore = {
+	"blobs.app": "easyModeActive",
+	"developer.chrome.com": "easyModeActive",
+	"humanparts.medium.com": "hardModeActive",
+	"medium.com": "hardModeActive",
+	"news.google.com": "easyModeActive",
+	"payment.webpay.by": "whitelist",
+	"uxdesign.cc": "hardModeActive",
+	"www.21vek.by": "whitelist",
+	"www.designcareer.co": "hardModeActive",
+	"www.educba.com": "hardModeActive",
+	"www.portative.by": "hardModeActive",
+	"www.stuff.co.nz": "hardModeActive",
+	"www.youtube.com": "whitelist",
+	"yandex.ru": "hardModeActive",
+}
+
 // handle install
-chrome.runtime.onInstalled.addListener(details => {
+chrome.runtime.onInstalled.addListener(async (details) => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
 		storageGet(['websites', 'curAutoMode'], response => {
@@ -28,12 +49,14 @@ chrome.runtime.onInstalled.addListener(details => {
 						restored: 0
 					},
 					statsEnabled: true,
-					backupData: {},
 					restoreContActive: [...defPreventContArr],
 					curAutoMode: 'whitelist',
 					shortCutMode: null,
 					// shortCutMode: 'hardModeActive',
-					websites: {},
+					// websites: {},
+					websites1: {},
+					websites2: {},
+					websites3: {},
 					autoModeAggr: 'typeI',
 					preset: 'presetManual',
 				})
@@ -42,9 +65,34 @@ chrome.runtime.onInstalled.addListener(details => {
 			}
 		})
     } else if (details.reason == 'update') {
-    	// chrome.tabs.create({ url: 'https://romanisthere.github.io/apps/popupoff/updates/#2.0.0' })
-		storageGet(['websites'], response => {
-			let newWebsites = {}
+
+		// storageGet(['websites1', 'websites2', 'websites3'], resp => {
+		// 	const {websites1, websites2, websites3} = resp
+		// 	const newWebs = {...websites1, ...websites2, ...websites3}
+		// 	storageSet({
+		// 		websites: newWebs
+		// 	})
+		// })
+
+		// chrome.storage.sync.remove(['websites1', 'websites2', 'websites3'])
+
+		try {
+			const { websites } = await getStorageData('websites')
+			// const websites = websitesStore
+			if (websites != null) {
+				console.log(websites)
+				await setWebsites(websites)
+				chrome.storage.sync.remove(['websites', 'backupData'])
+			}
+		} catch (e) {
+			console.log('something happened')
+			console.log(e)
+		}
+
+		// PRODUCTION UNMUTE //
+		// chrome.storage.sync.remove(['thisWebsiteWork', 'thisWebsiteWorkEasy'])
+		// storageGet(['websites'], response => {
+		// 	let newWebsites = {}
 
 			// if (response.websites) {
 			// 	newWebsites = response.websites
@@ -61,20 +109,18 @@ chrome.runtime.onInstalled.addListener(details => {
 			// storageSet({
 			// 	websites: newWebsites
 			// })
-			console.log(response.websites)
-		})
+		// })
 
-		// backupData()
-
-		chrome.storage.sync.getBytesInUse(null, resp => {
-            console.log('all: ', resp)
-        })
-		chrome.storage.sync.getBytesInUse(['websites'], resp => {
-            console.log('websites: ', resp)
-        })
         chrome.storage.sync.get(null, resp => {
             console.log(resp)
         })
+
+		setTimeout(function () {
+			console.log('timeout')
+			chrome.storage.sync.get(null, resp => {
+	            console.log(resp)
+	        })
+		}, 2000);
 
 		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode', 'restoreContActive', 'websites', 'curAutoMode', 'statsEnabled', 'autoModeAggr'], response => {
 		// 	if (response.websites == null || response.restoreContActive == null || response.curAutoMode == null) {
@@ -130,7 +176,10 @@ chrome.runtime.setUninstallURL("https://romanisthere.github.io/PopUpOFF-Website/
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.query({ 'active': true }, info => {
     	const url = info[0].url
-	    if (url.includes('chrome://') || url.includes('chrome-extension://')) {
+		// console.log(url)
+		// console.log(url.length)
+	    if (url.includes('chrome://') || url.includes('chrome-extension://') || url.length === 0) {
+			// console.log('here')
 			chrome.browserAction.disable(activeInfo.tabId)
 		} else {
 			const pureUrl = getPureURL(info[0])
@@ -145,40 +194,38 @@ const letters = {
 	'whitelist': ''
 }
 
-const setNewBadge = (pureUrl, tabID) =>
-	storageGet(['curAutoMode', 'websites'], resp => {
-		if (resp.curAutoMode == null) {
-			storageSet({ curAutoMode: 'easyModeActive' })
-			return
-		}
+const setNewBadge = async (pureUrl, tabID) => {
+	let { curAutoMode } = await getStorageData('curAutoMode')
+	const websites = await getWebsites()
 
-		if (resp.websites == null) {
-			storageSet({ websites: {} })
-			return
-		}
+	console.log(websites)
 
-		const { websites, curAutoMode } = resp
-		const fullWebsites = { ...defWebsites, ...websites }
-		let curModeName = curAutoMode
+	if (curAutoMode == null) {
+		await setStorageData({ curAutoMode: 'easyModeActive' })
+		curAutoMode = 'easyModeActive'
+	}
 
-		if (pureUrl in fullWebsites)
-			curModeName = fullWebsites[pureUrl]
+	const fullWebsites = { ...defWebsites, ...websites }
+	let curModeName = curAutoMode
 
-		const letter = letters[curModeName]
+	if (pureUrl in fullWebsites)
+		curModeName = fullWebsites[pureUrl]
 
-		setBadgeText(letter)(tabID)
+	const letter = letters[curModeName]
 
-		Object.keys(subMenuStore).forEach(key => {
-			const menu = subMenuStore[key]
+	setBadgeText(letter)(tabID)
 
-			chrome.contextMenus.update(menu, {
-				type: 'checkbox',
-				checked: (letter === 'A' && key === 'hardModeActive')
-					|| (letter === 'M' && key === 'easyModeActive')
-					|| (letter === '' && key === 'whitelist')
-			})
+	Object.keys(subMenuStore).forEach(key => {
+		const menu = subMenuStore[key]
+
+		chrome.contextMenus.update(menu, {
+			type: 'checkbox',
+			checked: (letter === 'A' && key === 'hardModeActive')
+				|| (letter === 'M' && key === 'easyModeActive')
+				|| (letter === '' && key === 'whitelist')
 		})
 	})
+}
 
 // handle mode changed from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -230,20 +277,24 @@ const subMenuStore = {
 	whitelist: null,
 }
 
-const setNewMode = (newMode, pureUrl, tabID) => {
-	storageGet(['websites'], resp => {
-		const { websites } = resp
-		const fullWebsites = { ...defWebsites, ...websites }
+const setNewMode = async (newMode, pureUrl, tabID) => {
+	const websites = await getWebsites()
+	console.log(websites)
 
-		if (pureUrl in fullWebsites && fullWebsites[pureUrl] === newMode)
-			return
+	const fullWebsites = { ...defWebsites, ...websites }
 
-		const newWebsites = { ...websites, [pureUrl]: newMode }
-		const letter = letters[newMode]
+	if (pureUrl in fullWebsites && fullWebsites[pureUrl] === newMode)
+		return
 
-		storageSet({ websites: newWebsites })
+	const newWebsites = { ...websites, [pureUrl]: newMode }
+	const letter = letters[newMode]
+
+	try {
+		await setWebsites(newWebsites)
 		setBadgeText(letter)(tabID)
-	})
+	} catch (e) {
+		console.log(e)
+	}
 }
 
 // add context menu with options
@@ -262,9 +313,9 @@ subMenu.map((item, index) => {
 			const tabURL = tabs.url
 
 			chrome.tabs.sendMessage(tabID, { activeMode: item.mode }, resp => {
-	            if (resp && resp.closePopup === true) {
-					chrome.tabs.update(tabID, { url: tabURL })
-	            }
+	            // if (resp && resp.closePopup === true) {
+				// 	chrome.tabs.update(tabID, { url: tabURL })
+	            // }
 	        })
 
 			setNewMode(item.mode, pureUrl, tabID)

@@ -8,7 +8,7 @@ const addClass = (node, className) => node.classList.add(className)
 const removeClass = (node, className) => node.classList.remove(className)
 const getAttr = (node, attrName) => node.getAttribute(attrName)
 // Chrome store
-const storageSet = (changes) => chrome.storage.sync.set(changes)
+const storageSet = (changes, f) => chrome.storage.sync.set(changes, f)
 const storageGet = (request, f) => chrome.storage.sync.get(request, f)
 // Browser actions. Badge - text at right bottom corner of extension's icon
 const setBadgeText = (text) =>
@@ -40,13 +40,6 @@ const nFormatter = (num, digits) => {
 	return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
 }
 
-const backupData = () =>
-	storageGet(['websites', 'curAutoMode', 'stats', 'statsEnabled', 'restoreContActive', 'shortCutMode', 'autoModeAggr'], response => {
-		storageSet({
-			backupData: { ...response }
-		})
-	})
-
 const debounce = (func, wait, immediate) => {
 	var timeout
 	return function() {
@@ -65,6 +58,84 @@ const debounce = (func, wait, immediate) => {
 const arrayToObj = (arr, prop) =>
 	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {})
 
+const splitIntoChunks = (obj) => {
+	let obj1 = {}
+	let obj2 = {}
+	let obj3 = {}
+
+	const keys = Object.keys(obj)
+	const keysLength = keys.length
+	let k = 0
+
+	for (let i = 0; i < keysLength; i++) {
+		const key = keys[i]
+		if (k === 0) {
+			obj1 = { ...obj1, [key]: obj[key] }
+			k++
+		} else if (k === 1) {
+			obj2 = { ...obj2, [key]: obj[key] }
+			k++
+		} else if (k === 2) {
+			obj3 = { ...obj3, [key]: obj[key] }
+			k = 0
+		}
+	}
+
+	return {
+		obj1: obj1,
+		obj2: obj2,
+		obj3: obj3
+	}
+}
+
+const getStorageData = key =>
+	new Promise((resolve, reject) =>
+		chrome.storage.sync.get(key, result =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve(result)
+		)
+	)
+
+const setStorageData = data =>
+	new Promise((resolve, reject) =>
+		chrome.storage.sync.set(data, () =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve()
+		)
+	)
+
+const setWebsites = async (obj) => {
+	const { obj1, obj2, obj3 } = obj ? splitIntoChunks(obj) : { obj1: {}, obj2: {}, obj3: {} }
+
+	// console.table(obj)
+	// console.table(obj1)
+	// console.table(obj2)
+	// console.table(obj3)
+
+	console.log(Object.keys(obj).length)
+	console.log(Object.keys(obj1).length)
+	console.log(Object.keys(obj2).length)
+	console.log(Object.keys(obj3).length)
+
+	return setStorageData({
+		websites1: { ...obj1 },
+		websites2: { ...obj2 },
+		websites3: { ...obj3 }
+	})
+}
+
+const getWebsites = async () => {
+	try {
+		const { websites1, websites2, websites3 } = await getStorageData(['websites1', 'websites2', 'websites3'])
+		const websites = { ...websites1, ...websites2, ...websites3 }
+		return websites
+	} catch (e) {
+		return ({})
+	}
+}
+
 export {
 	querySelector,
 	querySelectorAll,
@@ -76,7 +147,11 @@ export {
 	getPureURL,
 	setBadgeText,
 	nFormatter,
-	backupData,
 	debounce,
+	splitIntoChunks,
+	setWebsites,
+	getWebsites,
+	getStorageData,
+	setStorageData,
 	arrayToObj
 }
