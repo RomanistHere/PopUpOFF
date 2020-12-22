@@ -12,6 +12,7 @@ import {
 	setWebsites,
 	getWebsites,
 	getStorageData,
+	setStorageData,
 	getPureURL,
 	nFormatter,
 	debounce

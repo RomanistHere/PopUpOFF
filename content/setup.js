@@ -53,12 +53,7 @@ const initMode = async () => {
 
 initMode()
 
-// "change mode" listener from popup.js and bg.js
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-	// check if script is inside the iframe
-	if (window !== window.parent)
-		return true
-
+const changeMode = async (request, sender, sendResponse) => {
 	const curModeName = request.activeMode
 	// check stats and restore content
 	const { statsEnabled, restoreContActive, autoModeAggr } = await getStorageData(['statsEnabled', 'restoreContActive', 'autoModeAggr'])
@@ -81,6 +76,15 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 	} else {
 		sendResponse({ closePopup: false })
 	}
+}
+
+// "change mode" listener from popup.js and bg.js
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	// check if script is inside the iframe
+	if (window !== window.parent)
+		return true
+
+	changeMode(request, sender, sendResponse)
 
 	return true
 })
