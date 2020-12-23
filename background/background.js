@@ -71,12 +71,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		// })
 
 		// chrome.storage.sync.remove(['websites1', 'websites2', 'websites3'])
-
 		try {
 			const { websites } = await getStorageData('websites')
 			// const websites = websitesStore
 			if (websites != null) {
-				console.log(websites)
+				// 2.0.0 - 2.0.1
 
 				let newWebsites = { ...websites }
 				const keys = Object.keys(defWebsites)
@@ -89,72 +88,63 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				}
 
 				await setWebsites(newWebsites)
-				chrome.storage.sync.remove(['websites', 'backupData', 'thisWebsiteWork', 'thisWebsiteWorkEasy'])
+			} else {
+				// before 2.0
+
+				let { thisWebsiteWork, thisWebsiteWorkEasy, shortCutMode } = await getStorageData(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'])
+
+				if (thisWebsiteWork == null || thisWebsiteWorkEasy == null) {
+					thisWebsiteWork = []
+					thisWebsiteWorkEasy = []
+				}
+				// shortcut converting
+				// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
+				const newShortCut = (shortCutMode == 'thisWebsiteWorkEasy') ? 'easyModeActive' :
+									(shortCutMode == 'thisWebsiteWork') ? 'hardModeActive' : null
+
+				// websites converting
+				const newWebsites = {
+					...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
+					...arrayToObj(thisWebsiteWork, 'hardModeActive')
+				}
+
+				await setWebsites(newWebsites)
+				await setStorageData({
+					restoreContActive: [...defPreventContArr],
+					curAutoMode: 'whitelist',
+					autoModeAggr: 'typeI',
+					shortCutMode: newShortCut,
+					tutorial: true,
+					update: true,
+				 	preset: 'presetManual',
+				})
 			}
+
+			// remove old props
+			chrome.storage.sync.remove(['websites', 'backupData', 'thisWebsiteWork', 'thisWebsiteWorkEasy', 'supervision', 'restoreCont'])
 		} catch (e) {
 			console.log('something happened')
 			console.log(e)
 		}
 
-		// PRODUCTION UNMUTE //
-		// chrome.storage.sync.remove(['thisWebsiteWork', 'thisWebsiteWorkEasy'])
+		// Detect if there are issue and fix
+		const { shortCutMode, statsEnabled, autoModeAggr } = await getStorageData(['shortCutMode', 'statsEnabled', 'autoModeAggr'])
 
-        chrome.storage.sync.get(null, resp => {
-            console.log(resp)
-        })
+		if (autoModeAggr == null) {
+			await setStorageData({ autoModeAggr: 'typeI' })
+		}
 
-		setTimeout(function () {
-			console.log('timeout')
-			chrome.storage.sync.get(null, resp => {
-	            console.log(resp)
-	        })
-		}, 2000);
+		if (statsEnabled == null) {
+			await setStorageData({ statsEnabled: false })
+		}
 
-		// storageGet(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode', 'restoreContActive', 'websites', 'curAutoMode', 'statsEnabled', 'autoModeAggr'], response => {
-		// 	if (response.websites == null || response.restoreContActive == null || response.curAutoMode == null) {
-		// 		if (response.thisWebsiteWork == null || response.thisWebsiteWorkEasy == null) {
-		// 			response.thisWebsiteWork = []
-		// 			response.thisWebsiteWorkEasy = []
-		// 		}
-		// 		// shortcut converting
-		// 		// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
-		// 		const { shortCutMode, thisWebsiteWork, thisWebsiteWorkEasy } = response
-		// 		const newShortCut = (shortCutMode == 'thisWebsiteWorkEasy') ? 'easyModeActive' :
-		// 							(shortCutMode == 'thisWebsiteWork') ? 'hardModeActive' : null
-		//
-		// 		// websites converting
-		// 		const newWebsites = {
-		// 			...websites,
-		// 			...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
-		// 			...arrayToObj(thisWebsiteWork, 'hardModeActive')
-		// 		}
-		//
-		// 		const restCont = [...preventContArr]
-		//
-		// 		storageSet({
-		// 			websites: newWebsites,
-		// 			restoreContActive: restCont,
-		// 			curAutoMode: 'whitelist',
-		// 			autoModeAggr: 'typeIII',
-		// 			shortCutMode: newShortCut,
-		// 			tutorial: true,
-		// 			update: true,
-		// 		 	preset: 'presetManual',
-		// 		})
-		// 	}
-		//
-		// 	if (response.autoModeAggr == null) {
-		// 		storageSet({ autoModeAggr: 'typeI' })
-		// 	}
-		//
-		// 	if (response.statsEnabled == null) {
-		// 		storageSet({ statsEnabled: false })
-		// 	}
-		//
-		// 	if (typeof response.shortCutMode == 'undefined') {
-		// 		storageSet({ shortCutMode: null })
-		// 	}
-		// })
+		if (typeof shortCutMode == 'undefined') {
+			await setStorageData({ shortCutMode: null })
+		}
+
+		chrome.storage.sync.get(null, resp => {
+			console.log(resp)
+		})
     }
 })
 
