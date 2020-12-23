@@ -4,8 +4,6 @@ import {
 } from '../constants/data.js'
 
 import {
-	storageSet,
-	storageGet,
 	getPureURL,
 	setBadgeText,
 	splitIntoChunks,
@@ -37,33 +35,31 @@ const websitesStore = {
 chrome.runtime.onInstalled.addListener(async (details) => {
     if (details.reason == 'install') {
 		// check is extension already in use at other device
-		storageGet(['websites', 'curAutoMode'], response => {
-			if (response.websites == null || response.curAutoMode == null) {
-				// set up start
-				storageSet({
-					tutorial: true,
-					update: false,
-					stats: {
-						cleanedArea: 0,
-						numbOfItems: 0,
-						restored: 0
-					},
-					statsEnabled: true,
-					restoreContActive: [...defPreventContArr],
-					curAutoMode: 'whitelist',
-					shortCutMode: null,
-					// shortCutMode: 'hardModeActive',
-					// websites: {},
-					websites1: {},
-					websites2: {},
-					websites3: {},
-					autoModeAggr: 'typeI',
-					preset: 'presetManual',
-				})
+		const { curAutoMode } = await getStorageData('curAutoMode')
 
-				chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
-			}
-		})
+		if (curAutoMode == null) {
+			// set up start
+			await setStorageData({
+				tutorial: true,
+				update: false,
+				stats: {
+					cleanedArea: 0,
+					numbOfItems: 0,
+					restored: 0
+				},
+				statsEnabled: true,
+				restoreContActive: [...defPreventContArr],
+				curAutoMode: 'whitelist',
+				shortCutMode: null,
+				websites1: {},
+				websites2: {},
+				websites3: {},
+				autoModeAggr: 'typeI',
+				preset: 'presetManual',
+			})
+
+			chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
+		}
     } else if (details.reason == 'update') {
 
 		// storageGet(['websites1', 'websites2', 'websites3'], resp => {
@@ -81,8 +77,19 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 			// const websites = websitesStore
 			if (websites != null) {
 				console.log(websites)
-				await setWebsites(websites)
-				chrome.storage.sync.remove(['websites', 'backupData'])
+
+				let newWebsites = { ...websites }
+				const keys = Object.keys(defWebsites)
+				try {
+					keys.forEach(key => {
+						delete newWebsites[key]
+					})
+				} catch (e) {
+					console.log(e)
+				}
+
+				await setWebsites(newWebsites)
+				chrome.storage.sync.remove(['websites', 'backupData', 'thisWebsiteWork', 'thisWebsiteWorkEasy'])
 			}
 		} catch (e) {
 			console.log('something happened')
@@ -91,25 +98,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 		// PRODUCTION UNMUTE //
 		// chrome.storage.sync.remove(['thisWebsiteWork', 'thisWebsiteWorkEasy'])
-		// storageGet(['websites'], response => {
-		// 	let newWebsites = {}
-
-			// if (response.websites) {
-			// 	newWebsites = response.websites
-			// 	const keys = Object.keys(defWebsites)
-			// 	try {
-			// 		keys.forEach(key => {
-			// 			delete newWebsites[key]
-			// 		})
-			// 	} catch (e) {
-			// 		console.log(e)
-			// 	}
-			// }
-			//
-			// storageSet({
-			// 	websites: newWebsites
-			// })
-		// })
 
         chrome.storage.sync.get(null, resp => {
             console.log(resp)

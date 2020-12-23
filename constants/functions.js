@@ -7,9 +7,6 @@ const getPureURL = ({ url }) => url.substring(url.lastIndexOf("//") + 2, url.ind
 const addClass = (node, className) => node.classList.add(className)
 const removeClass = (node, className) => node.classList.remove(className)
 const getAttr = (node, attrName) => node.getAttribute(attrName)
-// Chrome store
-const storageSet = (changes, f) => chrome.storage.sync.set(changes, f)
-const storageGet = (request, f) => chrome.storage.sync.get(request, f)
 // Browser actions. Badge - text at right bottom corner of extension's icon
 const setBadgeText = (text) =>
 	(tabID) => {
@@ -55,6 +52,7 @@ const debounce = (func, wait, immediate) => {
 	}
 }
 
+// Storage related methods
 const arrayToObj = (arr, prop) =>
 	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {})
 
@@ -114,11 +112,11 @@ const setWebsites = async (obj) => {
 	// console.table(obj2)
 	// console.table(obj3)
 
-	console.log(Object.keys(obj).length)
+	console.log('st length: ', Object.keys(obj).length)
 	console.log(Object.keys(obj1).length)
 	console.log(Object.keys(obj2).length)
 	console.log(Object.keys(obj3).length)
-	console.log(Object.keys(obj1).length + Object.keys(obj2).length + Object.keys(obj3).length)
+	console.log('fin length: ', Object.keys(obj1).length + Object.keys(obj2).length + Object.keys(obj3).length)
 
 	return setStorageData({
 		websites1: { ...obj1 },
@@ -133,7 +131,7 @@ const getWebsites = async () => {
 		const websites = { ...websites1, ...websites2, ...websites3 }
 		return websites
 	} catch (e) {
-		return ({})
+		return {}
 	}
 }
 
@@ -143,8 +141,6 @@ export {
 	addClass,
 	removeClass,
 	getAttr,
-	storageSet,
-	storageGet,
 	getPureURL,
 	setBadgeText,
 	nFormatter,
