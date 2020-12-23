@@ -457,7 +457,7 @@ const videoCheck = element => {
     const childNodes = element.childNodes
     // console.log(nodeName)
 
-    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'IFRAME')
+    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'INPUT' || nodeName === 'IFRAME')
         return false
 
     // contains shadow dom
@@ -477,7 +477,7 @@ const videoCheck = element => {
     return true
 }
 
-const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube', 'ble deal', 'started for fre', 'tart fre']
+const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube', 'ble deal', 'started for fre', 'tart fre', 'advertisement']
 
 const forbWords = [...forbWordsEasy, 'policy', 'subscri', 'sale', 'updates', 'member', 'value', 'advertis', 'подписаться', 'install']
 
@@ -517,7 +517,7 @@ const positionCheckTypeI = (element, windowArea) => {
         if (contentEasyCheck(element))
             return { shouldRemove: true, shouldMemo: true }
         else
-            return { shouldRemove: false, shouldMemo: false }
+            return { shouldRemove: true, shouldMemo: false }
     }
 
     const layoutArea = element.offsetHeight * element.offsetWidth
@@ -570,8 +570,11 @@ const positionCheckTypeI = (element, windowArea) => {
 }
 
 const positionCheckTypeIII = (element, windowArea) => {
-    if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        return { shouldRemove: true, shouldMemo: false }
+	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
+        if (contentEasyCheck(element))
+            return { shouldRemove: true, shouldMemo: true }
+        else
+            return { shouldRemove: true, shouldMemo: false }
     }
 
     const layoutArea = element.offsetHeight * element.offsetWidth

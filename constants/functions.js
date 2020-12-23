@@ -118,6 +118,7 @@ const setWebsites = async (obj) => {
 	console.log(Object.keys(obj1).length)
 	console.log(Object.keys(obj2).length)
 	console.log(Object.keys(obj3).length)
+	console.log(Object.keys(obj1).length + Object.keys(obj2).length + Object.keys(obj3).length)
 
 	return setStorageData({
 		websites1: { ...obj1 },
