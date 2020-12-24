@@ -112,11 +112,11 @@ const setWebsites = async (obj) => {
 	// console.table(obj2)
 	// console.table(obj3)
 
-	console.log('st length: ', Object.keys(obj).length)
-	console.log(Object.keys(obj1).length)
-	console.log(Object.keys(obj2).length)
-	console.log(Object.keys(obj3).length)
-	console.log('fin length: ', Object.keys(obj1).length + Object.keys(obj2).length + Object.keys(obj3).length)
+	// console.log('st length: ', Object.keys(obj).length)
+	// console.log(Object.keys(obj1).length)
+	// console.log(Object.keys(obj2).length)
+	// console.log(Object.keys(obj3).length)
+	// console.log('fin length: ', Object.keys(obj1).length + Object.keys(obj2).length + Object.keys(obj3).length)
 
 	return setStorageData({
 		websites1: { ...obj1 },

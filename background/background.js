@@ -33,7 +33,9 @@ const websitesStore = {
 
 // handle install
 chrome.runtime.onInstalled.addListener(async (details) => {
-    if (details.reason == 'install') {
+	const { previousVersion, reason } = details
+	console.log(previousVersion, reason)
+    if (reason == 'install') {
 		// check is extension already in use at other device
 		const { curAutoMode } = await getStorageData('curAutoMode')
 
@@ -60,7 +62,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 			chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
 		}
-    } else if (details.reason == 'update') {
+    } else if (reason == 'update') {
 
 		// storageGet(['websites1', 'websites2', 'websites3'], resp => {
 		// 	const {websites1, websites2, websites3} = resp
@@ -74,7 +76,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		try {
 			const { websites } = await getStorageData('websites')
 			// const websites = websitesStore
-			if (websites != null) {
+			if (previousVersion === '2.0.2') {
+				// 2.0.2
+			} else if (websites != null) {
 				// 2.0.0 - 2.0.1
 
 				let newWebsites = { ...websites }
