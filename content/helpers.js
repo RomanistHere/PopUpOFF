@@ -381,7 +381,7 @@ const checkElems = (elems, checkElem) => {
 
 const unhide = (elem, statsEnabled, state) => {
     if (elem.innerHTML.length > 5) {
-        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded', 'article-teaser-overflow')
+        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded', 'article-teaser-overflow', 'editor-description__wrapper--cropped')
         if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
     }
     return state
@@ -395,8 +395,9 @@ const findHidden = (state, statsEnabled, doc) => {
         ...doc.querySelectorAll('.not_scroll'),
         ...doc.querySelectorAll('.paragraph--faded'),
         ...doc.querySelectorAll('.paragraph--reduced'),
-        ...doc.querySelectorAll('.paragraph--dynamic'),
+		...doc.querySelectorAll('.paragraph--dynamic'),
         ...doc.querySelectorAll('.article-teaser-overflow'),
+        ...doc.querySelectorAll('.editor-description__wrapper--cropped'),
     ]
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
     // custom ID theguardian
@@ -456,6 +457,10 @@ const videoCheck = element => {
     const nodeName = element.nodeName
     const childNodes = element.childNodes
     // console.log(nodeName)
+	// TODO: 2.0.3 check iframe element for content
+	// if (nodeName === 'IFRAME') {
+	// 	console.log(element)
+	// }
 
     if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'INPUT' || nodeName === 'IFRAME')
         return false
