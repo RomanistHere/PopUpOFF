@@ -244,16 +244,6 @@ const setStorageData = data =>
 const setWebsites = async (obj) => {
 	const { obj1, obj2, obj3 } = obj ? splitIntoChunks(obj) : { obj1: {}, obj2: {}, obj3: {} }
 
-	// console.table(obj)
-	// console.table(obj1)
-	// console.table(obj2)
-	// console.table(obj3)
-
-	console.log(Object.keys(obj).length)
-	console.log(Object.keys(obj1).length)
-	console.log(Object.keys(obj2).length)
-	console.log(Object.keys(obj3).length)
-
 	return setStorageData({
 		websites1: { ...obj1 },
 		websites2: { ...obj2 },
@@ -457,12 +447,21 @@ const videoCheck = element => {
     const nodeName = element.nodeName
     const childNodes = element.childNodes
     // console.log(nodeName)
+
+	if (nodeName === 'APP-DRAWER') {
+		return false
+	}
+
+	if (window.location.href.includes('www.youtube') || window.location.href.includes('www.google')) {
+		return true
+	}
+
 	// TODO: 2.0.3 check iframe element for content
 	// if (nodeName === 'IFRAME') {
 	// 	console.log(element)
 	// }
 
-    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'INPUT' || nodeName === 'IFRAME')
+    if (nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'INPUT' || nodeName === 'IFRAME')
         return false
 
     // contains shadow dom
@@ -482,13 +481,14 @@ const videoCheck = element => {
     return true
 }
 
-const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube', 'ble deal', 'started for fre', 'tart fre', 'advertisement']
+const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube', 'ble deal', 'started for fre', 'tart fre', 'advertisement', '//consent.', 'ign in to youtub']
 
 const forbWords = [...forbWordsEasy, 'policy', 'subscri', 'sale', 'updates', 'member', 'value', 'advertis', 'подписаться', 'install']
 
 const allowedWords = ['sign in', 'language', 'basket', 'delivery', 'price', 'google meet', 'корзина', 'resume', 'apply', 'drive']
 
 const contentEasyCheck = element => {
+	// console.log(element)
     const textCont = element.innerHTML.toLowerCase()
 
     // console.log('contentEasyCheck(should block): ', forbWordsEasy.some(v => {

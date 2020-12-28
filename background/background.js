@@ -34,7 +34,6 @@ const websitesStore = {
 // handle install
 chrome.runtime.onInstalled.addListener(async (details) => {
 	const { previousVersion, reason } = details
-	console.log(previousVersion, reason)
     if (reason == 'install') {
 		// check is extension already in use at other device
 		const { curAutoMode } = await getStorageData('curAutoMode')
@@ -146,9 +145,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 			await setStorageData({ shortCutMode: null })
 		}
 
-		chrome.storage.sync.get(null, resp => {
-			console.log(resp)
-		})
+		// chrome.storage.sync.get(null, resp => {
+		// 	console.log(resp)
+		// })
     }
 })
 
@@ -158,10 +157,7 @@ chrome.runtime.setUninstallURL("https://romanisthere.github.io/PopUpOFF-Website/
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.query({ 'active': true }, info => {
     	const url = info[0].url
-		// console.log(url)
-		// console.log(url.length)
-	    if (url.includes('chrome://') || url.includes('chrome-extension://') || url.length === 0) {
-			// console.log('here')
+	    if (url.includes('chrome://') || url.includes('chrome-extension://')) {
 			chrome.browserAction.disable(activeInfo.tabId)
 		} else {
 			const pureUrl = getPureURL(info[0])
@@ -179,8 +175,6 @@ const letters = {
 const setNewBadge = async (pureUrl, tabID) => {
 	let { curAutoMode } = await getStorageData('curAutoMode')
 	const websites = await getWebsites()
-
-	console.log(websites)
 
 	if (curAutoMode == null) {
 		await setStorageData({ curAutoMode: 'easyModeActive' })
@@ -261,7 +255,6 @@ const subMenuStore = {
 
 const setNewMode = async (newMode, pureUrl, tabID) => {
 	const websites = await getWebsites()
-	console.log(websites)
 
 	const fullWebsites = { ...defWebsites, ...websites }
 
