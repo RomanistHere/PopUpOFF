@@ -84,7 +84,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				const keys = Object.keys(defWebsites)
 				try {
 					keys.forEach(key => {
-						delete newWebsites[key]
+						if (newWebsites[key] === defWebsites[key]) {
+							delete newWebsites[key]
+						}
 					})
 				} catch (e) {
 					console.log(e)
