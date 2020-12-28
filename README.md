@@ -14,11 +14,19 @@ Tracking is completely removed since 1.1.6</br></br>
 #### Prevent paid content from hiding (Anti-paid) - since 1.1.6
 Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reduction of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont-2/) </br></br>
 #### [Changelog](https://romanisthere.github.io/apps/popupoff/updates/):
+2.0.2
+- Improvements in Moderate mode
+- Improvements in anti-paid
+- Added "reset to default" buttons
+- Added info at the options page
+- Changes in storing of the websites
+- Removed auto reload when activate Dormant mode
+
 2.0.0 - 2.0.1
 - Redesign (of everything)
 - Mass refactorings
 - Automode (finally!)
-- fixes and improvements
+- Other fixes and improvements
 
 1.1.9 - 1.1.10
 - some minor improvements and fixes (I forgot to write the updates back these days so I don't remember, nothing interesting, I guess)
