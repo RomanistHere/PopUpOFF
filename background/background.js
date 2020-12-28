@@ -14,23 +14,6 @@ import {
 	arrayToObj
 } from '../constants/functions.js'
 
-const websitesStore = {
-	"blobs.app": "easyModeActive",
-	"developer.chrome.com": "easyModeActive",
-	"humanparts.medium.com": "hardModeActive",
-	"medium.com": "hardModeActive",
-	"news.google.com": "easyModeActive",
-	"payment.webpay.by": "whitelist",
-	"uxdesign.cc": "hardModeActive",
-	"www.21vek.by": "whitelist",
-	"www.designcareer.co": "hardModeActive",
-	"www.educba.com": "hardModeActive",
-	"www.portative.by": "hardModeActive",
-	"www.stuff.co.nz": "hardModeActive",
-	"www.youtube.com": "whitelist",
-	"yandex.ru": "hardModeActive",
-}
-
 // handle install
 chrome.runtime.onInstalled.addListener(async (details) => {
 	const { previousVersion, reason } = details
@@ -62,19 +45,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 			chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
 		}
     } else if (reason == 'update') {
-
-		// storageGet(['websites1', 'websites2', 'websites3'], resp => {
-		// 	const {websites1, websites2, websites3} = resp
-		// 	const newWebs = {...websites1, ...websites2, ...websites3}
-		// 	storageSet({
-		// 		websites: newWebs
-		// 	})
-		// })
-
-		// chrome.storage.sync.remove(['websites1', 'websites2', 'websites3'])
 		try {
 			const { websites } = await getStorageData('websites')
-			// const websites = websitesStore
 			if (previousVersion === '2.0.2') {
 				// 2.0.2
 			} else if (websites != null) {
