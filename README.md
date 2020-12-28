@@ -21,6 +21,7 @@ Some newspapers are showing you an article you want to read and then remove half
 - Added info at the options page
 - Changes in storing of the websites
 - Removed auto reload when activate Dormant mode
+- Add quiz on uninstall
 
 2.0.0 - 2.0.1
 - Redesign (of everything)

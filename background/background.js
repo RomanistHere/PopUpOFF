@@ -187,6 +187,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		const pureUrl = getPureURL(sender)
 
 		setNewBadge(pureUrl, tabID)
+	} else if (request.openOptPage) {
+		chrome.runtime.openOptionsPage()
 	}
 
 	return true
