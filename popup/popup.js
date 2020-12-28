@@ -1,6 +1,6 @@
 import {
-	websites,
-	preventContArr
+	defWebsites,
+	defPreventContArr
 } from '../constants/data.js'
 
 import {
@@ -9,8 +9,10 @@ import {
 	addClass,
 	removeClass,
     getAttr,
-	storageSet,
-	storageGet,
+	setWebsites,
+	getWebsites,
+	getStorageData,
+	setStorageData,
 	getPureURL,
 	nFormatter,
 	debounce
@@ -28,6 +30,27 @@ const setNewBtn = (btns, newActBtn) => {
     addClass(newActBtn, 'desc-active')
 }
 
+const reloadPage = (id, url) => {
+	browser.tabs.update(id, { url: url })
+	window.close()
+}
+
+const showReloadPopUp = ({ id, url }) => {
+	const popupReloadBtn = querySelector('.popup_reload')
+	popupReloadBtn.addEventListener('click', e => {
+		e.preventDefault()
+		reloadPage(id, url)
+	})
+
+	const popupReload = querySelector('.popup')
+	addClass(popupReload, 'popup-show')
+	setTimeout(() => {
+		removeClass(popupReload, 'popup-show')
+		addClass(popupReload, 'popup-fade')
+	}, 2000)
+	setTimeout(() => { removeClass(popupReload, 'popup-fade') }, 3000)
+}
+
 // handle clicks on buttons
 const buttons = querySelectorAll('.desc')
 buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
@@ -40,16 +63,17 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
 
     setNewBtn(buttons, this)
 
-    browser.tabs.query({ active: true, currentWindow: true }, tabs => {
+    browser.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
         // check website object. Change/add property
-        storageGet(['websites'], resp => {
-            const { websites } = resp
-            const pureUrl = getPureURL(tabs[0])
+		const websites = await getWebsites()
+        const pureUrl = getPureURL(tabs[0])
 
-			const newWebsites = { ...websites, [pureUrl]: mode }
-
-            storageSet({ websites: newWebsites })
-        })
+		const newWebsites = { ...websites, [pureUrl]: mode }
+		try {
+        	await setWebsites(newWebsites)
+		} catch (e) {
+			console.log(e)
+		}
 
 		// if whitelist just enabled and prevent content active -> remove prevent content (prevent content is not working in whitelist)
 		if (mode === 'whitelist' && state.isRestContActive)
@@ -59,7 +83,7 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
         // send msg to content script with new active mode
         browser.tabs.sendMessage(tabs[0].id, { activeMode: mode }, resp => {
             if (resp && resp.closePopup === true) {
-				browser.tabs.update(tabs[0].id, { url: tabs[0].url })
+				showReloadPopUp(tabs[0])
             }
         })
     })
@@ -68,11 +92,11 @@ buttons.forEach(item => item.addEventListener('click', debounce(function(e) {
 }, 150)))
 
 // stats update
-const updStats = () => {
-	storageGet(['stats'], res => {
-		querySelector('.stats__elem').innerHTML = nFormatter(res.stats.numbOfItems, 1)
-		querySelector('.stats__size').innerHTML = nFormatter(res.stats.cleanedArea, 1)
-	})
+const updStats = async () => {
+	const { stats } = await getStorageData('stats')
+
+	querySelector('.stats__elem').innerHTML = nFormatter(stats.numbOfItems, 1)
+	querySelector('.stats__size').innerHTML = nFormatter(stats.cleanedArea, 1)
 }
 
 // setup tutorial screen
@@ -91,12 +115,12 @@ const initTutorial = (updated = false) => {
 		e.preventDefault()
 		addClass(tutorialWrap, 'tutorial-setup')
 
-		querySelectorAll('.setings__btn').forEach(elem => elem.addEventListener('click', function() {
+		querySelectorAll('.setings__btn').forEach(elem => elem.addEventListener('click', async function() {
 			const preset = getAttr(this, 'data-preset')
 			const curAutoMode = preset === 'presetManual' ? 'whitelist' : 'easyModeActive'
 			const autoModeAggr = preset === 'presetManual' ? 'typeIII' : 'typeI'
 
-			storageSet({
+			await setStorageData({
 				curAutoMode: curAutoMode,
 				autoModeAggr: autoModeAggr,
 			})
@@ -106,17 +130,17 @@ const initTutorial = (updated = false) => {
 	})
 
 	// open the link
-	tutorialRead.addEventListener('click', () => {
-		storageSet({
+	tutorialRead.addEventListener('click', async () => {
+		await setStorageData({
 			tutorial: false,
 			update: false
 		})
 	})
 
 	// close tutorial
-	tutorialSkip.addEventListener('click', e => {
+	tutorialSkip.addEventListener('click', async (e) => {
 		e.preventDefault()
-		storageSet({
+		await setStorageData({
 			tutorial: false,
 			update: false
 		})
@@ -127,83 +151,86 @@ const initTutorial = (updated = false) => {
 
 // init popup state
 const init = () => {
-    browser.tabs.query({ active: true, currentWindow: true }, tabs => {
-        storageGet(['update', 'tutorial', 'websites', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'], resp => {
-			// setup tutorial
-			if (resp.tutorial)
-				initTutorial(resp.update)
+    browser.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+		const { statsEnabled, restoreContActive, curAutoMode, stats, update, tutorial } = await getStorageData(['update', 'tutorial', 'curAutoMode', 'statsEnabled', 'stats', 'restoreContActive'])
+		const websites = await getWebsites()
 
-			// set statistics
-			if (resp.statsEnabled) {
-				addClass(querySelector('.stats'), 'stats-show')
-				// update statistic
-				querySelector('.stats__elem').innerHTML = nFormatter(resp.stats.numbOfItems, 1)
-				querySelector('.stats__size').innerHTML = nFormatter(resp.stats.cleanedArea, 1)
-				setInterval(updStats, 1000)
-			}
+		// setup tutorial
+		if (tutorial)
+			initTutorial(update)
 
-			// modes init
-            const { restoreContActive, websites, curAutoMode } = resp
-            const pureUrl = getPureURL(tabs[0])
-			state = { ...state, pureUrl: pureUrl }
+		// set statistics
+		if (statsEnabled) {
+			addClass(querySelector('.stats'), 'stats-show')
+			// update statistic
+			querySelector('.stats__elem').innerHTML = nFormatter(stats.numbOfItems, 1)
+			querySelector('.stats__size').innerHTML = nFormatter(stats.cleanedArea, 1)
+			setInterval(updStats, 1000)
+		}
 
-			// check restore content array and set btn
-			if (restoreContActive.includes(pureUrl)) {
-				addClass(querySelector('.add_opt'), 'add_opt-active')
-				state = { ...state, isRestContActive: true }
-			}
+		// modes init
+        const pureUrl = getPureURL(tabs[0])
+		state = { ...state, pureUrl: pureUrl }
 
-			// if website is in one of arrays - set the proper mode
-			let curModeName = curAutoMode
+		// check restore content array and set btn
+		if (restoreContActive.includes(pureUrl)) {
+			addClass(querySelector('.add_opt'), 'add_opt-active')
+			state = { ...state, isRestContActive: true }
+		}
 
-            if (pureUrl in websites) {
-				curModeName = websites[pureUrl]
-            }
+		// if website is in one of arrays - set the proper mode
+		let curModeName = curAutoMode
+		const fullWebsites = { ...defWebsites, ...websites }
 
-			const actButton = querySelector(`[data-mode='${curModeName}']`)
-			state = { ...state, curMode: curModeName }
-			setNewBtn(buttons, actButton)
-        })
+        if (pureUrl in fullWebsites) {
+			curModeName = fullWebsites[pureUrl]
+        }
+
+		const actButton = querySelector(`[data-mode='${curModeName}']`)
+		state = { ...state, curMode: curModeName }
+		setNewBtn(buttons, actButton)
     })
 }
 init()
 
 // prevent content
 const prevContBtn = querySelector('.add_opt')
-prevContBtn.addEventListener('click', debounce(function(e) {
+prevContBtn.addEventListener('click', debounce(async function(e) {
 	e.preventDefault()
-	storageGet(['restoreContActive', 'websites'], resp => {
-		const { restoreContActive, websites } = resp
-		let newArr = []
-		let newWebsites = {...websites}
+	const { restoreContActive } = await getStorageData(['restoreContActive'])
+	const websites = await getWebsites()
+	let newArr = []
+	let newWebsites = { ...websites }
 
-		// add/remove site to restore cotntent array
-		if (state.isRestContActive) {
-			newArr = restoreContActive.filter(url => url !== state.pureUrl)
-			removeClass(this, 'add_opt-active')
-		} else {
-			newArr = [...restoreContActive, state.pureUrl]
-			addClass(this, 'add_opt-active')
-		}
+	// add/remove site to restore content array
+	if (state.isRestContActive) {
+		newArr = restoreContActive.filter(url => url !== state.pureUrl)
+		removeClass(this, 'add_opt-active')
+	} else {
+		newArr = [...restoreContActive, state.pureUrl]
+		addClass(this, 'add_opt-active')
+	}
 
-		// if whitelist activated, add website to easy mode (prevent content should not work in whitelist)
-		if (state.curMode === 'whitelist') {
-			newWebsites = {...websites, [state.pureUrl]: 'easyModeActive' }
-			state = { ...state, curMode: 'easyModeActive' }
-		}
+	// if whitelist activated, add website to easy mode (prevent content should not work in whitelist)
+	if (state.curMode === 'whitelist') {
+		newWebsites = { ...websites, [state.pureUrl]: 'easyModeActive' }
+		state = { ...state, curMode: 'easyModeActive' }
+	}
 
-		// set state
-		storageSet({
-			restoreContActive: newArr,
-			websites: newWebsites
-		})
+	// set state
+	try {
+		await setWebsites(newWebsites)
+		await setStorageData({ restoreContActive: newArr })
 		state = { ...state, isRestContActive: !state.isRestContActive }
+	} catch (e) {
+		console.log(e)
+	}
 
-		// reload current page and close popup if activated prevent content
-		if (state.isRestContActive) {
-			browser.tabs.query({active: true, currentWindow: true}, tabs => {
-		        browser.tabs.update(tabs[0].id, { url: tabs[0].url })
-		    })
-		}
-	})
+	// reload current page and close popup if activated prevent content
+	if (state.isRestContActive) {
+		browser.tabs.query({active: true, currentWindow: true}, tabs => {
+	        browser.tabs.update(tabs[0].id, { url: tabs[0].url })
+			// window.close()
+	    })
+	}
 }, 500))

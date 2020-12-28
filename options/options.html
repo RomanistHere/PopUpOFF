@@ -1,9 +1,34 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
         <link rel="stylesheet" href="../css/options.css">
     </head>
     <body>
+        <section class="options__section">
+            <h2 class="options__header options_text">
+                Useful links
+            </h2>
+            <p class="options__desc options_text">
+                Info:
+                <a target="_blank" href="https://romanisthere.github.io/posts/popupoff-tutorial-2/" class="options__link link">Tutorial</a>,
+                <a target="_blank" href="https://romanisthere.github.io/posts/prev-cont-2/" class="options__link link">Anti-paid explained</a>,
+                <a target="_blank" href="https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0" class="options__link link">Website</a>,
+                <a target="_blank" href="https://github.com/RomanistHere/PopUpOFF" class="options__link link">GitHub</a>,
+                <a target="_blank" href="https://romanisthere.github.io/apps/popupoff/updates/" class="options__link link">Changelog</a>,
+                <a target="_blank" href="https://youtu.be/3jTKRCxLyPE" class="options__link link">Demo</a>
+                </br>
+                News:
+                <a target="_blank" href="https://twitter.com/RomanistHere" class="options__link link">Twitter</a>,
+                <a target="_blank" href="https://t.me/BetterWebNews" class="options__link link">Telegram</a>,
+                <a target="_blank" href="https://www.youtube.com/channel/UCApGcALt2N9U7NCnbC43OxQ" class="options__link link">YouTube</a>
+                </br>
+                Personal:
+                <a target="_blank" href="https://www.donationalerts.com/r/romanisthere" class="options__link link">Donate</a>,
+                <a target="_blank" href="mailto:romanisthere@gmail.com" class="options__link link">My email</a> (RomanistHere@gmail.com) - I'm very friendly, say "Hello"!</a>
+            </p>
+        </section>
+
         <h2 class="options__title options_text ">
             Basic settings:
         </h2>
@@ -84,7 +109,7 @@
                 Get control over what Moderate mode blocks.</br>
                 We all have our own needs. Just not to see cookie notifications or don't get distracted while reading your favorite newspaper online. Personalise your experience: </br>
                 - <span class="options_text-col">Gentle</span> - remove the most annoying elements (cookies and popups). <span class="options_text-col">Recommended</span>;</br>
-                - <span class="options_text-col">Medium</span> - in developement;</br>
+                <!-- - <span class="options_text-col">Medium</span> - in developement;</br> -->
                 - <span class="options_text-col">Strict</span> - leaves only headers and nav bars (sign up popups could be hidden);</br>
             </p>
             <div class="options__slider slider aggression">
@@ -94,6 +119,31 @@
                 <input class="slider__input" type="range" min="1" max="2" value="1">
             </div>
         </section>
+
+        <section class="options__section">
+            <h2 class="options__header options_text">
+                Reset to default (delete your progress)
+            </h2>
+            <p class="options__desc options_text">
+                Something is not working properly? Seeing errors or "undefined"? I'm sorry, give the buttons below a try:
+            </p>
+            <div class="options__desc">
+                <a href="#" data-label="stats" class="options__button">Stats only</a>
+                <a href="#" data-label="settings" class="options__button">Settings only</a>
+                <a href="#" data-label="all" class="options__button">Everything</a>
+            </div>
+            <p class="options__desc options_text">
+                I would be happy if you contacted me about it as well though :)
+            </p>
+        </section>
+
+        <div class="popup">
+            Are you sure?
+            <div class="popup__pick">
+                <a href="#" class="popup__link delete">Reset</a>
+                <a href="#" class="popup__link notDelete">No</a>
+            </div>
+        </div>
 
         <script type="module" src="options.js"></script>
     </body>

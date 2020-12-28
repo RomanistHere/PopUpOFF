@@ -12,7 +12,7 @@ const modes = {
 
 const startMode = (curModeName, statsEnabled, shouldRestoreCont, autoModeAggr) => {
 	// check if we switch from hard to easy one
-	if (appState.curMode === 'hardModeActive')
+	if (appState.curMode === 'hardModeActive' || appState.curMode === 'easyModeActive')
 		restoreFixedElems()
 	// start new mode and upd state
 	const mode = modes[curModeName === 'easyModeActive' ? `${curModeName}_${autoModeAggr}` : curModeName]
@@ -21,101 +21,111 @@ const startMode = (curModeName, statsEnabled, shouldRestoreCont, autoModeAggr) =
 }
 
 // initialize mode
-chrome.storage.sync.get(['statsEnabled', 'websites', 'restoreContActive', 'curAutoMode', 'autoModeAggr'], resp => {
+const initMode = async () => {
+	let { statsEnabled, restoreContActive, curAutoMode, autoModeAggr } = await getStorageData(['statsEnabled', 'restoreContActive', 'curAutoMode', 'autoModeAggr'])
+	const websites = await getWebsites()
 	// check if script is inside the iframe
 	if (window !== window.parent)
 		return
 
-	if (resp.restoreContActive == null) {
-		chrome.storage.sync.set({ restoreContActive: [] })
-		return
+	if (restoreContActive == null) {
+		await setStorageData({ restoreContActive: [] })
+		restoreContActive = []
 	}
 
-	if (resp.autoModeAggr == null) {
-		chrome.storage.sync.set({ autoModeAggr: 'typeI' })
-		return
+	if (autoModeAggr == null) {
+		await setStorageData({ autoModeAggr: 'typeI' })
+		autoModeAggr = 'typeI'
 	}
 
-	if (resp.statsEnabled == null) {
-		chrome.storage.sync.set({ statsEnabled: false })
-		return
+	if (statsEnabled == null) {
+		await setStorageData({ statsEnabled: false })
+		statsEnabled = false
 	}
 
-	const { statsEnabled, restoreContActive, websites, curAutoMode, autoModeAggr } = resp
+	const fullWebsites = { ...defWebsites, ...websites }
 	const pureUrl = getPureURL(window.location.href)
 	const shouldRestoreCont = restoreContActive.includes(pureUrl)
-	const curModeName = pureUrl in websites ? websites[pureUrl] : curAutoMode
+	const curModeName = pureUrl in fullWebsites ? fullWebsites[pureUrl] : curAutoMode
 
 	startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
-})
+}
+
+initMode()
+
+const changeMode = async (request, sender, sendResponse) => {
+	const curModeName = request.activeMode
+	// check stats and restore content
+	const { statsEnabled, restoreContActive, autoModeAggr } = await getStorageData(['statsEnabled', 'restoreContActive', 'autoModeAggr'])
+	const pureUrl = getPureURL(window.location.href)
+	const shouldRestoreCont = restoreContActive.includes(pureUrl)
+
+	domObserver = disconnectObservers(domObserver)
+
+	startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
+	modeChangedToBg()
+
+	if (curModeName === 'whitelist') {
+		if (shouldRestoreCont) {
+			const newContActive = restoreContActive.filter(url => url !== pureUrl)
+			chrome.storage.sync.set({ restoreContActive: newContActive })
+		}
+
+		sendResponse({ closePopup: true })
+		// window.location.reload()
+	} else {
+		sendResponse({ closePopup: false })
+	}
+}
 
 // "change mode" listener from popup.js and bg.js
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	// check if script is inside the iframe
 	if (window !== window.parent)
 		return true
 
-	const curModeName = request.activeMode
-	// check stats and restore content
-	chrome.storage.sync.get(['statsEnabled', 'restoreContActive', 'autoModeAggr'], resp => {
-		const { statsEnabled, restoreContActive, autoModeAggr } = resp
-		const pureUrl = getPureURL(window.location.href)
-		const shouldRestoreCont = restoreContActive.includes(pureUrl)
-
-		domObserver = disconnectObservers(domObserver)
-
-		startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
-		modeChangedToBg()
-
-		if (curModeName === 'whitelist') {
-			if (shouldRestoreCont) {
-				const newContActive = restoreContActive.filter(url => url !== pureUrl)
-				chrome.storage.sync.set({ restoreContActive: newContActive })
-			}
-
-			sendResponse({ closePopup: true })
-			window.location.reload()
-		} else {
-			sendResponse({ closePopup: false })
-		}
-	})
+	changeMode(request, sender, sendResponse)
 
 	return true
 })
 
 // shortcut (keycomb: "Alt + x") from browser listener
-const keyDownCallBack = e => {
+const keyDownCallBack = async (e) => {
 	const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
 
 	if ((e.altKey && e.which == 88) || (isMac && e.metaKey && e.shiftKey && e.which == 88)) {
 		// needed shortcut pressed
 		e.preventDefault()
 
-		chrome.storage.sync.get(['shortCutMode', 'statsEnabled', 'restoreContActive', 'websites', 'autoModeAggr'], resp => {
-			const { shortCutMode, statsEnabled, restoreContActive, websites, autoModeAggr } = resp
+		const { statsEnabled, restoreContActive, shortCutMode, autoModeAggr } = await getStorageData(['statsEnabled', 'restoreContActive', 'shortCutMode', 'autoModeAggr'])
+		const websites = await getWebsites()
+		const fullWebsites = { ...defWebsites, ...websites }
 
-			if (appState.curMode === shortCutMode || shortCutMode === null)
-				return
+		if (appState.curMode === shortCutMode || shortCutMode === null)
+			return
 
-			const pureUrl = getPureURL(window.location.href)
-			const shouldRestoreCont = restoreContActive.includes(pureUrl)
+		const pureUrl = getPureURL(window.location.href)
+		const shouldRestoreCont = restoreContActive.includes(pureUrl)
 
-			const curModeName = shortCutMode
-			domObserver = disconnectObservers(domObserver)
+		const curModeName = shortCutMode
+		domObserver = disconnectObservers(domObserver)
 
-			if (pureUrl in websites && websites[pureUrl] === curModeName)
-				return
+		if (pureUrl in fullWebsites && fullWebsites[pureUrl] === curModeName)
+			return
 
-			const newWebsites = { ...websites, [pureUrl]: curModeName }
+		const newWebsites = { ...websites, [pureUrl]: curModeName }
 
-			startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
-			chrome.storage.sync.set({ websites: newWebsites })
+		startMode(curModeName, statsEnabled, shouldRestoreCont, autoModeAggr)
+		try {
+			await setWebsites(newWebsites)
 			modeChangedToBg()
 			createNotification(appState.curMode)
+		} catch (e) {
+			console.log(e)
+		}
 
-			if (curModeName === 'whitelist')
-				window.location.reload()
-		})
+		// if (curModeName === 'whitelist')
+		// 	window.location.reload()
 	}
 }
 document.onkeydown = debounce(keyDownCallBack, 100)
@@ -126,11 +136,11 @@ document.addEventListener('openOptPage', (e) => {
 })
 
 // send stats to website
-const sendStats = () =>
-	chrome.storage.sync.get(['stats'], resp => {
-		const clonedDetail = cloneInto(resp.stats, document.defaultView)
-		document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: clonedDetail }))
-	})
+const sendStats = async () => {
+	const { stats } = await getStorageData('stats')
+	const clonedDetail = cloneInto(stats, document.defaultView)
+	document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: clonedDetail }))
+}
 
 if (window.location.href === 'https://romanisthere.github.io/secrets/') {
 	document.addEventListener('showPopUpOFFStats', ({ detail }) => {

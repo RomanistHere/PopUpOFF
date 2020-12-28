@@ -1,3 +1,154 @@
+// other default settings
+const defWebsites = {
+	'a.goodtime.io': 'whitelist',
+	'about.google': 'whitelist',
+	'app.hubspot.com': 'whitelist',
+	'cal.mixmax.com': 'whitelist',
+	'calendar.google.com': 'whitelist',
+	'catalog.onliner.by': 'whitelist',
+	'cloud.google.com': 'whitelist',
+	'docs.google.com': 'whitelist',
+	'drive.google.com': 'whitelist',
+	'e-dostavka.by': 'whitelist',
+	'hangouts.google.com': 'whitelist',
+	'mail.google.com': 'whitelist',
+	'music.yandex.com': 'whitelist',
+	'music.yandex.ru': 'whitelist',
+	'music.youtube.com': 'whitelist',
+	'open.spotify.com': 'whitelist',
+	'romanisthere.github.io': 'whitelist',
+	'support.google.com': 'whitelist',
+	'trello.com': 'whitelist',
+	'twitter.com': 'whitelist',
+	'vk.com': 'whitelist',
+	'vk.ru': 'whitelist',
+	'web.telegram.org': 'whitelist',
+	'www.amazon.co.uk': 'whitelist',
+	'www.amazon.com': 'whitelist',
+	'www.baidu.com': 'whitelist',
+	'www.bing.com': 'whitelist',
+	'www.facebook.com': 'whitelist',
+	'www.google.com': 'whitelist',
+	'www.inspera.com': 'whitelist',
+	'www.instagram.com': 'whitelist',
+	'www.linkedin.com': 'whitelist',
+	'www.netflix.com': 'whitelist',
+	'www.onliner.by': 'whitelist',
+	'www.pinterest.com': 'whitelist',
+	'www.reddit.com': 'whitelist',
+	'www.spotify.com': 'whitelist',
+	'www.walmart.com': 'whitelist',
+	'www.youtube.com': 'whitelist',
+	'zoom.us': 'whitelist',
+	'store.steampowered.com': 'whitelist',
+	'www.hackerrank.com': 'whitelist',
+	'www.coursera.org': 'whitelist',
+	'azure.microsoft.com': 'whitelist',
+	'store.google.com': 'whitelist',
+	'www.oneplus.com': 'whitelist',
+	'smallpdf.com': 'whitelist',
+	'www.upwork.com': 'whitelist',
+	'www.docusign.com': 'whitelist',
+	'account.docusign.com': 'whitelist',
+	'go.docusign.com': 'whitelist',
+	'app.docusign.com': 'whitelist',
+	'app.hellosign.com': 'whitelist',
+	'www.oysho.com': 'whitelist',
+	'www.zara.com': 'whitelist',
+	'www.nike.com': 'whitelist',
+	'www.adidas.com': 'whitelist',
+	'www.adidas.co.uk': 'whitelist',
+	'www.reebok.co.uk': 'whitelist',
+	'www.reebok.com': 'whitelist',
+	'www.newbalance.com': 'whitelist',
+	'www.newbalance.co.uk': 'whitelist',
+	'eu.puma.com': 'whitelist',
+	'us.puma.com': 'whitelist',
+	'www.lacoste.com': 'whitelist',
+	'www.armani.com': 'whitelist',
+	'www.hugoboss.com': 'whitelist',
+	'www.calvinklein.co.uk': 'whitelist',
+	'www.calvinklein.de': 'whitelist',
+	'www.victoriassecret.com': 'whitelist',
+	'l.macys.com': 'whitelist',
+	'www.jcpenney.com': 'whitelist',
+	'www.dillards.com': 'whitelist',
+	'oldnavy.gap.com': 'whitelist',
+	'www.gap.co.uk': 'whitelist',
+	'www.gap.com': 'whitelist',
+	'www2.hm.com': 'whitelist',
+	'www.hm.com': 'whitelist',
+	'www.childrensplace.com': 'whitelist',
+	'www.carters.com': 'whitelist',
+	'www.zarahome.com': 'whitelist',
+	'www.walmart.com': 'whitelist',
+	'www.ebay.co.uk': 'whitelist',
+	'www.ebay.com': 'whitelist',
+	'www.target.com': 'whitelist',
+	'www.bestbuy.com': 'whitelist',
+	'www.costco.com': 'whitelist',
+	'www.lowes.com': 'whitelist',
+	'www.homedepot.com': 'whitelist',
+	'www.walgreens.com': 'whitelist',
+	'www.samsclub.com': 'whitelist',
+	'www.kohls.com': 'whitelist',
+	'www.ae.com': 'whitelist',
+	'www.forever21.com': 'whitelist',
+	'www.lasenza.com': 'whitelist',
+	'www.bathandbodyworks.com': 'whitelist',
+	'www.levi.com': 'whitelist',
+	'eu.wrangler.com': 'whitelist',
+	'www.wrangler.com': 'whitelist',
+	'www.massimodutti.com': 'whitelist',
+	'uk.tommy.com': 'whitelist',
+	'www.pullandbear.com': 'whitelist',
+	'shop.mango.com': 'whitelist',
+	'www.c-and-a.com': 'whitelist',
+	'www.bershka.com': 'whitelist',
+	'www.stradivarius.com': 'whitelist',
+	'www.guess.eu': 'whitelist',
+	'www.guess.com': 'whitelist',
+	'www.dolcegabbana.com': 'whitelist',
+	'www.gucci.com': 'whitelist',
+	'www.prada.com': 'whitelist',
+	'www.louisvuitton.com': 'whitelist',
+	'www.armaniexchange.com': 'whitelist',
+	'www.dior.com': 'whitelist',
+	'www.ralphlauren.co.uk': 'whitelist',
+	'www.ralphlauren.com': 'whitelist',
+	'www.samsung.com': 'whitelist',
+	'www.huawei.com': 'whitelist',
+	'consumer.huawei.com': 'whitelist',
+	'www.motorola.com': 'whitelist',
+	'www.motorola.co.uk': 'whitelist',
+	'www.sony.net': 'whitelist',
+	'www.panasonic.com': 'whitelist',
+	'www.lenovo.com': 'whitelist',
+	'www.siemens.com': 'whitelist',
+	'www.bosch.com': 'whitelist',
+	'www.sony.co.uk': 'whitelist',
+	'www.sony.com': 'whitelist',
+	'www.asus.com': 'whitelist',
+	'www.mi.com': 'whitelist',
+	'www.apple.com': 'whitelist',
+	'www.lg.com': 'whitelist',
+	'www.realme.com': 'whitelist',
+	'www.vivo.com': 'whitelist',
+	'lolesports.com': 'whitelist',
+	'aliexpress.ru': 'whitelist',
+	'www.aliexpress.com': 'whitelist',
+	'localhost:4200': 'whitelist',
+	'localhost:3000': 'whitelist',
+	'localhost:8000': 'whitelist',
+	'localhost:5000': 'whitelist',
+	'localhost:8080': 'whitelist',
+	// moderate by default
+	'www.economist.com': 'easyModeActive',
+	'www.reviewjournal.com': 'easyModeActive',
+	'www.bostonglobe.com': 'easyModeActive',
+	'www.theguardian.com': 'easyModeActive',
+	'www.theladders.com': 'easyModeActive'
+}
 // "global" variables //
 // event check
 let beforeUnloadAactive = false
@@ -39,6 +190,74 @@ const debounce = (func, wait, immediate) => {
 		clearTimeout(timeout)
 		timeout = setTimeout(later, wait)
 		if (callNow) func.apply(context, args)
+	}
+}
+
+const splitIntoChunks = (obj) => {
+	let obj1 = {}
+	let obj2 = {}
+	let obj3 = {}
+
+	const keys = Object.keys(obj)
+	const keysLength = keys.length
+	let k = 0
+
+	for (let i = 0; i < keysLength; i++) {
+		const key = keys[i]
+		if (k === 0) {
+			obj1 = { ...obj1, [key]: obj[key] }
+			k++
+		} else if (k === 1) {
+			obj2 = { ...obj2, [key]: obj[key] }
+			k++
+		} else if (k === 2) {
+			obj3 = { ...obj3, [key]: obj[key] }
+			k = 0
+		}
+	}
+
+	return {
+		obj1: obj1,
+		obj2: obj2,
+		obj3: obj3
+	}
+}
+
+const getStorageData = key =>
+	new Promise((resolve, reject) =>
+		chrome.storage.sync.get(key, result =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve(result)
+		)
+	)
+
+const setStorageData = data =>
+	new Promise((resolve, reject) =>
+		chrome.storage.sync.set(data, () =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve()
+		)
+	)
+
+const setWebsites = async (obj) => {
+	const { obj1, obj2, obj3 } = obj ? splitIntoChunks(obj) : { obj1: {}, obj2: {}, obj3: {} }
+
+	return setStorageData({
+		websites1: { ...obj1 },
+		websites2: { ...obj2 },
+		websites3: { ...obj3 }
+	})
+}
+
+const getWebsites = async () => {
+	try {
+		const { websites1, websites2, websites3 } = await getStorageData(['websites1', 'websites2', 'websites3'])
+		const websites = { ...websites1, ...websites2, ...websites3 }
+		return websites
+	} catch (e) {
+		return ({})
 	}
 }
 
@@ -152,7 +371,7 @@ const checkElems = (elems, checkElem) => {
 
 const unhide = (elem, statsEnabled, state) => {
     if (elem.innerHTML.length > 5) {
-        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded', 'article-teaser-overflow')
+        elem.classList.remove('hide', 'height_0', 'not_scroll', 'paragraph--reduced', 'paragraph--dynamic', 'paragraph--faded', 'article-teaser-overflow', 'editor-description__wrapper--cropped')
         if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
     }
     return state
@@ -166,8 +385,9 @@ const findHidden = (state, statsEnabled, doc) => {
         ...doc.querySelectorAll('.not_scroll'),
         ...doc.querySelectorAll('.paragraph--faded'),
         ...doc.querySelectorAll('.paragraph--reduced'),
-        ...doc.querySelectorAll('.paragraph--dynamic'),
+		...doc.querySelectorAll('.paragraph--dynamic'),
         ...doc.querySelectorAll('.article-teaser-overflow'),
+        ...doc.querySelectorAll('.editor-description__wrapper--cropped'),
     ]
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
     // custom ID theguardian
@@ -226,8 +446,22 @@ const videoCheck = element => {
     // traverse through the element and its children recursively till find <video> tag or block the element
     const nodeName = element.nodeName
     const childNodes = element.childNodes
+    // console.log(nodeName)
 
-    if (nodeName === 'APP-DRAWER' || nodeName === 'VIDEO' || nodeName === 'IMG')
+	if (nodeName === 'APP-DRAWER') {
+		return false
+	}
+
+	if (window.location.href.includes('www.youtube') || window.location.href.includes('www.google')) {
+		return true
+	}
+
+	// TODO: 2.0.3 check iframe element for content
+	// if (nodeName === 'IFRAME') {
+	// 	console.log(element)
+	// }
+
+    if (nodeName === 'VIDEO' || nodeName === 'IMG' || nodeName === 'FORM' || nodeName === 'BUTTON' || nodeName === 'INPUT' || nodeName === 'IFRAME')
         return false
 
     // contains shadow dom
@@ -247,13 +481,14 @@ const videoCheck = element => {
     return true
 }
 
-const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube']
+const forbWordsEasy = ['cookie', 'adblock', 'ad block', 'blocker', 'ever miss', 't miss', 'our privacy', 'theguardian', 'bloqueador de anuncios', 'to continue us', 'mited acces', 'lusive acces', 'left this mon', 'be the fir', 'ble notif', 's the time', 'ur newslet', 'gister for fre', 'nload free', 'nload your free', 'gn to youtube', 'ble deal', 'started for fre', 'tart fre', 'advertisement', '//consent.', 'ign in to youtub']
 
 const forbWords = [...forbWordsEasy, 'policy', 'subscri', 'sale', 'updates', 'member', 'value', 'advertis', 'подписаться', 'install']
 
 const allowedWords = ['sign in', 'language', 'basket', 'delivery', 'price', 'google meet', 'корзина', 'resume', 'apply', 'drive']
 
 const contentEasyCheck = element => {
+	// console.log(element)
     const textCont = element.innerHTML.toLowerCase()
 
     // console.log('contentEasyCheck(should block): ', forbWordsEasy.some(v => {
@@ -287,7 +522,7 @@ const positionCheckTypeI = (element, windowArea) => {
         if (contentEasyCheck(element))
             return { shouldRemove: true, shouldMemo: true }
         else
-            return { shouldRemove: false, shouldMemo: false }
+            return { shouldRemove: true, shouldMemo: false }
     }
 
     const layoutArea = element.offsetHeight * element.offsetWidth
@@ -340,8 +575,11 @@ const positionCheckTypeI = (element, windowArea) => {
 }
 
 const positionCheckTypeIII = (element, windowArea) => {
-    if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        return { shouldRemove: true, shouldMemo: false }
+	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
+        if (contentEasyCheck(element))
+            return { shouldRemove: true, shouldMemo: true }
+        else
+            return { shouldRemove: true, shouldMemo: false }
     }
 
     const layoutArea = element.offsetHeight * element.offsetWidth

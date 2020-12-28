@@ -1,18 +1,14 @@
 // list of websites where prevent content feature enabled by default
-const preventContArr = [
+const defPreventContArr = [
 	'www.economist.com',
 	'www.reviewjournal.com',
 	'www.bostonglobe.com',
 	'www.theguardian.com',
-	'www.saechsische.de',
-	'sz-magazin.sueddeutsche.de',
-	'www.zeit.de',
-	'www.heise.de',
 	'www.theladders.com'
 ]
 
 // other default settings
-const websites = {
+const defWebsites = {
 	'a.goodtime.io': 'whitelist',
 	'about.google': 'whitelist',
 	'app.hubspot.com': 'whitelist',
@@ -150,31 +146,20 @@ const websites = {
 	'lolesports.com': 'whitelist',
 	'aliexpress.ru': 'whitelist',
 	'www.aliexpress.com': 'whitelist',
+	'localhost:4200': 'whitelist',
+	'localhost:3000': 'whitelist',
+	'localhost:8000': 'whitelist',
+	'localhost:5000': 'whitelist',
+	'localhost:8080': 'whitelist',
 	// moderate by default
 	'www.economist.com': 'easyModeActive',
 	'www.reviewjournal.com': 'easyModeActive',
 	'www.bostonglobe.com': 'easyModeActive',
 	'www.theguardian.com': 'easyModeActive',
-	'www.saechsische.de': 'easyModeActive',
-	'sz-magazin.sueddeutsche.de': 'easyModeActive',
-	'www.zeit.de': 'easyModeActive',
-	'www.heise.de': 'easyModeActive',
 	'www.theladders.com': 'easyModeActive'
 }
 
-// This is what presets are:
-//
-// const presetCasual = {
-// 	curAutoMode: 'easyModeActive',
-// 	autoModeAggr: 'typeI',
-// }
-//
-// const presetManual = {
-// 	curAutoMode: 'whitelist',
-// 	autoModeAggr: 'typeIII',
-// }
-
 export {
-	websites,
-	preventContArr
+	defWebsites,
+	defPreventContArr
 }
