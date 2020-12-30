@@ -15,9 +15,15 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	const doc = document.documentElement
 	const body = document.body
 	const elems = body.getElementsByTagName("*")
+	const memoize = new WeakMap()
 
 	// methods
 	const checkElem = element => {
+		if (memoize.has(element)) {
+			setPropImp(element, "display", "none")
+			return
+		}
+
 		if (!isDecentElem(element)) return
 
 		const elemPosStyle = getStyle(element, 'position')
@@ -33,6 +39,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 			if (statsEnabled) state = addItemToStats(element, state)
 
 	        setPropImp(element, "display", "none")
+			memoize.set(element, true)
 	    }
 
 	    state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem)
@@ -40,13 +47,18 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1200) {
-			removeDomWatcher(domObserver, wasNotStoped, body, action)
+		if (infiniteLoopPreventCounter > 1300) {
+			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
+			infiniteLoopPreventCounter = 0
 			return true
 		}
 		infiniteLoopPreventCounter++
 		if (myTimer === 0) {
-			myTimer = setTimeout(() => resetLoopCounter(infiniteLoopPreventCounter, myTimer), 1000)
+			myTimer = setTimeout(() => {
+				infiniteLoopPreventCounter = 0
+			    clearTimeout(myTimer)
+			    myTimer = 0
+			}, 1000)
 		}
 		return false
 	}
@@ -54,7 +66,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	const watchDOM = () => {
 		if (!domObserver) {
 			domObserver = new MutationObserver(mutations => {
-				state = watchMutations(mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem)
+				state = watchMutations(mutations, shouldRestoreCont, statsEnabled, state, doc, body, prevLoop, checkElem, memoize)
 			})
 		}
 
@@ -137,12 +149,17 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	// watch DOM
 	const prevLoop = () => {
 		if (infiniteLoopPreventCounter > 1000) {
-			removeDomWatcher(domObserver, wasNotStoped, body, action)
+			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
+			infiniteLoopPreventCounter = 0
 			return true
 		}
 		infiniteLoopPreventCounter++
 		if (myTimer === 0) {
-			myTimer = setTimeout(() => resetLoopCounter(infiniteLoopPreventCounter, myTimer), 1000)
+			myTimer = setTimeout(() => {
+				infiniteLoopPreventCounter = 0
+			    clearTimeout(myTimer)
+			    myTimer = 0
+			}, 1000)
 		}
 		return false
 	}

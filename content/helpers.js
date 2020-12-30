@@ -650,12 +650,6 @@ const checkElemWithSibl = (element, checkElem) => {
     }
 }
 
-const resetLoopCounter = (infiniteLoopPreventCounter, myTimer) => {
-    infiniteLoopPreventCounter = 0
-    clearTimeout(myTimer)
-    myTimer = 0
-}
-
 const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
     try {
         domObserver.disconnect()
@@ -667,11 +661,16 @@ const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
             }, 2000)
         }
         wasNotStoped = false
+		return wasNotStoped
     } catch (e) {
     }
 }
 
-const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {
+const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem, memoize) => {
+	if (memoize.has(mutation.target)) {
+		return state
+	}
+
     if ((mutation.target.nodeName == 'SCRIPT') ||
     (mutation.target.nodeName == 'HEAD') ||
     (mutation.target.nodeName == 'STYLE'))
@@ -764,7 +763,7 @@ const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, 
         }
 
         // check element and its siblings
-        state = checkMutation(mutation, statsEnabled, state, doc, body, checkElem)
+        state = checkMutation(mutation, statsEnabled, state, doc, body, checkElem, memoize)
     }
     return state
 }
