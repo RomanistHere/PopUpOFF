@@ -38,7 +38,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				websites1: {},
 				websites2: {},
 				websites3: {},
-				autoModeAggr: 'typeI',
 				preset: 'presetManual',
 			})
 
@@ -47,8 +46,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     } else if (reason == 'update') {
 		try {
 			const { websites } = await getStorageData('websites')
-			if (previousVersion === '2.0.2') {
+			if (previousVersion === '2.0.3') {
+				// 2.0.3
+			} else if (previousVersion === '2.0.2') {
 				// 2.0.2
+				chrome.storage.sync.remove(['autoModeAggr'])
 			} else if (websites != null) {
 				// 2.0.0 - 2.0.1
 
@@ -89,7 +91,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				await setStorageData({
 					restoreContActive: [...defPreventContArr],
 					curAutoMode: 'whitelist',
-					autoModeAggr: 'typeI',
 					shortCutMode: newShortCut,
 					tutorial: true,
 					update: true,
@@ -105,11 +106,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		}
 
 		// Detect if there are issue and fix
-		const { shortCutMode, statsEnabled, autoModeAggr } = await getStorageData(['shortCutMode', 'statsEnabled', 'autoModeAggr'])
-
-		if (autoModeAggr == null) {
-			await setStorageData({ autoModeAggr: 'typeI' })
-		}
+		const { shortCutMode, statsEnabled } = await getStorageData(['shortCutMode', 'statsEnabled'])
 
 		if (statsEnabled == null) {
 			await setStorageData({ statsEnabled: false })

@@ -650,12 +650,6 @@ const checkElemWithSibl = (element, checkElem) => {
     }
 }
 
-const resetLoopCounter = (infiniteLoopPreventCounter, myTimer) => {
-    infiniteLoopPreventCounter = 0
-    clearTimeout(myTimer)
-    myTimer = 0
-}
-
 const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
     try {
         domObserver.disconnect()
@@ -667,6 +661,7 @@ const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
             }, 2000)
         }
         wasNotStoped = false
+		return wasNotStoped
     } catch (e) {
     }
 }

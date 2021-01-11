@@ -188,47 +188,9 @@ const initAutoMode = async () => {
 	}
 }
 
-// aggression and resetting //
-const initAggrAndRes = async () => {
-	const sliderAggr = querySelector('.aggression .slider__input')
-	const sliderTextLeftAggr = querySelector('.aggression .slider__left')
-	const sliderTextRightAggr = querySelector('.aggression .slider__right')
-	// const sliderTextCenterAggr = querySelector('.aggression .slider__center')
-	const sliderTextArrAggr = querySelectorAll('.aggression .slider__text')
-
-	sliderTextArrAggr.forEach(item => item.addEventListener('click', (e) => {
-		sliderAggr.value = e.target.dataset.value
-		sliderAggr.dispatchEvent(new Event('input'))
-	}))
-
-	const sliderAggrSetUp = {
-		1: ['typeI', sliderTextLeftAggr],
-		// 2: ['typeII', sliderTextCenterAggr],
-		2: ['typeIII', sliderTextRightAggr],
-	}
-
-	sliderAggr.oninput = async (e) => {
-		const val = e.target.value
-
-		sliderTextArrAggr.forEach(item => removeClass(item, 'slider__text-active'))
-		addClass(sliderAggrSetUp[val][1], 'slider__text-active')
-
-		await setStorageData({ "autoModeAggr": sliderAggrSetUp[val][0] })
-		addClass(sliderAggr, 'slider__input-active')
-	}
-
-	const valuesAggr = {
-		'typeI': [1, sliderTextLeftAggr],
-		// 'typeII': [2, sliderTextCenterAggr],
-		'typeIII': [2, sliderTextRightAggr]
-	}
-
+// resetting //
+const initReset = async () => {
 	// resetting //
-	const { autoModeAggr } = await getStorageData('autoModeAggr')
-	sliderAggr.value = valuesAggr[autoModeAggr][0]
-	addClass(valuesAggr[autoModeAggr][1], 'slider__text-active')
-	addClass(sliderAggr, 'slider__input-active')
-
 	const resetButtons = querySelectorAll('.options__button')
 	resetButtons.forEach(item => item.addEventListener('click', (e) => {
 		e.preventDefault()
@@ -272,7 +234,6 @@ const initAggrAndRes = async () => {
 			backupData: {},
 			curAutoMode: 'whitelist',
 			shortCutMode: null,
-			autoModeAggr: 'typeI',
 			preset: 'presetManual',
 		})
 		window.location.reload()
@@ -296,7 +257,6 @@ const initAggrAndRes = async () => {
 			websites1: {},
 			websites2: {},
 			websites3: {},
-			autoModeAggr: 'typeI',
 			preset: 'presetManual',
 		})
 		window.location.reload()
@@ -321,4 +281,4 @@ initTutorial()
 initStats()
 initKeyboard()
 initAutoMode()
-initAggrAndRes()
+initReset()

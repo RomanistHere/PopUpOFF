@@ -118,11 +118,9 @@ const initTutorial = (updated = false) => {
 		querySelectorAll('.setings__btn').forEach(elem => elem.addEventListener('click', async function() {
 			const preset = getAttr(this, 'data-preset')
 			const curAutoMode = preset === 'presetManual' ? 'whitelist' : 'easyModeActive'
-			const autoModeAggr = preset === 'presetManual' ? 'typeIII' : 'typeI'
 
 			await setStorageData({
 				curAutoMode: curAutoMode,
-				autoModeAggr: autoModeAggr,
 			})
 
 			setTimeout(() => { removeClass(tutorialWrap, 'tutorial-setup') }, 300)
