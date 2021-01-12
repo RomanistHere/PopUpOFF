@@ -11,9 +11,10 @@ const modes = {
 
 const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
 	// check if we switch from hard to easy one
-	if (appState.curMode === 'hardModeActive' || appState.curMode === 'easyModeActive')
+	if (appState.curMode === 'hardModeActive' || appState.curMode === 'easyModeActive' || appState.curMode === 'incognitoActive')
 		restoreFixedElems()
 	// start new mode and upd state
+	console.log(curModeName)
 	const mode = modes[curModeName]
 	appState = { ...appState, curMode: curModeName }
 	mode(statsEnabled, shouldRestoreCont)
@@ -149,6 +150,7 @@ let notifTimeout
 const textItems = {
 	'whitelist': 'Dormant',
 	'hardModeActive': 'Aggressive',
+	'incognitoActive': 'Incognito',
 	'easyModeActive': 'Moderate',
 }
 
