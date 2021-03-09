@@ -75,7 +75,7 @@ browser.runtime.onInstalled.addListener(async (details) => {
 		try {
 			const { websites } = await getStorageData('websites')
 			// const websites = websitesStore
-			if (previousVersion === '2.0.2') {
+			if (previousVersion === '2.0.2' || previousVersion === '2.0.2.1') {
 				// 2.0.2
 			} else if (websites != null) {
 				// 2.0.0 - 2.0.1
