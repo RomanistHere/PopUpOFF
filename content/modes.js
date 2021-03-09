@@ -47,7 +47,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1300) {
+		if (infiniteLoopPreventCounter > 500) {
 			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
 			infiniteLoopPreventCounter = 0
 			return true
@@ -148,7 +148,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	}
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1000) {
+		if (infiniteLoopPreventCounter > 300) {
 			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
 			infiniteLoopPreventCounter = 0
 			return true

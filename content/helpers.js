@@ -751,6 +751,9 @@ const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, 
 
         const mutation = mutations[i]
 
+		if (mutation.attributeName === 'data-popupoffbl')
+			continue
+
         if (!shouldRestoreCont) {
             const isProcessed = checkIsInArr(processedElems, mutation.target)
             // skip if processed
