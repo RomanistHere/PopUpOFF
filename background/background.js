@@ -17,7 +17,7 @@ import {
 // handle install
 chrome.runtime.onInstalled.addListener(async (details) => {
 	const { previousVersion, reason } = details
-    if (reason == 'install') {
+    if (reason === 'install') {
 		// check is extension already in use at other device
 		const { curAutoMode } = await getStorageData('curAutoMode')
 
@@ -41,9 +41,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				preset: 'presetManual',
 			})
 
-			chrome.tabs.create({ url: 'https://romanisthere.github.io/PopUpOFF-Website/index.html#2.0' })
+			// chrome.tabs.create({ url: 'https://popupoff.org/#aggressive' })
 		}
-    } else if (reason == 'update') {
+    } else if (reason === 'update') {
 		try {
 			const { websites } = await getStorageData('websites')
 			if (previousVersion === '2.0.3') {
@@ -51,55 +51,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 			} else if (previousVersion === '2.0.2') {
 				// 2.0.2
 				chrome.storage.sync.remove(['autoModeAggr'])
-			} else if (websites != null) {
-				// 2.0.0 - 2.0.1
-
-				let newWebsites = { ...websites }
-				const keys = Object.keys(defWebsites)
-				try {
-					keys.forEach(key => {
-						if (newWebsites[key] === defWebsites[key]) {
-							delete newWebsites[key]
-						}
-					})
-				} catch (e) {
-					console.log(e)
-				}
-
-				await setWebsites(newWebsites)
-			} else {
-				// before 2.0
-
-				let { thisWebsiteWork, thisWebsiteWorkEasy, shortCutMode } = await getStorageData(['thisWebsiteWork', 'thisWebsiteWorkEasy', 'shortCutMode'])
-
-				if (thisWebsiteWork == null || thisWebsiteWorkEasy == null) {
-					thisWebsiteWork = []
-					thisWebsiteWorkEasy = []
-				}
-				// shortcut converting
-				// shortcut: false, "thisWebsiteWorkEasy", "thisWebsiteWork" -> null, 'easyModeActive', 'hardModeActive'
-				const newShortCut = (shortCutMode == 'thisWebsiteWorkEasy') ? 'easyModeActive' :
-									(shortCutMode == 'thisWebsiteWork') ? 'hardModeActive' : null
-
-				// websites converting
-				const newWebsites = {
-					...arrayToObj(thisWebsiteWorkEasy, 'easyModeActive'),
-					...arrayToObj(thisWebsiteWork, 'hardModeActive')
-				}
-
-				await setWebsites(newWebsites)
-				await setStorageData({
-					restoreContActive: [...defPreventContArr],
-					curAutoMode: 'whitelist',
-					shortCutMode: newShortCut,
-					tutorial: true,
-					update: true,
-				 	preset: 'presetManual',
-				})
 			}
-
-			// remove old props
-			chrome.storage.sync.remove(['websites', 'backupData', 'thisWebsiteWork', 'thisWebsiteWorkEasy', 'supervision', 'restoreCont'])
 		} catch (e) {
 			console.log('something happened')
 			console.log(e)
@@ -115,21 +67,18 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		if (typeof shortCutMode == 'undefined') {
 			await setStorageData({ shortCutMode: null })
 		}
-
-		// chrome.storage.sync.get(null, resp => {
-		// 	console.log(resp)
-		// })
     }
 })
 
-chrome.runtime.setUninstallURL("https://romanisthere.github.io/PopUpOFF-Website/pages/delete.html")
+// chrome.runtime.setUninstallURL("https://popupoff.org/why-delete")
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.query({ 'active': true }, info => {
     	const url = info[0].url
 	    if (url.includes('chrome://') || url.includes('chrome-extension://')) {
-			chrome.browserAction.disable(activeInfo.tabId)
+			setBadgeText(null)(activeInfo.tabId)
+			chrome.action.disable(activeInfo.tabId)
 		} else {
 			const pureUrl = getPureURL(info[0])
 			setNewBadge(pureUrl, activeInfo.tabId)
@@ -199,10 +148,10 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 		const url = tab.url
 
 		if (url.includes('chrome://') || url.includes('chrome-extension://')) {
-			chrome.browserAction.disable(tabID)
+			setBadgeText(null)(tabID)
+			chrome.action.disable(tabID)
 		} else {
 			const pureUrl = getPureURL({ url })
-
 			setNewBadge(pureUrl, tabID)
 		}
 	}
@@ -255,24 +204,26 @@ const setNewMode = async (newMode, pureUrl, tabID) => {
 chrome.contextMenus.removeAll()
 subMenu.map((item, index) => {
  	subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
+		id: item.mode,
 		title: item.title,
 		type: 'checkbox',
 		// checked whitelist by default
-		checked: item.mode === 'whitelist' ? true : false,
+		checked: item.mode === 'whitelist',
 		// works for web pages only
 		documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
-		onclick: (obj, tabs) => {
-			const pureUrl = getPureURL(tabs)
-			const tabID = tabs.id
-			const tabURL = tabs.url
-
-			chrome.tabs.sendMessage(tabID, { activeMode: item.mode }, resp => {
-	            // if (resp && resp.closePopup === true) {
-				// 	chrome.tabs.update(tabID, { url: tabURL })
-	            // }
-	        })
-
-			setNewMode(item.mode, pureUrl, tabID)
-		}
 	})
 })
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+	const tabID = tab.id;
+	const tabURL = tab.url;
+	const pureUrl = getPureURL({ url: tabURL });
+
+	chrome.tabs.sendMessage(tabID, { activeMode: info.menuItemId }, resp => {
+		// if (resp && resp.closePopup === true) {
+		// 	chrome.tabs.update(tabID, { url: tabURL })
+		// }
+	})
+
+	setNewMode(info.menuItemId, pureUrl, tabID);
+});

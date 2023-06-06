@@ -7,15 +7,16 @@
         "activeTab",
         "storage",
         "tabs",
-        "http://*/",
-        "https://*/",
         "contextMenus"
+    ],
+    "host_permissions": [
+        "http://*/",
+        "https://*/"
     ],
     "options_ui": {
         "page": "options/options.html",
         "open_in_tab": true
     },
-    "content_security_policy": "script-src 'self'; object-src 'self'",
     "content_scripts": [
         {
             "js":         [ "content/helpers.js", "content/modes.js", "content/setup.js" ],
@@ -26,9 +27,10 @@
         }
     ],
     "background": {
-        "page": "background/background.html"
+        "service_worker": "background/background.js",
+        "type": "module"
     },
-    "browser_action": {
+    "action": {
         "default_popup": "popup/popup.html",
         "default_title": "PopUpOFF - Click to open",
         "default_icon": {
@@ -44,6 +46,6 @@
         "48": "images/logo48.png",
         "128": "images/logo128.png"
     },
-    "manifest_version": 2,
+    "manifest_version": 3,
     "minimum_chrome_version": "63"
 }

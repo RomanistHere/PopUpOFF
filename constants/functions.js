@@ -10,11 +10,11 @@ const getAttr = (node, attrName) => node.getAttribute(attrName)
 // Browser actions. Badge - text at right bottom corner of extension's icon
 const setBadgeText = (text) =>
 	(tabID) => {
-		chrome.browserAction.setBadgeText({
+		chrome.action.setBadgeText({
 			text: text ? text : "",
 			tabId: tabID ? tabID : null
 		})
-		chrome.browserAction.setBadgeBackgroundColor({ color: "#222831" })
+		chrome.action.setBadgeBackgroundColor({ color: "#222831" })
 	}
 
 const nFormatter = (num, digits) => {
