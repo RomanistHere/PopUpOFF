@@ -574,66 +574,6 @@ const positionCheckTypeI = (element, windowArea) => {
     return { shouldRemove: false, shouldMemo: false }
 }
 
-const positionCheckTypeIII = (element, windowArea) => {
-	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-        if (contentEasyCheck(element))
-            return { shouldRemove: true, shouldMemo: true }
-        else
-            return { shouldRemove: true, shouldMemo: false }
-    }
-
-    const layoutArea = element.offsetHeight * element.offsetWidth
-    const screenValue = roundToTwo(layoutArea/windowArea)
-    const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
-
-    if (screenValue >= .98) {
-        // case 1: overlay on the whole screen - should block
-        // case 2: video in full screen mode - should not
-        return { shouldRemove: videoCheck(element), shouldMemo: true }
-    }
-
-    if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
-        // popular notification
-        if (element.id === 'onesignal-slidedown-container')
-            return { shouldRemove: true, shouldMemo: true }
-
-        // it's a header!
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    if (element.offsetLeft <= 0 && element.offsetWidth <= 360) {
-        // youtube/facebook sidebar
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    if (screenValue < .98 && screenValue >= .1) {
-        // overlays
-        return { shouldRemove: true, shouldMemo: true }
-    }
-
-    if (screenValue <= .03 && element.offsetTop > 100) {
-        // buttons and side/social menus
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
-        // scrolling videos in the articles
-        return { shouldRemove: true, shouldMemo: true }
-    }
-
-    if (offsetBot <= 212) {
-        // bottom notification
-        return { shouldRemove: true, shouldMemo: true }
-    }
-
-    if (screenValue <= .1 && element.offsetTop > 100) {
-        // buttons and side/social menus
-        return { shouldRemove: false, shouldMemo: true }
-    }
-
-    return { shouldRemove: true, shouldMemo: false }
-}
-
 // watch DOM
 const checkElemWithSibl = (element, checkElem) => {
     if (element instanceof HTMLElement) {
@@ -835,4 +775,64 @@ const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, 
 //     }
 //
 //     return { shouldRemove: true, shouldMemo: false }
+// }
+
+// const positionCheckTypeIII = (element, windowArea) => {
+// 	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
+// 		if (contentEasyCheck(element))
+// 			return { shouldRemove: true, shouldMemo: true }
+// 		else
+// 			return { shouldRemove: true, shouldMemo: false }
+// 	}
+//
+// 	const layoutArea = element.offsetHeight * element.offsetWidth
+// 	const screenValue = roundToTwo(layoutArea/windowArea)
+// 	const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
+//
+// 	if (screenValue >= .98) {
+// 		// case 1: overlay on the whole screen - should block
+// 		// case 2: video in full screen mode - should not
+// 		return { shouldRemove: videoCheck(element), shouldMemo: true }
+// 	}
+//
+// 	if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
+// 		// popular notification
+// 		if (element.id === 'onesignal-slidedown-container')
+// 			return { shouldRemove: true, shouldMemo: true }
+//
+// 		// it's a header!
+// 		return { shouldRemove: false, shouldMemo: true }
+// 	}
+//
+// 	if (element.offsetLeft <= 0 && element.offsetWidth <= 360) {
+// 		// youtube/facebook sidebar
+// 		return { shouldRemove: false, shouldMemo: true }
+// 	}
+//
+// 	if (screenValue < .98 && screenValue >= .1) {
+// 		// overlays
+// 		return { shouldRemove: true, shouldMemo: true }
+// 	}
+//
+// 	if (screenValue <= .03 && element.offsetTop > 100) {
+// 		// buttons and side/social menus
+// 		return { shouldRemove: false, shouldMemo: true }
+// 	}
+//
+// 	if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
+// 		// scrolling videos in the articles
+// 		return { shouldRemove: true, shouldMemo: true }
+// 	}
+//
+// 	if (offsetBot <= 212) {
+// 		// bottom notification
+// 		return { shouldRemove: true, shouldMemo: true }
+// 	}
+//
+// 	if (screenValue <= .1 && element.offsetTop > 100) {
+// 		// buttons and side/social menus
+// 		return { shouldRemove: false, shouldMemo: true }
+// 	}
+//
+// 	return { shouldRemove: true, shouldMemo: false }
 // }

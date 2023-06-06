@@ -89,7 +89,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 const letters = {
 	'hardModeActive': 'A',
 	'easyModeActive': 'M',
-	'incognitoActive': 'I',
+	'staticActive': 'S',
 	'whitelist': ''
 }
 
@@ -118,7 +118,7 @@ const setNewBadge = async (pureUrl, tabID) => {
 		chrome.contextMenus.update(menu, {
 			type: 'checkbox',
 			checked: (letter === 'A' && key === 'hardModeActive')
-				|| (letter === 'I' && key === 'incognitoActive')
+				|| (letter === 'S' && key === 'staticActive')
 				|| (letter === 'M' && key === 'easyModeActive')
 				|| (letter === '' && key === 'whitelist')
 		})
@@ -163,11 +163,11 @@ const subMenu = [
 		title: `Aggressive`,
 		mode: 'hardModeActive'
 	},{
-		title: `Incognito`,
-		mode: 'incognitoActive'
-	},{
 		title: `Moderate`,
 		mode: 'easyModeActive'
+	},{
+		title: `Stationary`,
+		mode: 'staticActive'
 	},{
 		title: `Dormant`,
 		mode: 'whitelist'
@@ -176,8 +176,8 @@ const subMenu = [
 
 const subMenuStore = {
 	hardModeActive: null,
-	incognitoActive: null,
 	easyModeActive: null,
+	staticActive: null,
 	whitelist: null,
 }
 
