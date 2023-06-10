@@ -274,8 +274,13 @@ const disconnectObservers = domObserver => {
 }
 
 const restoreFixedElems = () => {
-	const elems = document.querySelectorAll('[data-PopUpOFFBl]')
-	elems.forEach(elem => elem.style.display = null)
+	const elems = document.querySelectorAll('[data-PopUpOFF]')
+	elems.forEach(elem => {
+		if (elem.getAttribute("data-PopUpOFF") === "bl")
+			elem.style.display = null
+		else if (elem.getAttribute("data-PopUpOFF") === "st")
+			elem.style.setProperty("position", "absolute")
+	})
 }
 
 const modeChangedToBg = () =>
@@ -328,27 +333,27 @@ const addItemToStats = (element, state) => {
 
 // methods
 const removeOverflow = (statsEnabled, state, doc, body) => {
-    if (getStyle(doc, 'overflow-y')) {
+    if (getStyle(doc, 'overflow-y') !== "visible") {
         setPropImp(doc, "overflow-y", "unset")
         if (statsEnabled) state = addCountToStats(state)
     }
 
-    if (getStyle(body, 'overflow-y')) {
+    if (getStyle(body, 'overflow-y') !== "visible") {
         setPropImp(body, "overflow-y", "unset")
         if (statsEnabled) state = addCountToStats(state)
     }
 
     const docPosStyle = getStyle(doc, 'position')
-    if ((docPosStyle == 'fixed') ||
-        (docPosStyle == 'absolute')) {
+    if ((docPosStyle === 'fixed') ||
+        (docPosStyle === 'absolute')) {
         setPropImp(doc, "min-height", "100vh")
         setPropImp(doc, "position", "relative")
         if (statsEnabled) state = addCountToStats(state)
     }
 
     const bodyPosStyle = getStyle(body, 'position')
-    if ((bodyPosStyle== 'fixed') ||
-        (bodyPosStyle == 'absolute')) {
+    if ((bodyPosStyle === 'fixed') ||
+        (bodyPosStyle === 'absolute')) {
         setPropImp(body, "position", "relative")
         setPropImp(body, "min-height", "100vh")
         if (statsEnabled) state = addCountToStats(state)
@@ -434,13 +439,12 @@ const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, check
     return state
 }
 
-const isDecentElem = element => {
-    return ((element.nodeName == 'SCRIPT') ||
-    (element.nodeName == 'HEAD') ||
-    (element.nodeName == 'BODY') ||
-    (element.nodeName == 'HTML') ||
-    (element.nodeName == 'STYLE')) ? false : true
-}
+const isDecentElem = element =>
+	!((element.nodeName === 'SCRIPT') ||
+		(element.nodeName === 'HEAD') ||
+		(element.nodeName === 'BODY') ||
+		(element.nodeName === 'HTML') ||
+		(element.nodeName === 'STYLE'));
 
 const videoCheck = element => {
     // traverse through the element and its children recursively till find <video> tag or block the element
@@ -607,19 +611,19 @@ const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
 }
 
 const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {
-    if ((mutation.target.nodeName == 'SCRIPT') ||
-    (mutation.target.nodeName == 'HEAD') ||
-    (mutation.target.nodeName == 'STYLE'))
+    if ((mutation.target.nodeName === 'SCRIPT') ||
+		(mutation.target.nodeName === 'HEAD') ||
+		(mutation.target.nodeName === 'STYLE'))
         return state
 
     checkElemWithSibl(mutation.target, checkElem)
     const arr = [...mutation.addedNodes]
     arr.map(element => {
-        if ((element.nodeName != '#text') &&
-        (element.nodeName != '#comment') &&
-        (element.nodeName != 'SCRIPT') &&
-        (element.nodeName != 'HEAD') &&
-        (element.nodeName != 'STYLE'))
+        if ((element.nodeName !== '#text') &&
+			(element.nodeName !== '#comment') &&
+			(element.nodeName !== 'SCRIPT') &&
+			(element.nodeName !== 'HEAD') &&
+			(element.nodeName !== 'STYLE'))
             checkElemWithSibl(element, checkElem)
     })
     return removeOverflow(statsEnabled, state, doc, body)
@@ -629,12 +633,12 @@ const unsetHeight = ({ target }, statsEnabled, state, memoize = new WeakMap()) =
     if (target.getAttribute('data-popupoffextension') === 'hello')
         return state
 
-    if ((target.nodeName == 'SCRIPT') ||
-    (target.nodeName == 'HEAD') ||
-    (target.nodeName == 'STYLE'))
+    if ((target.nodeName === 'SCRIPT') ||
+		(target.nodeName === 'HEAD') ||
+		(target.nodeName === 'STYLE'))
         return state
 
-    if (!memoize.has(target) && getStyle(target, 'display') == 'none') {
+    if (!memoize.has(target) && getStyle(target, 'display') === 'none') {
         setPropImp(target, "display", "unset")
         if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 }
     }

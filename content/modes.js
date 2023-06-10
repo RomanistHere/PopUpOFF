@@ -9,11 +9,11 @@ const getInitialState = statsEnabled => {
 		   : {
 			windowArea: parseFloat(window.innerHeight * window.innerWidth)
 		}
-};
+}
 
 const hardMode = (statsEnabled, shouldRestoreCont) => {
 	// state
-	let state = getInitialState(statsEnabled);
+	let state = getInitialState(statsEnabled)
 
 	// unmutable
 	const doc = document.documentElement
@@ -32,7 +32,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	        	return
 
 	        if (getStyle(element, 'display') !== 'none')
-	        	element.setAttribute('data-PopUpOFFBl', 'bl')
+	        	element.setAttribute('data-PopUpOFF', 'bl')
 
 			if (statsEnabled) state = addItemToStats(element, state)
 
@@ -96,7 +96,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 
 const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	// state
-	let state = getInitialState(statsEnabled);
+	let state = getInitialState(statsEnabled)
 	// unmutable
 	const doc = document.documentElement
 	const body = document.body
@@ -114,7 +114,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	        	return
 
 			if (getStyle(element, 'display') !== 'none')
-	        	element.setAttribute('data-PopUpOFFBl', 'bl')
+	        	element.setAttribute('data-PopUpOFF', 'bl')
 
 			const memoized = memoize.has(element)
 			const { shouldRemove, shouldMemo } = memoized
@@ -187,7 +187,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 
 const staticMode = (statsEnabled, shouldRestoreCont) => {
 	// state
-	let state = getInitialState(statsEnabled);
+	let state = getInitialState(statsEnabled)
 
 	// unmutable
 	const doc = document.documentElement
@@ -196,22 +196,22 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 
 	// methods
 	const checkElem = element => {
-		if (!isDecentElem(element)) return
+		if (!isDecentElem(element))
+			return
 
 		const elemPosStyle = getStyle(element, 'position')
-		if ((elemPosStyle === 'fixed') ||
-			(elemPosStyle === 'absolute') ||
-			(elemPosStyle === 'sticky')) {
 
+		if (elemPosStyle === 'fixed' || elemPosStyle === 'absolute' || elemPosStyle === 'sticky') {
 			if (element.getAttribute('data-PopUpOFF') === 'notification')
 				return
 
 			if (getStyle(element, 'display') !== 'none')
-				element.setAttribute('data-PopUpOFFBl', 'bl')
+				element.setAttribute('data-PopUpOFF', 'st')
 
-			if (statsEnabled) state = addItemToStats(element, state)
+			if (statsEnabled)
+				state = addItemToStats(element, state)
 
-			setPropImp(element, "position", "static")
+			setPropImp(element, "position", "relative")
 		}
 	}
 
@@ -258,6 +258,7 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 	// Let the hunt begin!
 	action(elems)
 	// statistics
+	// todo: fix
 	if (statsEnabled) {
 		setNewData(state)
 		if (!beforeUnloadAactive) {

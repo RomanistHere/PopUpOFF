@@ -14,7 +14,6 @@ const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
 	if (appState.curMode === 'hardModeActive' || appState.curMode === 'easyModeActive' || appState.curMode === 'staticActive')
 		restoreFixedElems()
 	// start new mode and upd state
-	console.log(curModeName)
 	const mode = modes[curModeName]
 	appState = { ...appState, curMode: curModeName }
 	mode(statsEnabled, shouldRestoreCont)
@@ -136,7 +135,7 @@ const sendStats = async () => {
 	document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: stats }))
 }
 
-if (window.location.href === 'https://romanisthere.github.io/secrets/') {
+if (window.location.href === 'https://popupoff.org/visualization') {
 	document.addEventListener('showPopUpOFFStats', ({ detail }) => {
 		if (detail === 'letTheShowBegin') {
 			sendStats()
