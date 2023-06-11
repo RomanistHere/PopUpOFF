@@ -1,7 +1,7 @@
 {
     "name": "PopUpOFF - Popup and overlay blocker",
     "short_name": "PopUpOFF",
-    "version": "2.0.3",
+    "version": "2.1.0",
     "description": "Removes and prevents popups, overlays and cookie notifications, other tools do not. Enjoy the original look of the internet.",
     "permissions": [
         "activeTab",
@@ -22,7 +22,6 @@
             "js":         [ "content/helpers.js", "content/modes.js", "content/setup.js" ],
             "css":        [ "css/content.css" ],
             "matches":    [ "<all_urls>" ],
-            "all_frames": true,
             "run_at":     "document_end"
         }
     ],

@@ -274,11 +274,11 @@ const disconnectObservers = domObserver => {
 }
 
 const restoreFixedElems = () => {
-	const elems = document.querySelectorAll('[data-PopUpOFF]')
+	const elems = document.querySelectorAll('[data-popupoff]')
 	elems.forEach(elem => {
-		if (elem.getAttribute("data-PopUpOFF") === "bl")
+		if (elem.getAttribute("data-popupoff") === "bl")
 			elem.style.display = null
-		else if (elem.getAttribute("data-PopUpOFF") === "st")
+		else if (elem.getAttribute("data-popupoff") === "st")
 			elem.style.setProperty("position", "absolute")
 	})
 }
@@ -333,31 +333,33 @@ const addItemToStats = (element, state) => {
 
 // methods
 const removeOverflow = (statsEnabled, state, doc, body) => {
-    if (getStyle(doc, 'overflow-y') !== "visible") {
+	const overFlowDoc = getStyle(doc, 'overflow-y')
+	const overFlowBody = getStyle(body, 'overflow-y')
+	const docPosStyle = getStyle(doc, 'position')
+	const bodyPosStyle = getStyle(body, 'position')
+
+    if (overFlowDoc !== "visible" && overFlowDoc !== "unset" && overFlowDoc !== "auto") {
         setPropImp(doc, "overflow-y", "unset")
         if (statsEnabled) state = addCountToStats(state)
     }
 
-    if (getStyle(body, 'overflow-y') !== "visible") {
+    if (overFlowBody !== "visible" && overFlowBody !== "unset" && overFlowBody !== "auto") {
         setPropImp(body, "overflow-y", "unset")
         if (statsEnabled) state = addCountToStats(state)
     }
 
-    const docPosStyle = getStyle(doc, 'position')
-    if ((docPosStyle === 'fixed') ||
-        (docPosStyle === 'absolute')) {
+    if (docPosStyle === 'fixed' || docPosStyle === 'absolute') {
         setPropImp(doc, "min-height", "100vh")
         setPropImp(doc, "position", "relative")
         if (statsEnabled) state = addCountToStats(state)
     }
 
-    const bodyPosStyle = getStyle(body, 'position')
-    if ((bodyPosStyle === 'fixed') ||
-        (bodyPosStyle === 'absolute')) {
+    if (bodyPosStyle === 'fixed' || bodyPosStyle === 'absolute') {
         setPropImp(body, "position", "relative")
         setPropImp(body, "min-height", "100vh")
         if (statsEnabled) state = addCountToStats(state)
     }
+
     return state
 }
 
@@ -397,7 +399,7 @@ const findHidden = (state, statsEnabled, doc) => {
     hidden.map(elem => { state = unhide(elem, statsEnabled, state) })
     // custom ID theguardian
     try {
-        document.querySelector('#sign-in-gate').remove()
+		document.querySelector('#sign-in-gate').remove()
     } catch (e) {}
 
     return state
@@ -633,9 +635,7 @@ const unsetHeight = ({ target }, statsEnabled, state, memoize = new WeakMap()) =
     if (target.getAttribute('data-popupoffextension') === 'hello')
         return state
 
-    if ((target.nodeName === 'SCRIPT') ||
-		(target.nodeName === 'HEAD') ||
-		(target.nodeName === 'STYLE'))
+    if (target.nodeName === 'SCRIPT' || target.nodeName === 'HEAD' || target.nodeName === 'STYLE')
         return state
 
     if (!memoize.has(target) && getStyle(target, 'display') === 'none') {
@@ -654,7 +654,7 @@ const restoreNode = (mutation, statsEnabled, state) => {
 
     for (let i = 0; i < length; i++) {
         const removedNodeClone = mutation.removedNodes[i].cloneNode(true)
-        if (removedNodeClone instanceof Element && removedNodeClone.getAttribute('data-PopUpOFF') === 'notification')
+        if (removedNodeClone instanceof Element && removedNodeClone.getAttribute('data-popupoff') === 'notification')
             return state
 
         target.appendChild(removedNodeClone)
@@ -672,8 +672,7 @@ const restoreNode = (mutation, statsEnabled, state) => {
 const checkForRestore = (mutation, statsEnabled, state, memoize) => {
     state = unsetHeight(mutation, statsEnabled, state, memoize)
 
-    if (mutation.type === 'childList' &&
-    mutation.removedNodes.length) {
+    if (mutation.type === 'childList' && mutation.removedNodes.length) {
         state = restoreNode(mutation, statsEnabled, state)
     }
 
@@ -690,6 +689,9 @@ const watchMutations = (mutations, shouldRestoreCont, statsEnabled, state, doc, 
             break
 
         const mutation = mutations[i]
+
+		if (mutation.attributeName === "data-popupoff")
+			continue
 
         if (!shouldRestoreCont) {
             const isProcessed = checkIsInArr(processedElems, mutation.target)

@@ -25,14 +25,12 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 		if (!isDecentElem(element)) return
 
 		const elemPosStyle = getStyle(element, 'position')
-		if ((elemPosStyle === 'fixed') ||
-	    	(elemPosStyle === 'sticky')) {
-
-			if (element.getAttribute('data-PopUpOFF') === 'notification')
+		if ((elemPosStyle === 'fixed') || (elemPosStyle === 'sticky')) {
+			if (element.getAttribute('data-popupoff'))
 	        	return
 
 	        if (getStyle(element, 'display') !== 'none')
-	        	element.setAttribute('data-PopUpOFF', 'bl')
+	        	element.setAttribute('data-popupoff', 'bl')
 
 			if (statsEnabled) state = addItemToStats(element, state)
 
@@ -44,7 +42,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1200) {
+		if (infiniteLoopPreventCounter > 1600) {
 			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
 			return true
 		}
@@ -74,6 +72,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	}
 
 	const action = elems => {
+		console.log("action call aggressive")
 		state = removeOverflow(statsEnabled, state, doc, body)
 		checkElems(elems, checkElem)
 		removeListeners()
@@ -94,6 +93,17 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	}
 }
 
+const checkToConvertToStatic = ({ elem }) => {
+	if (getStyle(elem, "overflow") === "hidden") {
+		const { width, height, top, left } = elem.getBoundingClientRect();
+		if (width > 0 && height > 0 && top === 0 && left === 0) {
+			setPropImp(elem, "position", "static")
+			elem.setAttribute('data-popupoff', 'st')
+			return true
+		}
+	}
+}
+
 const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	// state
 	let state = getInitialState(statsEnabled)
@@ -107,14 +117,16 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 		if (!isDecentElem(element)) return
 
 		const elemPosStyle = getStyle(element, 'position')
-	    if ((elemPosStyle === 'fixed') ||
-	    	(elemPosStyle === 'sticky')) {
+	    if ((elemPosStyle === 'fixed') || (elemPosStyle === 'sticky')) {
+			const isFixed = checkToConvertToStatic({ elem: element })
+			if (isFixed)
+				return;
 
-	    	if (element.getAttribute('data-PopUpOFF') === 'notification')
+	    	if (element.getAttribute('data-popupoff'))
 	        	return
 
 			if (getStyle(element, 'display') !== 'none')
-	        	element.setAttribute('data-PopUpOFF', 'bl')
+	        	element.setAttribute('data-popupoff', 'bl')
 
 			const memoized = memoize.has(element)
 			const { shouldRemove, shouldMemo } = memoized
@@ -135,7 +147,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	}
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1000) {
+		if (infiniteLoopPreventCounter > 1200) {
 			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
 			return true
 		}
@@ -165,6 +177,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	}
 
 	const action = elems => {
+		console.log("action call moderate")
 		state = removeOverflow(statsEnabled, state, doc, body)
 		checkElems(elems, checkElem)
 		removeListeners()
@@ -201,12 +214,12 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 
 		const elemPosStyle = getStyle(element, 'position')
 
-		if (elemPosStyle === 'fixed' || elemPosStyle === 'absolute' || elemPosStyle === 'sticky') {
-			if (element.getAttribute('data-PopUpOFF') === 'notification')
+		if (elemPosStyle === 'fixed' || elemPosStyle === 'sticky') {
+			if (element.getAttribute('data-popupoff'))
 				return
 
 			if (getStyle(element, 'display') !== 'none')
-				element.setAttribute('data-PopUpOFF', 'st')
+				element.setAttribute('data-popupoff', 'st')
 
 			if (statsEnabled)
 				state = addItemToStats(element, state)
@@ -217,7 +230,7 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1200) {
+		if (infiniteLoopPreventCounter > 1500) {
 			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action)
 			return true
 		}
@@ -247,6 +260,7 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 	}
 
 	const action = elems => {
+		console.log("action call static")
 		state = removeOverflow(statsEnabled, state, doc, body)
 		checkElems(elems, checkElem)
 		removeListeners()

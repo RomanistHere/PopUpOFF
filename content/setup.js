@@ -155,7 +155,7 @@ const textItems = {
 
 const createNotification = curMode => {
 	const notification = document.createElement("span")
-	notification.setAttribute('data-PopUpOFF', 'notification')
+	notification.setAttribute('data-popupoff', 'notification')
 	const text = document.createTextNode(`✔ ${textItems[curMode]} mode activated`)
 	notification.className = 'PopUpOFF_notification'
 	notification.appendChild(text)
@@ -164,6 +164,6 @@ const createNotification = curMode => {
 	clearTimeout(notifTimeout)
 	notifTimeout = setTimeout(() => {
 		if (document.querySelector('.PopUpOFF_notification'))
-			document.querySelector('[data-PopUpOFF="notification"]').remove()
+			document.querySelector('[data-popupoff="notification"]').remove()
 	}, 5000)
 }
