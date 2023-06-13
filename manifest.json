@@ -1,50 +1,42 @@
 {
-    "name": "PopUpOFF - Popup and overlay blocker",
-    "short_name": "PopUpOFF",
-    "version": "2.1.0",
-    "description": "Removes and prevents popups, overlays and cookie notifications, other tools do not. Enjoy the original look of the internet.",
-    "permissions": [
-        "activeTab",
-        "storage",
-        "tabs",
-        "contextMenus"
-    ],
-    "host_permissions": [
-        "http://*/",
-        "https://*/"
-    ],
-    "options_ui": {
-        "page": "options/options.html",
-        "open_in_tab": true
-    },
-    "content_scripts": [
-        {
-            "js":         [ "content/helpers.js", "content/modes.js", "content/setup.js" ],
-            "css":        [ "css/content.css" ],
-            "matches":    [ "<all_urls>" ],
-            "run_at":     "document_end"
-        }
-    ],
-    "background": {
-        "service_worker": "background/background.js",
-        "type": "module"
-    },
-    "action": {
-        "default_popup": "popup/popup.html",
-        "default_title": "PopUpOFF - Click to open",
-        "default_icon": {
-            "16": "images/logo16.png",
-            "32": "images/logo32.png",
-            "48": "images/logo48.png",
-            "128": "images/logo128.png"
-        }
-    },
-    "icons": {
-        "16": "images/logo16.png",
-        "32": "images/logo32.png",
-        "48": "images/logo48.png",
-        "128": "images/logo128.png"
-    },
-    "manifest_version": 3,
-    "minimum_chrome_version": "63"
+	"name": "PopUpOFF - Popup and overlay blocker",
+	"short_name": "PopUpOFF",
+	"version": "2.1.0",
+	"description": "Removes and prevents popups, overlays and cookie notifications, other tools do not. Enjoy the original look of the internet.",
+	"permissions": ["activeTab", "storage", "tabs", "contextMenus"],
+	"host_permissions": ["http://*/", "https://*/"],
+	"options_ui": {
+		"page": "options/options.html",
+		"open_in_tab": true
+	},
+	"content_scripts": [
+		{
+			"js": ["content/helpers.js", "content/modes.js", "content/setup.js"],
+			"css": ["css/content.css"],
+			"matches": ["<all_urls>"],
+			"run_at": "document_end"
+		}
+	],
+	"background": {
+		"service_worker": "background/background.js",
+		"type": "module"
+	},
+	"action": {
+		"default_popup": "popup/popup.html",
+		"default_title": "PopUpOFF - Click to open",
+		"default_icon": {
+			"16": "images/logo16.png",
+			"32": "images/logo32.png",
+			"48": "images/logo48.png",
+			"128": "images/logo128.png"
+		}
+	},
+	"icons": {
+		"16": "images/logo16.png",
+		"32": "images/logo32.png",
+		"48": "images/logo48.png",
+		"128": "images/logo128.png"
+	},
+	"manifest_version": 3,
+	"minimum_chrome_version": "63"
 }
