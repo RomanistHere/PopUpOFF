@@ -1,11 +1,13 @@
-# The PopUpOFF browser extension
+# PopUpOFF BROWSER EXTENSION
 
-- [Chromium](https://chrome.google.com/webstore/detail/popupoff-popup-blocker/ifnkdbpmgkdbfklnbfidaackdenlmhgh)
+- [Chrome / Chromium](https://chrome.google.com/webstore/detail/popupoff-popup-blocker/ifnkdbpmgkdbfklnbfidaackdenlmhgh)
 - [Firefox](https://addons.mozilla.org/en-GB/firefox/addon/popupoff/)
 - [Opera](https://addons.opera.com/en-gb/extensions/details/popupoff-popup-and-overlay-blocker/)
 - [Edge](https://microsoftedge.microsoft.com/addons/detail/popupoff-popup-and-over/elacdkdmimelpnkbccdanmnabhajdccm)
+
 - [Website](http://popupoff.org/)
 - [Twitter](https://twitter.com/RomanistHere)
+- [Support project / Donate](https://popupoff.org/#donate)
 
 # Mechanics
 
