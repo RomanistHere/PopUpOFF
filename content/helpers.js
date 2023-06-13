@@ -322,12 +322,13 @@ const addCountToStats = (state) => {
 }
 
 const addItemToStats = (element, state) => {
-    const layoutArea = element.offsetHeight * element.offsetWidth
+	const { width, height } = element.getBoundingClientRect();
+	const layoutArea = width * height;
 
     return isNaN(layoutArea) ? state : {
         ...state,
-        numbOfItems: parseFloat(state.numbOfItems) + 1,
-        cleanedArea: parseFloat(state.cleanedArea) + parseFloat(layoutArea)
+        numbOfItems: layoutArea > 10000 ? parseFloat(state.numbOfItems) + 1 : state.numbOfItems,
+        cleanedArea: parseFloat(state.cleanedArea) + (layoutArea / 2)
     }
 }
 
@@ -646,6 +647,17 @@ const unsetHeight = ({ target }, statsEnabled, state, memoize = new WeakMap()) =
     target.style.removeProperty("height")
 
     return state
+}
+
+const checkToConvertToStatic = ({ elem }) => {
+	if (getStyle(elem, "overflow") === "hidden") {
+		const { width, height, top, left } = elem.getBoundingClientRect();
+		if (width > 0 && height > 0 && top === 0 && left === 0) {
+			setPropImp(elem, "position", "static")
+			elem.setAttribute('data-popupoff', 'st')
+			return true
+		}
+	}
 }
 
 const restoreNode = (mutation, statsEnabled, state) => {

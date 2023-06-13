@@ -26,6 +26,10 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 
 		const elemPosStyle = getStyle(element, 'position')
 		if ((elemPosStyle === 'fixed') || (elemPosStyle === 'sticky')) {
+			const isFixed = checkToConvertToStatic({ elem: element })
+			if (isFixed)
+				return;
+
 			if (element.getAttribute('data-popupoff'))
 	        	return
 
@@ -89,17 +93,6 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 		if (!beforeUnloadAactive) {
 			window.addEventListener("beforeunload", () => { setNewData(state) })
 			beforeUnloadAactive = true
-		}
-	}
-}
-
-const checkToConvertToStatic = ({ elem }) => {
-	if (getStyle(elem, "overflow") === "hidden") {
-		const { width, height, top, left } = elem.getBoundingClientRect();
-		if (width > 0 && height > 0 && top === 0 && left === 0) {
-			setPropImp(elem, "position", "static")
-			elem.setAttribute('data-popupoff', 'st')
-			return true
 		}
 	}
 }
@@ -272,7 +265,6 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 	// Let the hunt begin!
 	action(elems)
 	// statistics
-	// todo: fix
 	if (statsEnabled) {
 		setNewData(state)
 		if (!beforeUnloadAactive) {
