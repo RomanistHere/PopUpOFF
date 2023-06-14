@@ -22,6 +22,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 			// set up start
 			await setStorageData({
 				tutorial: true,
+				ctxEnabled: true,
 				update: false,
 				stats: {
 					cleanedArea: 0,
@@ -50,7 +51,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 				chrome.storage.sync.remove(["autoModeAggr"]);
 			}
 		} catch (e) {
-			console.log("something happened");
+			console.log("something went wrong");
 			console.log(e);
 		}
 
@@ -136,6 +137,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		setNewBadge(pureUrl, tabID);
 	} else if (request.openOptPage) {
 		chrome.runtime.openOptionsPage();
+	} else if (request.ctxEnabled === true) {
+		addCtxMenu();
+	} else if (request.ctxEnabled === false) {
+		chrome.contextMenus.removeAll();
 	}
 
 	return true;
@@ -201,30 +206,41 @@ const setNewMode = async (newMode, pureUrl, tabID) => {
 	}
 };
 
-// add context menu with options
-chrome.contextMenus.removeAll();
-subMenu.map((item, index) => {
-	subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
-		id: item.mode,
-		title: item.title,
-		type: "checkbox",
-		// checked whitelist by default
-		checked: item.mode === "whitelist",
-		// works for web pages only
-		documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
-	});
-});
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-	const tabID = tab.id;
-	const tabURL = tab.url;
-	const pureUrl = getPureURL({ url: tabURL });
-
-	chrome.tabs.sendMessage(tabID, { activeMode: info.menuItemId }, resp => {
-		// if (resp && resp.closePopup === true) {
-		// 	chrome.tabs.update(tabID, { url: tabURL })
-		// }
+const addCtxMenu = () => {
+	subMenu.map((item, index) => {
+		subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
+			id: item.mode,
+			title: item.title,
+			type: "checkbox",
+			// checked whitelist by default
+			checked: item.mode === "whitelist",
+			// works for web pages only
+			documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
+		});
 	});
 
-	setNewMode(info.menuItemId, pureUrl, tabID);
-});
+	chrome.contextMenus.onClicked.addListener((info, tab) => {
+		const tabID = tab.id;
+		const tabURL = tab.url;
+		const pureUrl = getPureURL({ url: tabURL });
+
+		chrome.tabs.sendMessage(tabID, { activeMode: info.menuItemId }, resp => {
+			// if (resp && resp.closePopup === true) {
+			// 	chrome.tabs.update(tabID, { url: tabURL })
+			// }
+		});
+
+		setNewMode(info.menuItemId, pureUrl, tabID);
+	});
+}
+
+const initCtxMenu = async () => {
+	chrome.contextMenus.removeAll();
+	const { ctxEnabled } = await getStorageData("ctxEnabled");
+
+	if (ctxEnabled) {
+		addCtxMenu();
+	}
+}
+
+initCtxMenu();

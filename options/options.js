@@ -12,6 +12,7 @@ import { defPreventContArr } from "../constants/data.js";
 let state = {
 	tutorial: false,
 	stats: true,
+	ctxMenu: true,
 };
 
 // button checkmark -> cross animation
@@ -290,6 +291,34 @@ const initExportSettings = () => {
 	});
 };
 
+const initCtxMenu = async () => {
+	const ctxBtn = querySelector(".ctxMenu");
+	const { ctxEnabled } = await getStorageData("ctxEnabled");
+
+	if (ctxEnabled) {
+		addClass(ctxBtn, "options__btn-active");
+		state = { ...state, ctxMenu: true };
+	} else {
+		removeClass(ctxBtn, "options__btn-active");
+		state = { ...state, ctxMenu: false };
+	}
+
+	ctxBtn.addEventListener("click", async e => {
+		e.preventDefault();
+		if (!state.ctxMenu) {
+			chrome.runtime.sendMessage({ ctxEnabled: true });
+			await setStorageData({ ctxEnabled: true });
+			removeClass(ctxBtn, "options__btn-active");
+			state = { ...state, ctxMenu: true };
+		} else {
+			chrome.runtime.sendMessage({ ctxEnabled: false });
+			await setStorageData({ ctxEnabled: false });
+			addClass(ctxBtn, "options__btn-active");
+			state = { ...state, ctxMenu: false };
+		}
+	});
+};
+
 initTutorial();
 initStats();
 initKeyboard();
@@ -297,3 +326,4 @@ initAutoMode();
 initReset();
 initStationary();
 initExportSettings();
+initCtxMenu();

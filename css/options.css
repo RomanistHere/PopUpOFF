@@ -60,7 +60,7 @@ body {
 }
 
 .options__section {
-	padding-bottom: 20px;
+	padding-bottom: 40px;
 }
 
 .options__set {
@@ -179,11 +179,12 @@ input:checked + label {
 	color: var(--yellow-col);
 	text-decoration: none;
 
-	transition: all ease 0.3s;
+	transition: all ease 0.15s;
 }
 
 .options__button:hover {
-	text-decoration: underline;
+	border-color: var(--white-col);
+	color: var(--white-col);
 }
 
 .popup {
