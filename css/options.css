@@ -78,6 +78,10 @@ input:checked + label {
 	color: var(--yellow-col);
 }
 
+.hidden {
+	display: none;
+}
+
 .options__btn {
 	display: block;
 	position: relative;

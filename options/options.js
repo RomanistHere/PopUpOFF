@@ -124,7 +124,8 @@ const initReset = async () => {
 			e.preventDefault();
 			const label = e.currentTarget.getAttribute("data-label");
 
-			firePopUp(label);
+			if (label)
+				firePopUp(label);
 		})
 	);
 
@@ -217,9 +218,82 @@ const initStationary = async () => {
 	});
 };
 
+const initExportSettings = () => {
+	const initExport = async () => {
+		const data = await getStorageData(null);
+		const compressed = JSON.stringify(data);
+		const url = 'data:application/json;base64,' + btoa(compressed);
+
+		chrome.downloads.download({
+			url: url,
+			filename: 'PopUpOFF_settings.json'
+		});
+	}
+
+	const exportSettings = async () => {
+		chrome.permissions.contains({
+			permissions: ["downloads"],
+		}, (result) => {
+			if (result) {
+				initExport();
+			} else {
+				chrome.permissions.request({
+					permissions: ["downloads"],
+				}, (granted) => {
+					// The callback argument will be true if the user granted the permissions.
+					if (granted) {
+						initExport();
+					} else {
+						alert("You can't export (download) settings without giving permissions first");
+					}
+				});
+			}
+		});
+
+	}
+
+	querySelector(".exportBtn").addEventListener("click", async e => {
+		e.preventDefault();
+		await exportSettings();
+	});
+
+	// init import
+	const input = querySelector(".importInput");
+
+	const importJson = async (e) => {
+		const file = input.files[0];
+		const reader = new FileReader();
+
+		reader.readAsText(file);
+
+		reader.onload = async () => {
+			const data = JSON.parse(reader.result);
+			await setStorageData(data);
+			alert("Success! Update this page to see the changes.");
+
+			input.value = '';
+		};
+
+		reader.onerror = () => {
+			console.log(reader.error);
+			alert("Couldn't read the file. Contact RomanistHere@pm.me for help");
+
+			input.value = '';
+		};
+	};
+
+	input.addEventListener("change", importJson, false);
+
+	querySelector(".importBtn").addEventListener("click", async e => {
+		e.preventDefault();
+		input.click();
+	});
+};
+
 initTutorial();
 initStats();
 initKeyboard();
 initAutoMode();
 initReset();
 initStationary();
+initExportSettings();

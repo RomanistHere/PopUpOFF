@@ -4,6 +4,7 @@
 	"version": "2.1.0",
 	"description": "Removes and prevents popups, overlays and cookie notifications, other tools do not. Enjoy the original look of the internet.",
 	"permissions": ["activeTab", "storage", "tabs", "contextMenus"],
+	"optional_permissions": ["downloads"],
 	"host_permissions": ["http://*/", "https://*/"],
 	"options_ui": {
 		"page": "options/options.html",
