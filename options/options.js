@@ -280,8 +280,23 @@ const initReset = async () => {
 	};
 };
 
+const initStationary = async () => {
+	const inputs = querySelectorAll(".stationary input");
+	const { staticSubMode } = await getStorageData("staticSubMode");
+
+	if (staticSubMode === "absolute")
+		querySelector(`.stationary #absolute`).checked = true;
+
+	inputs.forEach(elem => {
+		elem.addEventListener("change", async (e) => {
+			await setStorageData({ staticSubMode: e.target.value });
+		})
+	})
+};
+
 initTutorial();
 initStats();
 initKeyboard();
 initAutoMode();
 initReset();
+initStationary();

@@ -3,13 +3,13 @@ let appState = {
 };
 
 const modes = {
-	whitelist: (arg1, arg2) => null,
-	hardModeActive: (arg1, arg2) => hardMode(arg1, arg2),
-	easyModeActive: (arg1, arg2) => easyMode(arg1, arg2, positionCheckTypeI),
-	staticActive: (arg1, arg2) => staticMode(arg1, arg2),
+	whitelist: (obj) => null,
+	hardModeActive: (obj) => hardMode(obj),
+	easyModeActive: (obj) => easyMode({ ...obj, positionCheck: positionCheckTypeI }),
+	staticActive: (obj) => staticMode(obj),
 };
 
-const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
+const startMode = ({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	// check if we switch from hard to easy one
 	if (
 		appState.curMode === "hardModeActive" ||
@@ -20,15 +20,16 @@ const startMode = (curModeName, statsEnabled, shouldRestoreCont) => {
 	// start new mode and upd state
 	const mode = modes[curModeName];
 	appState = { ...appState, curMode: curModeName };
-	mode(statsEnabled, shouldRestoreCont);
+	mode({ statsEnabled, shouldRestoreCont, staticSubMode });
 };
 
 // initialize mode
 const initMode = async () => {
-	let { statsEnabled, restoreContActive, curAutoMode } = await getStorageData([
+	let { statsEnabled, restoreContActive, curAutoMode, staticSubMode } = await getStorageData([
 		"statsEnabled",
 		"restoreContActive",
 		"curAutoMode",
+		"staticSubMode",
 	]);
 	const websites = await getWebsites();
 	// check if script is inside the iframe
@@ -49,7 +50,7 @@ const initMode = async () => {
 	const shouldRestoreCont = restoreContActive.includes(pureUrl);
 	const curModeName = pureUrl in fullWebsites ? fullWebsites[pureUrl] : curAutoMode;
 
-	startMode(curModeName, statsEnabled, shouldRestoreCont);
+	startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
 };
 
 initMode();
@@ -57,16 +58,17 @@ initMode();
 const changeMode = async (request, sender, sendResponse) => {
 	const curModeName = request.activeMode;
 	// check stats and restore content
-	const { statsEnabled, restoreContActive } = await getStorageData([
+	const { statsEnabled, restoreContActive, staticSubMode } = await getStorageData([
 		"statsEnabled",
 		"restoreContActive",
+		"staticSubMode"
 	]);
 	const pureUrl = getPureURL(window.location.href);
 	const shouldRestoreCont = restoreContActive.includes(pureUrl);
 
 	domObserver = disconnectObservers(domObserver);
 
-	startMode(curModeName, statsEnabled, shouldRestoreCont);
+	startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
 	modeChangedToBg();
 
 	if (curModeName === "whitelist") {
@@ -103,10 +105,11 @@ const keyDownCallBack = async e => {
 		// needed shortcut pressed
 		e.preventDefault();
 
-		const { statsEnabled, restoreContActive, shortCutMode } = await getStorageData([
+		const { statsEnabled, restoreContActive, shortCutMode, staticSubMode } = await getStorageData([
 			"statsEnabled",
 			"restoreContActive",
 			"shortCutMode",
+			"staticSubMode",
 		]);
 		const websites = await getWebsites();
 		const fullWebsites = { ...defWebsites, ...websites };
@@ -123,7 +126,7 @@ const keyDownCallBack = async e => {
 
 		const newWebsites = { ...websites, [pureUrl]: curModeName };
 
-		startMode(curModeName, statsEnabled, shouldRestoreCont);
+		startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
 		try {
 			await setWebsites(newWebsites);
 			modeChangedToBg();

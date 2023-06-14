@@ -11,7 +11,7 @@ const getInitialState = statsEnabled => {
 		  };
 };
 
-const hardMode = (statsEnabled, shouldRestoreCont) => {
+const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 	// state
 	let state = getInitialState(statsEnabled);
 
@@ -105,7 +105,7 @@ const hardMode = (statsEnabled, shouldRestoreCont) => {
 	}
 };
 
-const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
+const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 	// state
 	let state = getInitialState(statsEnabled);
 	// unmutable
@@ -207,7 +207,7 @@ const easyMode = (statsEnabled, shouldRestoreCont, positionCheck) => {
 	}
 };
 
-const staticMode = (statsEnabled, shouldRestoreCont) => {
+const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	// state
 	let state = getInitialState(statsEnabled);
 
@@ -215,6 +215,8 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 	const doc = document.documentElement;
 	const body = document.body;
 	const elems = body.getElementsByTagName("*");
+	// while it's called "static", but it actually "relative" for now
+	const position = staticSubMode === "absolute" ? "absolute" : "relative";
 
 	// methods
 	const checkElem = element => {
@@ -230,7 +232,7 @@ const staticMode = (statsEnabled, shouldRestoreCont) => {
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
-			setPropImp(element, "position", "relative");
+			setPropImp(element, "position", position);
 		}
 	};
 

@@ -67,6 +67,21 @@ body {
 	padding-bottom: 20px;
 }
 
+.options__set {
+	color: var(--white-col);
+	margin: 0 22px;
+	font-size: 18px;
+	accent-color: var(--yellow-col);
+}
+
+label {
+	transition: color .2s;
+}
+
+input:checked + label {
+	color: var(--yellow-col);
+}
+
 .options__btn {
 	display: block;
 	position: relative;

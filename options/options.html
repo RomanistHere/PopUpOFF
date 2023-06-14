@@ -34,7 +34,7 @@
 
         <section class="options__section">
             <h2 class="options__header options_text">
-                Automode
+                Active by default (Automode)
             </h2>
             <p class="options__desc options_text">
                 Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Moderate</span> and <span class="options_text-col">Dormant</span>.
@@ -67,7 +67,7 @@
                 Statistics
             </h2>
             <p class="options__desc options_text">
-                I can't see or collect your statistics. It's just a little bit of fun for you. Screenshot it, tag me, share via socials - I will comment on it! <span class="options_text-col">Enjoy :)</span>
+                No one but you has access to your stats... Unless you share it <span class="options_text-col">#popupoff</span>
             </p>
             <div class="options__desc">
                 <a href="#" class="options__btn stats">
@@ -89,7 +89,7 @@
                 Keyboard shortcut
             </h2>
             <p class="options__desc options_text">
-                Currently you can not change the shortcut itself. It is <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span> (Hi Apple). But here you can choose what mode is going to be active after you press it.
+                Currently you can not change the shortcut itself. It is <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span> (Hi Apple). But here you can choose what mode is going to be active after you press the combination.
             </p>
             <div class="options__slider slider shortcut">
                 <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
@@ -102,21 +102,28 @@
 
         <section class="options__section">
             <h2 class="options__header options_text">
-                Smart blocking
+                Stationary mode
             </h2>
+
             <p class="options__desc options_text">
-                Get control over what Moderate mode blocks.</br>
-                We all have our own needs. Just not to see cookie notifications or don't get distracted while reading your favorite newspaper online. Personalise your experience: </br>
-                - <span class="options_text-col">Gentle</span> - remove the most annoying elements (cookies and popups). <span class="options_text-col">Recommended</span>;</br>
-                <!-- - <span class="options_text-col">Medium</span> - in developement;</br> -->
-                - <span class="options_text-col">Strict</span> - leaves only headers and nav bars (sign up popups could be hidden);</br>
+                It can either make sticky elements freeze at their starting point - <span class="options_text-col">absolute</span>
+                or move to another place, likely the end of the page - <span class="options_text-col">static</span>.
+                Freezing will break less websites, but won't remove annoying overlays - just will "unstick" them and your screen.
             </p>
-            <div class="options__slider slider aggression">
-                <span data-value="1" class="slider__text options_text slider__left">Gentle</span>
-                <!-- <span data-value="2" class="slider__text options_text slider__center">Medium</span> -->
-                <span data-value="2" class="slider__text options_text slider__right">Strict</span>
-                <input class="slider__input" type="range" min="1" max="2" value="1">
-            </div>
+
+            <fieldset class="options__set stationary">
+                <legend>Select stationary mode behavior:</legend>
+
+                <div>
+                    <input type="radio" id="static" name="stationary" value="static" checked>
+                    <label for="static">Static</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="absolute" name="stationary" value="absolute">
+                    <label for="absolute">Absolute</label>
+                </div>
+            </fieldset>
         </section>
 
         <section class="options__section">
@@ -139,7 +146,7 @@
         <div class="popup">
             Are you sure?
             <div class="popup__pick">
-                <a href="#" class="popup__link delete">Reset</a>
+                <a href="#" class="popup__link delete">Yes, reset</a>
                 <a href="#" class="popup__link notDelete">No</a>
             </div>
         </div>

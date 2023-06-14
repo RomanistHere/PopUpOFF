@@ -615,8 +615,10 @@ const positionCheckTypeI = (element, windowArea) => {
 	// console.log(element)
 
 	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-		if (contentEasyCheck(element)) return { shouldRemove: true, shouldMemo: true };
-		else return { shouldRemove: true, shouldMemo: false };
+		if (contentEasyCheck(element))
+			return { shouldRemove: true, shouldMemo: true };
+		else
+			return { shouldRemove: true, shouldMemo: false };
 	}
 
 	const layoutArea = element.offsetHeight * element.offsetWidth;
