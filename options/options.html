@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <link rel="stylesheet" href="../css/options.css">
+        <title>PopUpOFF settings page</title>
     </head>
     <body>
         <section class="options__section">
@@ -36,15 +37,36 @@
             <h2 class="options__header options_text">
                 Active by default (Automode)
             </h2>
+
             <p class="options__desc options_text">
-                Below you can specify what mode would be active by default. Recommended options are <span class="options_text-col">Moderate</span> and <span class="options_text-col">Dormant</span>.
+                Below you can specify what mode would be active by default.
+                Recommended options are <span class="options_text-col">Moderate</span>
+                and <span class="options_text-col">Dormant</span>.
             </p>
-            <div class="options__slider slider automode">
-                <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
-                <span data-value="2" class="slider__text options_text slider__center slider__text-def">Dormant</span>
-                <span data-value="3" class="slider__text options_text slider__right">Aggressive</span>
-                <input class="slider__input" type="range" min="1" max="3" value="2">
-            </div>
+
+            <fieldset class="options__set auto">
+                <legend>Select mode that will be active on new sites:</legend>
+
+                <div>
+                    <input type="radio" id="auto_dormant" name="auto" value="whitelist" checked>
+                    <label for="auto_dormant">Dormant - it's a whitelist option (PopUpOFF doesn't remove anything)</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="auto_moderate" name="auto" value="easyModeActive">
+                    <label for="auto_moderate">Moderate</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="auto_static" name="auto" value="staticActive">
+                    <label for="auto_static">Stationary</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="auto_aggressive" name="auto" value="hardModeActive">
+                    <label for="auto_aggressive">Aggressive</label>
+                </div>
+            </fieldset>
         </section>
 
         <section class="options__section">
@@ -88,16 +110,41 @@
             <h2 class="options__header options_text">
                 Keyboard shortcut
             </h2>
+
             <p class="options__desc options_text">
-                Currently you can not change the shortcut itself. It is <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span> (Hi Apple). But here you can choose what mode is going to be active after you press the combination.
+                Currently you can not change the shortcut itself. It is
+                <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span>
+                (Hi Apple). But here you can choose what mode is going to be active after you press the combination.
             </p>
-            <div class="options__slider slider shortcut">
-                <span data-value="1" class="slider__text options_text slider__left">Moderate</span>
-                <span data-value="2" class="slider__text options_text slider__center slider__center-left">Dormant</span>
-                <span data-value="3" class="slider__text options_text slider__center slider__center-right slider__text-def">Disable</span>
-                <span data-value="4" class="slider__text options_text slider__right">Aggressive</span>
-                <input class="slider__input" type="range" min="1" max="4" value="2">
-            </div>
+
+            <fieldset class="options__set kbrd">
+                <legend>Select what mode will activate when you press shortcut:</legend>
+
+                <div>
+                    <input type="radio" id="kbrd_disabled" name="kbrd" value="null" checked>
+                    <label for="kbrd_disabled">Disabled (no mode will activate)</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="kbrd_dormant" name="kbrd" value="whitelist">
+                    <label for="kbrd_dormant">Dormant</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="kbrd_moderate" name="kbrd" value="easyModeActive">
+                    <label for="kbrd_moderate">Moderate</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="kbrd_static" name="kbrd" value="staticActive">
+                    <label for="kbrd_static">Stationary</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="kbrd_aggressive" name="kbrd" value="hardModeActive">
+                    <label for="kbrd_aggressive">Aggressive</label>
+                </div>
+            </fieldset>
         </section>
 
         <section class="options__section">

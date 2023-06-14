@@ -85,111 +85,34 @@ const initStats = async () => {
 
 // keyboard shortcut //
 const initKeyboard = async () => {
-	const slider = querySelector(".shortcut .slider__input");
-	const sliderTextLeft = querySelector(".shortcut .slider__left");
-	const sliderTextRight = querySelector(".shortcut .slider__right");
-	const sliderTextCenterLeft = querySelector(".shortcut .slider__center-left");
-	const sliderTextCenterRight = querySelector(".shortcut .slider__center-right");
-	const sliderTextArr = querySelectorAll(".shortcut .slider__text");
+	const inputs = querySelectorAll(".kbrd input");
 	const { shortCutMode } = await getStorageData("shortCutMode");
 
-	sliderTextArr.forEach(item =>
-		item.addEventListener("click", e => {
-			slider.value = e.target.dataset.value;
-			slider.dispatchEvent(new Event("input"));
+	if (shortCutMode)
+		querySelector(`.kbrd input[value=${shortCutMode}]`).checked = true;
+
+	inputs.forEach(elem => {
+		elem.addEventListener("change", async (e) => {
+			const mode = e.target.value === "null" ? null : e.target.value;
+			await setStorageData({ shortCutMode: mode });
 		})
-	);
-
-	const sliderSetUp = {
-		1: ["easyModeActive", sliderTextLeft],
-		2: ["whitelist", sliderTextCenterLeft],
-		3: [null, sliderTextCenterRight],
-		4: ["hardModeActive", sliderTextRight],
-	};
-
-	slider.oninput = async e => {
-		const val = e.target.value;
-
-		sliderTextArr.forEach(item => removeClass(item, "slider__text-active"));
-		addClass(sliderSetUp[val][1], "slider__text-active");
-
-		await setStorageData({ shortCutMode: sliderSetUp[val][0] });
-
-		if (val == 3) {
-			removeClass(slider, "slider__input-active");
-		} else {
-			addClass(slider, "slider__input-active");
-		}
-	};
-
-	const values = {
-		easyModeActive: [1, sliderTextLeft],
-		whitelist: [2, sliderTextCenterLeft],
-		hardModeActive: [4, sliderTextRight],
-	};
-
-	if (shortCutMode === null) {
-		slider.value = 3;
-		addClass(sliderTextCenterRight, "slider__text-active");
-	} else {
-		addClass(slider, "slider__input-active");
-		sliderTextArr.forEach(item => removeClass(item, "slider__text-active"));
-
-		slider.value = values[shortCutMode][0];
-		addClass(values[shortCutMode][1], "slider__text-active");
-	}
+	});
 };
 
 // autmode //
 const initAutoMode = async () => {
-	const sliderAuto = querySelector(".automode .slider__input");
-	const sliderTextLeftAuto = querySelector(".automode .slider__left");
-	const sliderTextRightAuto = querySelector(".automode .slider__right");
-	const sliderTextCenterAuto = querySelector(".automode .slider__center");
-	const sliderTextArrAuto = querySelectorAll(".automode .slider__text");
+	const inputs = querySelectorAll(".auto input");
 	const { curAutoMode } = await getStorageData("curAutoMode");
 
-	sliderTextArrAuto.forEach(item =>
-		item.addEventListener("click", e => {
-			sliderAuto.value = e.target.dataset.value;
-			sliderAuto.dispatchEvent(new Event("input"));
+	if (curAutoMode)
+		querySelector(`.auto input[value=${curAutoMode}]`).checked = true;
+
+	inputs.forEach(elem => {
+		elem.addEventListener("change", async (e) => {
+			const mode = e.target.value === "null" ? null : e.target.value;
+			await setStorageData({ curAutoMode: mode });
 		})
-	);
-
-	const sliderAutoSetUp = {
-		1: ["easyModeActive", sliderTextLeftAuto],
-		2: ["whitelist", sliderTextCenterAuto],
-		3: ["hardModeActive", sliderTextRightAuto],
-	};
-
-	sliderAuto.oninput = async e => {
-		const val = e.target.value;
-
-		sliderTextArrAuto.forEach(item => removeClass(item, "slider__text-active"));
-		addClass(sliderAutoSetUp[val][1], "slider__text-active");
-
-		await setStorageData({ curAutoMode: sliderAutoSetUp[val][0] });
-
-		if (val == 2) {
-			removeClass(sliderAuto, "slider__input-active");
-		} else {
-			addClass(sliderAuto, "slider__input-active");
-		}
-	};
-
-	const valuesAuto = {
-		easyModeActive: [1, sliderTextLeftAuto],
-		whitelist: [2, sliderTextCenterAuto],
-		hardModeActive: [3, sliderTextRightAuto],
-	};
-
-	sliderTextArrAuto.forEach(item => removeClass(item, "slider__text-active"));
-	sliderAuto.value = valuesAuto[curAutoMode][0];
-	addClass(valuesAuto[curAutoMode][1], "slider__text-active");
-
-	if (curAutoMode !== "whitelist") {
-		addClass(sliderAuto, "slider__input-active");
-	}
+	});
 };
 
 // resetting //
@@ -291,7 +214,7 @@ const initStationary = async () => {
 		elem.addEventListener("change", async (e) => {
 			await setStorageData({ staticSubMode: e.target.value });
 		})
-	})
+	});
 };
 
 initTutorial();
