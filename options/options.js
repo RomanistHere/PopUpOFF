@@ -60,11 +60,15 @@ const initTutorial = async () => {
 // stats //
 const initStats = async () => {
 	const statsBtn = querySelector(".stats");
-	const { statsEnabled } = await getStorageData("statsEnabled");
+	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats" ]);
 
 	if (statsEnabled) {
+		const { cleanedArea, numbOfItems, restored } = stats;
+
 		addClass(statsBtn, "options__btn-active");
 		state = { ...state, stats: true };
+		querySelector(".statsCount").textContent = numbOfItems;
+		querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
 	} else {
 		removeClass(statsBtn, "options__btn-active");
 		state = { ...state, stats: false };
