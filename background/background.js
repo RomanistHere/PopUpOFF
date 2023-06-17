@@ -95,7 +95,7 @@ const letters = {
 };
 
 const setNewBadge = async (pureUrl, tabID) => {
-	let { curAutoMode } = await getStorageData("curAutoMode");
+	let { curAutoMode, ctxEnabled } = await getStorageData(["curAutoMode, ctxEnabled"]);
 	const websites = await getWebsites();
 
 	if (curAutoMode == null) {
@@ -112,18 +112,20 @@ const setNewBadge = async (pureUrl, tabID) => {
 
 	setBadgeText(letter)(tabID);
 
-	Object.keys(subMenuStore).forEach(key => {
-		const menu = subMenuStore[key];
+	if (ctxEnabled) {
+		Object.keys(subMenuStore).forEach(key => {
+			const menu = subMenuStore[key];
 
-		chrome.contextMenus.update(menu, {
-			type: "checkbox",
-			checked:
-				(letter === "A" && key === "hardModeActive") ||
-				(letter === "S" && key === "staticActive") ||
-				(letter === "M" && key === "easyModeActive") ||
-				(letter === "" && key === "whitelist"),
+			chrome.contextMenus.update(menu, {
+				type: "checkbox",
+				checked:
+					(letter === "A" && key === "hardModeActive") ||
+					(letter === "S" && key === "staticActive") ||
+					(letter === "M" && key === "easyModeActive") ||
+					(letter === "" && key === "whitelist"),
+			});
 		});
-	});
+	}
 };
 
 // handle mode changed from content script

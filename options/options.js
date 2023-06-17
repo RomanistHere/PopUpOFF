@@ -81,8 +81,10 @@ const initStats = async () => {
 		addClass(statsBtn, "options__btn-active");
 		state = { ...state, stats: true };
 		querySelector(".statsCount").textContent = numbOfItems;
-		querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
-		querySelector(".statsTime").textContent = secondsToHms(cleanedArea + .3);
+		if (cleanedArea > 0) {
+			querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
+			querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+		}
 	} else {
 		removeClass(statsBtn, "options__btn-active");
 		state = { ...state, stats: false };
