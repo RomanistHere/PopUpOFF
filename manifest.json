@@ -38,6 +38,10 @@
 		"48": "images/logo48.png",
 		"128": "images/logo128.png"
 	},
+	"web_accessible_resources": [{
+		"matches": ["<all_urls>"],
+		"resources": ["images/stop_ads.png"]
+	}],
 	"manifest_version": 3,
 	"minimum_chrome_version": "63"
 }

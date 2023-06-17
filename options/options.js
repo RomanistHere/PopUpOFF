@@ -1,10 +1,10 @@
 import {
+	addClass,
 	getStorageData,
-	setStorageData,
 	querySelector,
 	querySelectorAll,
-	addClass,
 	removeClass,
+	setStorageData,
 } from "../constants/functions.js";
 
 import { defPreventContArr } from "../constants/data.js";
@@ -58,9 +58,22 @@ const initTutorial = async () => {
 };
 
 // stats //
+const secondsToHms = l => {
+	const d = Number(l);
+	const h = Math.floor(d / 3600);
+	const m = Math.floor((d % 3600) / 60);
+	const s = Math.floor((d % 3600) % 60);
+
+	const hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
+	const mDisplay = m > 0 ? m + (m === 1 ? " minute, " : " minutes, ") : "";
+	const sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
+
+	return hDisplay + mDisplay + sDisplay;
+};
+
 const initStats = async () => {
 	const statsBtn = querySelector(".stats");
-	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats" ]);
+	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats"]);
 
 	if (statsEnabled) {
 		const { cleanedArea, numbOfItems, restored } = stats;
@@ -69,6 +82,7 @@ const initStats = async () => {
 		state = { ...state, stats: true };
 		querySelector(".statsCount").textContent = numbOfItems;
 		querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
+		querySelector(".statsTime").textContent = secondsToHms(cleanedArea + .3);
 	} else {
 		removeClass(statsBtn, "options__btn-active");
 		state = { ...state, stats: false };
@@ -323,6 +337,20 @@ const initCtxMenu = async () => {
 	});
 };
 
+const initDonation = async () => {
+	querySelector(".donationImage").src = chrome.runtime.getURL("/images/stop_ads.png");
+
+	const { optBannerClicked } = await getStorageData(["optBannerClicked"]);
+	if (!optBannerClicked) {
+		removeClass(querySelector(".donation"), "hidden");
+	}
+
+	querySelectorAll(".donation__btns a").forEach(elem => elem.addEventListener("click", async () => {
+		await setStorageData({ optBannerClicked: true });
+	}));
+}
+
+initDonation();
 initTutorial();
 initStats();
 initKeyboard();
