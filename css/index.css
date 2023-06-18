@@ -101,7 +101,7 @@ body {
 	display: block;
 
 	margin: 5px;
-	padding: 25px 0 25px 92px;
+	padding: 22px 0 22px 84px;
 
 	font-size: 20px;
 	color: #f9ffeecc;
@@ -112,14 +112,12 @@ body {
 	border: 2px solid var(--yellow-col);
 	transition: all ease 0.1s;
 
-	will-change: auto;
-	backface-visibility: hidden;
-	-webkit-font-smoothing: antialiased;
 	--arr-col: var(--yellow-col);
 }
 
 .desc:not(.desc-active):hover {
-	transform: translateZ(0) perspective(1px) scale(1.02, 1.02);
+	color: var(--white-col);
+	background-color: rgba(249, 255, 238, .05);
 }
 
 .desc-active {
@@ -181,34 +179,32 @@ body {
 	align-items: center;
 	justify-content: space-between;
 
-	height: 37px;
+	height: 44px;
 	margin-bottom: 5px;
 
 	background-color: var(--white-col2);
 }
 
-.stats {
-	display: none;
-	position: relative;
-
-	margin-right: 5px;
-
-	color: var(--dark-col);
-	font-size: 20px;
-	text-decoration: none;
-	font-weight: normal;
-
-	transition: all ease 0.2s;
+.icons_cont__btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 5px;
 }
 
-.stats-show {
-	display: block;
+.icons_cont__btn path {
+	transition: fill .2s;
 }
 
-.stats:hover {
-	color: #6bb756;
+.icons_cont__btn:hover path {
+	fill: var(--yellow-col);
 }
 
+.icons_cont {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 /* // tooltip // */
 
 .tooltip {
@@ -628,6 +624,10 @@ body {
 	text-decoration: underline;
 }
 
+.hidden {
+	display: none;
+}
+
 @keyframes popupFade {
 	0% {
 		transform: none;
@@ -638,5 +638,3 @@ body {
 		opacity: 0;
 	}
 }
-
-/* // popup end // */

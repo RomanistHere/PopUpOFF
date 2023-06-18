@@ -94,14 +94,6 @@ buttons.forEach(item =>
 	)
 );
 
-// stats update
-const updStats = async () => {
-	const { stats } = await getStorageData("stats");
-
-	querySelector(".stats__elem").innerHTML = nFormatter(stats.numbOfItems, 1);
-	querySelector(".stats__size").innerHTML = nFormatter(stats.cleanedArea, 1);
-};
-
 // setup tutorial screen
 const initTutorial = (updated = false) => {
 	const tutorialWrap = querySelector(".tutorial");
@@ -159,13 +151,12 @@ const initTutorial = (updated = false) => {
 // init popup state
 const init = () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
-		const { statsEnabled, restoreContActive, curAutoMode, stats, update, tutorial } =
+		const { statsEnabled, restoreContActive, curAutoMode, update, tutorial } =
 			await getStorageData([
 				"update",
 				"tutorial",
 				"curAutoMode",
 				"statsEnabled",
-				"stats",
 				"restoreContActive",
 			]);
 		const websites = await getWebsites();
@@ -174,13 +165,14 @@ const init = () => {
 		if (tutorial) initTutorial(update);
 
 		// set statistics
-		if (statsEnabled) {
-			addClass(querySelector(".stats"), "stats-show");
-			// update statistic
-			querySelector(".stats__elem").innerHTML = nFormatter(stats.numbOfItems, 1);
-			querySelector(".stats__size").innerHTML = nFormatter(stats.cleanedArea, 1);
-			setInterval(updStats, 1000);
+		if (!statsEnabled) {
+			addClass(querySelector(".statsBtn"), "hidden");
 		}
+
+		querySelector(".settingsBtn").addEventListener("click", e => {
+			e.preventDefault();
+			chrome.runtime.openOptionsPage();
+		});
 
 		// modes init
 		const pureUrl = getPureURL(tabs[0]);
