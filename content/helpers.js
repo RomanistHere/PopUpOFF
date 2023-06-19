@@ -279,9 +279,12 @@ const disconnectObservers = domObserver => {
 const restoreFixedElems = () => {
 	const elems = document.querySelectorAll("[data-popupoff]");
 	elems.forEach(elem => {
-		if (elem.getAttribute("data-popupoff") === "bl") elem.style.display = null;
-		else if (elem.getAttribute("data-popupoff") === "st")
+		if (elem.getAttribute("data-popupoff") === "bl") {
+			elem.style.display = null;
+		} else if (elem.getAttribute("data-popupoff") === "st") {
 			elem.style.setProperty("position", "absolute");
+		}
+		elem.removeAttribute("data-popupoff");
 	});
 };
 

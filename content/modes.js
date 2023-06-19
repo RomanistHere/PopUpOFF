@@ -29,7 +29,8 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 			const isFixed = checkToConvertToStatic({ elem: element });
 			if (isFixed) return;
 
-			if (element.getAttribute("data-popupoff")) return;
+			if (element.getAttribute("data-popupoff") === "notification")
+				return;
 
 			if (getStyle(element, "display") !== "none")
 				element.setAttribute("data-popupoff", "bl");
@@ -122,7 +123,8 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 			const isFixed = checkToConvertToStatic({ elem: element });
 			if (isFixed) return;
 
-			if (element.getAttribute("data-popupoff")) return;
+			if (element.getAttribute("data-popupoff") === "notification")
+				return;
 
 			if (getStyle(element, "display") !== "none")
 				element.setAttribute("data-popupoff", "bl");
@@ -225,7 +227,8 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 		const elemPosStyle = getStyle(element, "position");
 
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			if (element.getAttribute("data-popupoff")) return;
+			if (element.getAttribute("data-popupoff") === "notification")
+				return;
 
 			if (getStyle(element, "display") !== "none")
 				element.setAttribute("data-popupoff", "st");

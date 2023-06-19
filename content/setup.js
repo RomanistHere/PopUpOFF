@@ -11,12 +11,9 @@ const modes = {
 
 const startMode = ({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	// check if we switch from hard to easy one
-	if (
-		appState.curMode === "hardModeActive" ||
-		appState.curMode === "easyModeActive" ||
-		appState.curMode === "staticActive"
-	)
+	if (appState.curMode === "hardModeActive" || appState.curMode === "easyModeActive" || appState.curMode === "staticActive")
 		restoreFixedElems();
+
 	// start new mode and upd state
 	const mode = modes[curModeName];
 	appState = { ...appState, curMode: curModeName };
