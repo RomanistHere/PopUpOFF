@@ -22,12 +22,14 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 
 	// methods
 	const checkElem = element => {
-		if (!isDecentElem(element)) return;
+		if (!isDecentElem(element))
+			return;
 
 		const elemPosStyle = getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
 			const isFixed = checkToConvertToStatic({ elem: element });
-			if (isFixed) return;
+			if (isFixed)
+				return;
 
 			if (element.getAttribute("data-popupoff") === "notification")
 				return;
@@ -116,18 +118,17 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 	const memoize = new WeakMap();
 
 	const checkElem = element => {
-		if (!isDecentElem(element)) return;
+		if (!isDecentElem(element))
+			return;
 
 		const elemPosStyle = getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
 			const isFixed = checkToConvertToStatic({ elem: element });
-			if (isFixed) return;
+			if (isFixed)
+				return;
 
 			if (element.getAttribute("data-popupoff") === "notification")
 				return;
-
-			if (getStyle(element, "display") !== "none")
-				element.setAttribute("data-popupoff", "bl");
 
 			const memoized = memoize.has(element);
 			const { shouldRemove, shouldMemo } = memoized
@@ -135,12 +136,17 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 				: positionCheck(element, state.windowArea);
 
 			if (shouldRemove) {
-				if (statsEnabled) state = addItemToStats(element, state);
+				if (statsEnabled)
+					state = addItemToStats(element, state);
+
+				if (getStyle(element, "display") !== "none")
+					element.setAttribute("data-popupoff", "bl");
 
 				setPropImp(element, "display", "none");
 			}
 
-			if (!memoized && shouldMemo) memoize.set(element, shouldRemove);
+			if (!memoized && shouldMemo)
+				memoize.set(element, shouldRemove);
 		}
 
 		state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem);
@@ -222,7 +228,8 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 
 	// methods
 	const checkElem = element => {
-		if (!isDecentElem(element)) return;
+		if (!isDecentElem(element))
+			return;
 
 		const elemPosStyle = getStyle(element, "position");
 

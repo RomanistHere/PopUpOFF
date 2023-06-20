@@ -395,11 +395,12 @@ const unhide = (elem, statsEnabled, state) => {
 			"hide",
 			"height_0",
 			"not_scroll",
+			"excerpt-cropped",
 			"paragraph--reduced",
 			"paragraph--dynamic",
 			"paragraph--faded",
 			"article-teaser-overflow",
-			"editor-description__wrapper--cropped"
+			"editor-description__wrapper--cropped",
 		);
 		if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 };
 	}
@@ -412,6 +413,7 @@ const findHidden = (state, statsEnabled, doc) => {
 		...doc.querySelectorAll(".hide"),
 		...doc.querySelectorAll(".height_0"),
 		...doc.querySelectorAll(".not_scroll"),
+		...doc.querySelectorAll(".excerpt-cropped"),
 		...doc.querySelectorAll(".paragraph--faded"),
 		...doc.querySelectorAll(".paragraph--reduced"),
 		...doc.querySelectorAll(".paragraph--dynamic"),
@@ -458,10 +460,7 @@ const detectGrad = (state, statsEnabled, element) => {
 };
 
 const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, checkElem) => {
-	if (
-		getStyle(element, "filter") != "none" ||
-		getStyle(element, "-webkit-filter") != "none"
-	) {
+	if (getStyle(element, "filter") !== "none" || getStyle(element, "-webkit-filter") !== "none") {
 		setPropImp(element, "filter", "none");
 		setPropImp(element, "-webkit-filter", "none");
 
@@ -494,17 +493,9 @@ const videoCheck = element => {
 		return false;
 	}
 
-	if (
-		window.location.href.includes("www.youtube") ||
-		window.location.href.includes("www.google")
-	) {
+	if (window.location.href.includes("www.youtube") || window.location.href.includes("www.google")) {
 		return true;
 	}
-
-	// TODO: 2.0.3 check iframe element for content
-	// if (nodeName === 'IFRAME') {
-	// 	console.log(element)
-	// }
 
 	if (
 		nodeName === "VIDEO" ||
@@ -532,6 +523,7 @@ const videoCheck = element => {
 
 const forbWordsEasy = [
 	"cookie",
+	"privacy",
 	"adblock",
 	"ad block",
 	"blocker",
@@ -554,6 +546,8 @@ const forbWordsEasy = [
 	"gn to youtube",
 	"ble deal",
 	"started for fre",
+	"it's free",
+	"free trial",
 	"tart fre",
 	"advertisement",
 	"//consent.",
@@ -587,15 +581,7 @@ const allowedWords = [
 ];
 
 const contentEasyCheck = element => {
-	// console.log(element)
 	const textCont = element.innerHTML.toLowerCase();
-
-	// console.log('contentEasyCheck(should block): ', forbWordsEasy.some(v => {
-	//     if (textCont.includes(v)) {
-	//         console.warn(v)
-	//     }
-	//     return textCont.includes(v)
-	// }))
 	return forbWordsEasy.some(v => textCont.includes(v));
 };
 
@@ -615,8 +601,7 @@ const contentUnlockCheck = element => {
 };
 
 const positionCheckTypeI = (element, windowArea) => {
-	// console.log(element)
-
+	console.log(element);
 	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
 		if (contentEasyCheck(element))
 			return { shouldRemove: true, shouldMemo: true };
@@ -628,11 +613,11 @@ const positionCheckTypeI = (element, windowArea) => {
 	const screenValue = roundToTwo(layoutArea / windowArea);
 	const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight);
 
-	// console.log(screenValue)
-
 	if (screenValue >= 0.98) {
 		// case 1: overlay on the whole screen - should block
 		// case 2: video in full screen mode - should not
+		console.log(contentEasyCheck(element))
+		console.log(videoCheck(element));
 		return {
 			shouldRemove: contentEasyCheck(element) || videoCheck(element),
 			shouldMemo: true,
