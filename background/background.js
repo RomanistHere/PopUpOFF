@@ -3,12 +3,10 @@ import { defWebsites, defPreventContArr } from "../constants/data.js";
 import {
 	getPureURL,
 	setBadgeText,
-	splitIntoChunks,
 	setWebsites,
 	getWebsites,
 	getStorageData,
 	setStorageData,
-	arrayToObj,
 } from "../constants/functions.js";
 
 // handle install
@@ -39,7 +37,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 				preset: "presetManual",
 			});
 
-			// chrome.tabs.create({ url: 'https://popupoff.org/#aggressive' })
+			// chrome.tabs.create({ url: "https://popupoff.org/tutorial" })
 		}
 	} else if (reason === "update") {
 		try {
@@ -178,7 +176,7 @@ const subMenu = [
 		mode: "staticActive",
 	},
 	{
-		title: `Dormant`,
+		title: `Turn OFF`,
 		mode: "whitelist",
 	},
 ];

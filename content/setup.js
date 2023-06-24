@@ -53,6 +53,7 @@ const initMode = async () => {
 initMode();
 
 const changeMode = async (request, sender, sendResponse) => {
+	const oldMode = appState.curMode;
 	const curModeName = request.activeMode;
 	// check stats and restore content
 	const { statsEnabled, restoreContActive, staticSubMode } = await getStorageData([
@@ -68,6 +69,7 @@ const changeMode = async (request, sender, sendResponse) => {
 	startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
 	modeChangedToBg();
 
+	console.log(`from ${oldMode} to ${curModeName}`)
 	if (curModeName === "whitelist") {
 		if (shouldRestoreCont) {
 			const newContActive = restoreContActive.filter(url => url !== pureUrl);
@@ -76,6 +78,8 @@ const changeMode = async (request, sender, sendResponse) => {
 
 		sendResponse({ closePopup: true });
 		// window.location.reload()
+	} else if (oldMode === "staticActive" && (curModeName === "easyModeActive" || curModeName === "hardModeActive")) {
+		sendResponse({ closePopup: true });
 	} else {
 		sendResponse({ closePopup: false });
 	}
@@ -161,7 +165,7 @@ if (window.location.href === "https://popupoff.org/visualization") {
 // notification mechanics
 let notifTimeout;
 const textItems = {
-	whitelist: "Dormant",
+	whitelist: "Turn OFF",
 	hardModeActive: "Aggressive",
 	staticActive: "Stationary",
 	easyModeActive: "Moderate",

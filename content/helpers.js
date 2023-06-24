@@ -601,7 +601,6 @@ const contentUnlockCheck = element => {
 };
 
 const positionCheckTypeI = (element, windowArea) => {
-	console.log(element);
 	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
 		if (contentEasyCheck(element))
 			return { shouldRemove: true, shouldMemo: true };
@@ -616,8 +615,6 @@ const positionCheckTypeI = (element, windowArea) => {
 	if (screenValue >= 0.98) {
 		// case 1: overlay on the whole screen - should block
 		// case 2: video in full screen mode - should not
-		console.log(contentEasyCheck(element))
-		console.log(videoCheck(element));
 		return {
 			shouldRemove: contentEasyCheck(element) || videoCheck(element),
 			shouldMemo: true,
