@@ -35,6 +35,8 @@ chrome.runtime.onInstalled.addListener(async details => {
 				websites3: {},
 			});
 
+			addCtxMenu();
+
 			// chrome.tabs.create({ url: "https://popupoff.org/tutorial" })
 		}
 	} else if (reason === "update") {
@@ -50,26 +52,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 			console.log("something went wrong");
 			console.log(e);
 		}
-
-		// Detect if there are issue and fix
-		const { shortCutMode, statsEnabled } = await getStorageData([
-			"shortCutMode",
-			"statsEnabled",
-		]);
-
-		if (statsEnabled == null) {
-			await setStorageData({ statsEnabled: false });
-		}
-
-		if (typeof shortCutMode == "undefined") {
-			await setStorageData({ shortCutMode: null });
-		}
 	}
-
-	setTimeout(async () => {
-		const { curAutoMode } = await getStorageData("curAutoMode");
-		console.log("after setup:", curAutoMode)
-	}, 1000);
 });
 
 // chrome.runtime.setUninstallURL("https://popupoff.org/why-delete")
@@ -96,7 +79,10 @@ const letters = {
 };
 
 const setNewBadge = async (pureUrl, tabID) => {
-	let { curAutoMode, ctxEnabled } = await getStorageData(["curAutoMode, ctxEnabled"]);
+	let { curAutoMode, ctxEnabled } = await getStorageData([
+		"ctxEnabled",
+		"curAutoMode",
+	]);
 	const websites = await getWebsites();
 
 	console.log(curAutoMode);
@@ -123,10 +109,10 @@ const setNewBadge = async (pureUrl, tabID) => {
 			chrome.contextMenus.update(menu, {
 				type: "checkbox",
 				checked:
-					(letter === "A" && key === "hardModeActive") ||
-					(letter === "S" && key === "staticActive") ||
-					(letter === "M" && key === "easyModeActive") ||
-					(letter === "" && key === "whitelist"),
+					letter === "A" && key === "hardModeActive" ||
+					letter === "S" && key === "staticActive" ||
+					letter === "M" && key === "easyModeActive" ||
+					letter === "" && key === "whitelist"
 			});
 		});
 	}
