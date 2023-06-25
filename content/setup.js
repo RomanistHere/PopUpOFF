@@ -69,7 +69,6 @@ const changeMode = async (request, sender, sendResponse) => {
 	startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
 	modeChangedToBg();
 
-	console.log(`from ${oldMode} to ${curModeName}`)
 	if (curModeName === "whitelist") {
 		if (shouldRestoreCont) {
 			const newContActive = restoreContActive.filter(url => url !== pureUrl);

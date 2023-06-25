@@ -10,7 +10,6 @@ import {
 import { defPreventContArr } from "../constants/data.js";
 
 let state = {
-	tutorial: false,
 	stats: true,
 	ctxMenu: true,
 };
@@ -29,33 +28,6 @@ querySelectorAll(".options__btn").forEach(btn => {
 		}, 310);
 	});
 });
-
-// tutorial //
-const initTutorial = async () => {
-	const tutorialBtn = querySelector(".tutorial");
-	const { tutorial } = await getStorageData("tutorial");
-
-	if (tutorial) {
-		addClass(tutorialBtn, "options__btn-active");
-		state = { ...state, tutorial: true };
-	} else {
-		removeClass(tutorialBtn, "options__btn-active");
-		state = { ...state, tutorial: false };
-	}
-
-	tutorialBtn.addEventListener("click", async e => {
-		e.preventDefault();
-		if (!state.tutorial) {
-			await setStorageData({ tutorial: true });
-			removeClass(tutorialBtn, "options__btn-active");
-			state = { ...state, tutorial: true };
-		} else {
-			await setStorageData({ tutorial: false });
-			addClass(tutorialBtn, "options__btn-active");
-			state = { ...state, tutorial: false };
-		}
-	});
-};
 
 // stats //
 const secondsToHms = l => {
@@ -179,13 +151,11 @@ const initReset = async () => {
 	const resetSettings = async e => {
 		e.preventDefault();
 		await setStorageData({
-			tutorial: true,
 			update: false,
 			statsEnabled: true,
 			backupData: {},
 			curAutoMode: "whitelist",
 			shortCutMode: null,
-			preset: "presetManual",
 		});
 		window.location.reload();
 	};
@@ -193,7 +163,6 @@ const initReset = async () => {
 	const resetAll = async e => {
 		e.preventDefault();
 		await setStorageData({
-			tutorial: true,
 			update: false,
 			stats: {
 				cleanedArea: 0,
@@ -208,7 +177,6 @@ const initReset = async () => {
 			websites1: {},
 			websites2: {},
 			websites3: {},
-			preset: "presetManual",
 		});
 		window.location.reload();
 	};
@@ -353,7 +321,6 @@ const initDonation = async () => {
 }
 
 initDonation();
-initTutorial();
 initStats();
 initKeyboard();
 initAutoMode();

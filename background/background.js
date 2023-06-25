@@ -19,7 +19,6 @@ chrome.runtime.onInstalled.addListener(async details => {
 		if (curAutoMode == null) {
 			// set up start
 			await setStorageData({
-				tutorial: true,
 				ctxEnabled: true,
 				update: false,
 				stats: {
@@ -34,7 +33,6 @@ chrome.runtime.onInstalled.addListener(async details => {
 				websites1: {},
 				websites2: {},
 				websites3: {},
-				preset: "presetManual",
 			});
 
 			// chrome.tabs.create({ url: "https://popupoff.org/tutorial" })
@@ -67,6 +65,11 @@ chrome.runtime.onInstalled.addListener(async details => {
 			await setStorageData({ shortCutMode: null });
 		}
 	}
+
+	setTimeout(async () => {
+		const { curAutoMode } = await getStorageData("curAutoMode");
+		console.log("after setup:", curAutoMode)
+	}, 1000);
 });
 
 // chrome.runtime.setUninstallURL("https://popupoff.org/why-delete")
@@ -96,6 +99,8 @@ const setNewBadge = async (pureUrl, tabID) => {
 	let { curAutoMode, ctxEnabled } = await getStorageData(["curAutoMode, ctxEnabled"]);
 	const websites = await getWebsites();
 
+	console.log(curAutoMode);
+
 	if (curAutoMode == null) {
 		await setStorageData({ curAutoMode: "easyModeActive" });
 		curAutoMode = "easyModeActive";
@@ -104,7 +109,8 @@ const setNewBadge = async (pureUrl, tabID) => {
 	const fullWebsites = { ...defWebsites, ...websites };
 	let curModeName = curAutoMode;
 
-	if (pureUrl in fullWebsites) curModeName = fullWebsites[pureUrl];
+	if (pureUrl in fullWebsites)
+		curModeName = fullWebsites[pureUrl];
 
 	const letter = letters[curModeName];
 

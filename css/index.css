@@ -341,176 +341,9 @@ body {
 	color: var(--green-col);
 }
 
-/* // bottom link end // */
-
-/* // tutorial // */
 .PopUpOFF {
 	position: relative;
 }
-
-.tutorial {
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	padding: 0 10px;
-
-	background-color: var(--dark-col);
-	border: 5px solid var(--yellow-col);
-
-	font-size: 18px;
-	line-height: 25px;
-	color: var(--white-col);
-
-	transition: all ease 0.5s;
-}
-
-.tutorial-hide {
-	opacity: 0;
-}
-
-.tutorial-non {
-	display: none;
-}
-
-.tutorial-col {
-	color: var(--yellow-col);
-}
-
-.tutorial__title {
-	margin: 0;
-	padding: 25px 0 9px;
-
-	font-weight: normal;
-	font-size: 22px;
-	line-height: 31px;
-	text-align: center;
-}
-
-.tutorial__title-low {
-	padding: 0 0 16px;
-
-	font-size: 18px;
-}
-
-.tutorial__list {
-	margin: 0;
-	padding: 0 0 0 30px;
-}
-
-.tutorial__item {
-	margin-bottom: 9px;
-}
-
-.tutorial__str {
-	display: flex;
-	justify-content: center;
-
-	width: 100%;
-	margin-top: 16px;
-
-	flex-wrap: wrap;
-}
-
-.tutorial__link {
-	padding: 3px 2px;
-
-	transition: all ease 0.3s;
-}
-
-.tutorial__link-in_text {
-	padding: 0;
-}
-
-.tutorial__union {
-	font-size: 16px;
-}
-
-.tutorial__read:hover,
-.tutorial__setup:hover,
-.tutorial__link-in_text:hover {
-	color: var(--white-col);
-}
-
-.tutorial__skip {
-	position: fixed;
-
-	bottom: 5px;
-	right: 9px;
-
-	font-size: 16px;
-	color: var(--white-col);
-}
-
-.tutorial__skip:hover {
-	color: var(--yellow-col);
-}
-
-.tutorial__settings {
-	transform: translateY(120%);
-}
-
-.tutorial-setup .tutorial__settings {
-	transform: none;
-}
-
-.setings {
-	display: flex;
-	position: fixed;
-
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-
-	flex-wrap: wrap;
-
-	transition: all ease 0.9s;
-	background-color: var(--dark-col);
-}
-
-.setings__btn {
-	width: 100%;
-	padding: 0 15px;
-	margin: 5px;
-	border: 5px solid var(--yellow-col);
-
-	box-sizing: border-box;
-
-	text-decoration: none;
-	color: var(--white-col);
-	transition: border-color ease 0.2s;
-}
-
-.setings__btn:nth-child(2n) {
-	margin-top: 0;
-}
-
-.setings__btn:hover {
-	border-color: var(--green-col);
-}
-
-.setings__btn:active {
-	transform: translate(-1px, 3px);
-}
-
-.settings__info {
-	font-size: 14px;
-}
-
-.settings__title {
-	padding: 0;
-	margin: 16px 0 9px;
-
-	text-align: left;
-}
-
-.settings__desc {
-	margin: 0;
-}
-
-/* // tutorial end // */
 
 /* // cross // */
 
@@ -638,4 +471,8 @@ body {
 		transform: translateY(10px);
 		opacity: 0;
 	}
+}
+
+.tutorial-col {
+	color: var(--yellow-col);
 }
