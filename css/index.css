@@ -101,12 +101,13 @@ body {
 	display: block;
 
 	margin: 5px;
-	padding: 22px 0 22px 84px;
+	padding: 22px 0 22px 20px;
 
 	font-size: 20px;
 	color: #f9ffeecc;
 	text-decoration: none;
 	font-weight: normal;
+	text-align: center;
 
 	cursor: pointer;
 
@@ -215,7 +216,7 @@ body {
 	right: -6px;
 	top: -310%;
 	width: 160px;
-	padding: 5px 0;
+	padding: 5px 10px;
 
 	border: 1px solid var(--white-col);
 	border-radius: 6px;

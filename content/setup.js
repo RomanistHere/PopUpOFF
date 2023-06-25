@@ -166,7 +166,7 @@ let notifTimeout;
 const textItems = {
 	whitelist: "Turn OFF",
 	hardModeActive: "Aggressive",
-	staticActive: "Stationary",
+	staticActive: "Delicate",
 	easyModeActive: "Moderate",
 };
 

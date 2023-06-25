@@ -223,8 +223,6 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	const doc = document.documentElement;
 	const body = document.body;
 	const elems = body.getElementsByTagName("*");
-	// while it's called "static", but it actually "relative" for now
-	const position = staticSubMode === "absolute" ? "absolute" : "relative";
 
 	// methods
 	const checkElem = element => {
@@ -242,7 +240,7 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
-			setPropImp(element, "position", position);
+			setPropImp(element, "position", staticSubMode);
 		}
 	};
 

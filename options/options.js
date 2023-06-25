@@ -193,12 +193,14 @@ const initReset = async () => {
 	};
 };
 
-const initStationary = async () => {
-	const inputs = querySelectorAll(".stationary input");
+const initDelicate = async () => {
+	const inputs = querySelectorAll(".delicate input");
 	const { staticSubMode } = await getStorageData("staticSubMode");
 
 	if (staticSubMode === "absolute")
-		querySelector(`.stationary #absolute`).checked = true;
+		querySelector(`.delicate #absolute`).checked = true;
+	else if (staticSubMode === "static")
+		querySelector(`.delicate #static`).checked = true;
 
 	inputs.forEach(elem => {
 		elem.addEventListener("change", async (e) => {
@@ -325,6 +327,6 @@ initStats();
 initKeyboard();
 initAutoMode();
 initReset();
-initStationary();
+initDelicate();
 initExportSettings();
 initCtxMenu();

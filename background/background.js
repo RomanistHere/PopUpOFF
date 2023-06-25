@@ -74,7 +74,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 const letters = {
 	hardModeActive: "A",
 	easyModeActive: "M",
-	staticActive: "S",
+	staticActive: "D",
 	whitelist: "",
 };
 
@@ -110,7 +110,7 @@ const setNewBadge = async (pureUrl, tabID) => {
 				type: "checkbox",
 				checked:
 					letter === "A" && key === "hardModeActive" ||
-					letter === "S" && key === "staticActive" ||
+					letter === "D" && key === "staticActive" ||
 					letter === "M" && key === "easyModeActive" ||
 					letter === "" && key === "whitelist"
 			});
@@ -164,7 +164,7 @@ const subMenu = [
 		mode: "easyModeActive",
 	},
 	{
-		title: `Stationary`,
+		title: `Delicate`,
 		mode: "staticActive",
 	},
 	{
