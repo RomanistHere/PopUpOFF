@@ -38,7 +38,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 
 			addCtxMenu();
 
-			// chrome.tabs.create({ url: "https://popupoff.org/tutorial" })
+			chrome.tabs.create({ url: "https://popupoff.org/tutorial" })
 		}
 	} else if (reason === "update") {
 		try {
@@ -56,7 +56,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 	}
 });
 
-// chrome.runtime.setUninstallURL("https://popupoff.org/why-delete")
+chrome.runtime.setUninstallURL("https://popupoff.org/why-delete")
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
@@ -86,11 +86,9 @@ const setNewBadge = async (pureUrl, tabID) => {
 	]);
 	const websites = await getWebsites();
 
-	console.log(curAutoMode);
-
 	if (curAutoMode == null) {
-		await setStorageData({ curAutoMode: "easyModeActive" });
-		curAutoMode = "easyModeActive";
+		await setStorageData({ curAutoMode: "whitelist" });
+		curAutoMode = "whitelist";
 	}
 
 	const fullWebsites = { ...defWebsites, ...websites };
@@ -107,14 +105,19 @@ const setNewBadge = async (pureUrl, tabID) => {
 		Object.keys(subMenuStore).forEach(key => {
 			const menu = subMenuStore[key];
 
-			chrome.contextMenus.update(menu, {
-				type: "checkbox",
-				checked:
-					letter === "A" && key === "hardModeActive" ||
-					letter === "D" && key === "staticActive" ||
-					letter === "M" && key === "easyModeActive" ||
-					letter === "" && key === "whitelist"
-			});
+			try {
+				chrome.contextMenus.update(menu, {
+					type: "checkbox",
+					checked:
+						letter === "A" && key === "hardModeActive" ||
+						letter === "D" && key === "staticActive" ||
+						letter === "M" && key === "easyModeActive" ||
+						letter === "" && key === "whitelist"
+				});
+			} catch (e) {
+				console.log("Couldn't update context menu");
+				console.log(e);
+			}
 		});
 	}
 };
@@ -195,36 +198,42 @@ const setNewMode = async (newMode, pureUrl, tabID) => {
 		await setWebsites(newWebsites);
 		setBadgeText(letter)(tabID);
 	} catch (e) {
+		console.log("Couldn't update badge");
 		console.log(e);
 	}
 };
 
 const addCtxMenu = () => {
-	subMenu.map((item, index) => {
-		subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
-			id: item.mode,
-			title: item.title,
-			type: "checkbox",
-			// checked whitelist by default
-			checked: item.mode === "whitelist",
-			// works for web pages only
-			documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
-		});
-	});
-
-	chrome.contextMenus.onClicked.addListener((info, tab) => {
-		const tabID = tab.id;
-		const tabURL = tab.url;
-		const pureUrl = getPureURL({ url: tabURL });
-
-		chrome.tabs.sendMessage(tabID, { activeMode: info.menuItemId }, resp => {
-			// if (resp && resp.closePopup === true) {
-			// 	chrome.tabs.update(tabID, { url: tabURL })
-			// }
+	try {
+		subMenu.map((item, index) => {
+			subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
+				id: item.mode,
+				title: item.title,
+				type: "checkbox",
+				// checked whitelist by default
+				checked: item.mode === "whitelist",
+				// works for web pages only
+				documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
+			});
 		});
 
-		setNewMode(info.menuItemId, pureUrl, tabID);
-	});
+		chrome.contextMenus.onClicked.addListener((info, tab) => {
+			const tabID = tab.id;
+			const tabURL = tab.url;
+			const pureUrl = getPureURL({ url: tabURL });
+
+			chrome.tabs.sendMessage(tabID, { activeMode: info.menuItemId }, resp => {
+				// if (resp && resp.closePopup === true) {
+				// 	chrome.tabs.update(tabID, { url: tabURL })
+				// }
+			});
+
+			setNewMode(info.menuItemId, pureUrl, tabID);
+		});
+	} catch (e) {
+		console.log("Couldn't create context menu");
+		console.log(e);
+	}
 }
 
 const initCtxMenu = async () => {

@@ -86,7 +86,6 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 	};
 
 	const action = elems => {
-		console.log("action call aggressive");
 		state = removeOverflow(statsEnabled, state, doc, body);
 		checkElems(elems, checkElem);
 		removeListeners();
@@ -193,7 +192,6 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 	};
 
 	const action = elems => {
-		console.log("action call moderate");
 		state = removeOverflow(statsEnabled, state, doc, body);
 		checkElems(elems, checkElem);
 		removeListeners();
@@ -285,7 +283,6 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	};
 
 	const action = elems => {
-		console.log("action call static");
 		state = removeOverflow(statsEnabled, state, doc, body);
 		checkElems(elems, checkElem);
 		removeListeners();

@@ -42,6 +42,5 @@
 		"matches": ["<all_urls>"],
 		"resources": ["images/stop_ads.png"]
 	}],
-	"manifest_version": 3,
-	"minimum_chrome_version": "63"
+	"manifest_version": 3
 }
