@@ -72,6 +72,11 @@ body {
 
 label {
 	transition: color .2s;
+	cursor: pointer;
+}
+
+label:hover {
+	color: var(--yellow-col);
 }
 
 input:checked + label {
