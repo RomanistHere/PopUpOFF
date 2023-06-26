@@ -19,8 +19,7 @@
 		}
 	],
 	"background": {
-		"service_worker": "background/background.js",
-		"type": "module"
+		"page": "background/background.html"
 	},
 	"action": {
 		"default_popup": "popup/popup.html",
@@ -42,5 +41,10 @@
 		"matches": ["<all_urls>"],
 		"resources": ["images/stop_ads.png"]
 	}],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{154cddeb-4c8b-4627-a478-c7e5b427ffdf}"
+		}
+	},
 	"manifest_version": 3
 }
