@@ -31,6 +31,18 @@ Some newspapers are showing you an article you want to read and then remove half
 
 #### [Changelog](https://romanisthere.github.io/apps/popupoff/updates/):
 
+2.1.0
+
+- Delicate mode
+- Import/export settings
+- Context menu is optional
+- Antipaid improved
+- Removed possibility to adjust strictness of Moderate mode
+- Dormant renamed to "Turn OFF" for clarity
+- Dedicated tutorial page on install (on new website)
+- Settings icon to access settings from popup
+- Other minor changes and improvements
+
 2.0.2
 
 - Improvements in Moderate mode

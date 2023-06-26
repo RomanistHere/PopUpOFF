@@ -240,7 +240,7 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
-			setPropImp(element, "position", staticSubMode);
+			setPropImp(element, "position", staticSubMode || "relative");
 		}
 	};
 

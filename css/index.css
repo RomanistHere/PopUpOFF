@@ -231,6 +231,10 @@ body {
 	transition: opacity 0.3s ease-out;
 }
 
+.tooltip-three {
+	top: -430%;
+}
+
 .tooltip-top {
 	z-index: 10;
 

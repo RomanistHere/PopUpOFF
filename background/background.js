@@ -29,6 +29,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 				statsEnabled: true,
 				restoreContActive: [...defPreventContArr],
 				curAutoMode: "whitelist",
+				staticSubMode: "relative",
 				shortCutMode: null,
 				websites1: {},
 				websites2: {},
