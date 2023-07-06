@@ -205,15 +205,17 @@ const setNewMode = async (newMode, pureUrl, tabID) => {
 
 const addCtxMenu = () => {
 	try {
-		subMenu.map((item, index) => {
-			subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
-				id: item.mode,
-				title: item.title,
-				type: "checkbox",
-				// checked whitelist by default
-				checked: item.mode === "whitelist",
-				// works for web pages only
-				documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
+		chrome.contextMenus.removeAll(() => {
+			subMenu.map((item, index) => {
+				subMenuStore[Object.keys(subMenuStore)[index]] = chrome.contextMenus.create({
+					id: item.mode,
+					title: item.title,
+					type: "checkbox",
+					// checked whitelist by default
+					checked: item.mode === "whitelist",
+					// works for web pages only
+					documentUrlPatterns: ["http://*/*", "https://*/*", "http://*/", "https://*/"],
+				});
 			});
 		});
 
