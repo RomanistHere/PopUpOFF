@@ -10,11 +10,16 @@ const removeClass = (node, className) => node.classList.remove(className);
 const getAttr = (node, attrName) => node.getAttribute(attrName);
 // Browser actions. Badge - text at right bottom corner of extension's icon
 const setBadgeText = text => tabID => {
-	chrome.action.setBadgeText({
-		text: text ? text : "",
-		tabId: tabID ? tabID : null,
-	});
-	chrome.action.setBadgeBackgroundColor({ color: "#222831" });
+	try {
+		chrome.action.setBadgeText({
+			text: text ? text : "",
+			tabId: tabID ? tabID : null,
+		});
+		chrome.action.setBadgeBackgroundColor({ color: "#222831" });
+	} catch (e) {
+		console.log("Couldn't set badge");
+		console.log(e);
+	}
 };
 
 const nFormatter = (num, digits) => {
