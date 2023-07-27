@@ -1,10 +1,10 @@
 # PopUpOFF BROWSER EXTENSION
 
-- [Chrome / Chromium](https://chrome.google.com/webstore/detail/popupoff-popup-blocker/ifnkdbpmgkdbfklnbfidaackdenlmhgh)
-- [Firefox](https://addons.mozilla.org/en-GB/firefox/addon/popupoff/)
-- [Opera](https://addons.opera.com/en-gb/extensions/details/popupoff-popup-and-overlay-blocker/)
-- [Edge](https://microsoftedge.microsoft.com/addons/detail/popupoff-popup-and-over/elacdkdmimelpnkbccdanmnabhajdccm)
-
+- Download for:
+  - [Chrome / Chromium](https://chrome.google.com/webstore/detail/popupoff-popup-blocker/ifnkdbpmgkdbfklnbfidaackdenlmhgh)
+  - [Firefox](https://addons.mozilla.org/en-GB/firefox/addon/popupoff/)
+  - [Opera](https://addons.opera.com/en-gb/extensions/details/popupoff-popup-and-overlay-blocker/)
+  - [Edge](https://microsoftedge.microsoft.com/addons/detail/popupoff-popup-and-over/elacdkdmimelpnkbccdanmnabhajdccm)
 - [Website](http://popupoff.org/)
 - [Twitter](https://twitter.com/RomanistHere)
 - [Support project / Donate](https://popupoff.org/#donate)
@@ -29,7 +29,7 @@ Tracking is completely removed since 1.1.6
 
 Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reduction of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont-2/)
 
-#### [Changelog](https://romanisthere.github.io/apps/popupoff/updates/):
+#### [Changelog](https://popupoff.org/changelog):
 
 2.1.0
 
