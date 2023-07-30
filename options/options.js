@@ -48,7 +48,7 @@ const initStats = async () => {
 	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats"]);
 
 	if (statsEnabled) {
-		const { cleanedArea, numbOfItems, restored } = stats;
+		const { cleanedArea, numbOfItems } = stats;
 
 		addClass(statsBtn, "options__btn-active");
 		state = { ...state, stats: true };
@@ -323,7 +323,7 @@ const initDonation = async () => {
 }
 
 initDonation();
-initStats();
+// initStats();
 initKeyboard();
 initAutoMode();
 initReset();

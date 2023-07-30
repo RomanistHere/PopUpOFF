@@ -3,25 +3,32 @@
 	"short_name": "PopUpOFF",
 	"version": "2.1.0",
 	"description": "Removes and prevents popups, overlays and cookie notifications, other tools do not. Enjoy the original look of the internet.",
-	"permissions": ["activeTab", "storage", "tabs", "contextMenus"],
-	"optional_permissions": ["downloads"],
-	"host_permissions": ["http://*/", "https://*/"],
+	"permissions": [
+		"activeTab",
+		"storage",
+		"tabs",
+		"http://*/",
+		"https://*/",
+		"contextMenus"
+	],
 	"options_ui": {
 		"page": "options/options.html",
 		"open_in_tab": true
 	},
+	"content_security_policy": "script-src 'self'; object-src 'self'",
 	"content_scripts": [
 		{
-			"js": ["content/helpers.js", "content/modes.js", "content/setup.js"],
-			"css": ["css/content.css"],
-			"matches": ["<all_urls>"],
-			"run_at": "document_end"
+			"js":         [ "content/helpers.js", "content/modes.js", "content/setup.js" ],
+			"css":        [ "css/content.css" ],
+			"matches":    [ "<all_urls>" ],
+			"all_frames": true,
+			"run_at":     "document_end"
 		}
 	],
 	"background": {
 		"page": "background/background.html"
 	},
-	"action": {
+	"browser_action": {
 		"default_popup": "popup/popup.html",
 		"default_title": "PopUpOFF - Click to open",
 		"default_icon": {
@@ -37,14 +44,11 @@
 		"48": "images/logo48.png",
 		"128": "images/logo128.png"
 	},
-	"web_accessible_resources": [{
-		"matches": ["<all_urls>"],
-		"resources": ["images/stop_ads.png"]
-	}],
+	"web_accessible_resources": [ "images/stop_ads.png" ],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "{154cddeb-4c8b-4627-a478-c7e5b427ffdf}"
 		}
 	},
-	"manifest_version": 3
+	"manifest_version": 2
 }

@@ -107,9 +107,9 @@ const init = () => {
 		const websites = await getWebsites();
 
 		// set statistics
-		if (!statsEnabled) {
-			addClass(querySelector(".statsBtn"), "hidden");
-		}
+		// if (!statsEnabled) {
+		// 	addClass(querySelector(".statsBtn"), "hidden");
+		// }
 
 		querySelector(".settingsBtn").addEventListener("click", e => {
 			e.preventDefault();

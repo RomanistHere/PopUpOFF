@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 					numbOfItems: 0,
 					restored: 0,
 				},
-				statsEnabled: true,
+				statsEnabled: false,
 				restoreContActive: [...defPreventContArr],
 				curAutoMode: "whitelist",
 				staticSubMode: "relative",
@@ -64,7 +64,7 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 		const url = info[0].url;
 		if (url.includes("chrome://") || url.includes("chrome-extension://")) {
 			setBadgeText(null)(activeInfo.tabId);
-			chrome.action.disable(activeInfo.tabId);
+			chrome.browserAction.disable(activeInfo.tabId);
 		} else {
 			const pureUrl = getPureURL(info[0]);
 			setNewBadge(pureUrl, activeInfo.tabId);
@@ -149,7 +149,7 @@ chrome.tabs.onUpdated.addListener((tabID, changeInfo, tab) => {
 
 		if (url.includes("chrome://") || url.includes("chrome-extension://")) {
 			setBadgeText(null)(tabID);
-			chrome.action.disable(tabID);
+			chrome.browserAction.disable(tabID);
 		} else {
 			const pureUrl = getPureURL({ url });
 			setNewBadge(pureUrl, tabID);
