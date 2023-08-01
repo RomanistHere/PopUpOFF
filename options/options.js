@@ -43,19 +43,35 @@ const secondsToHms = l => {
 	return hDisplay + mDisplay + sDisplay;
 };
 
+const resetStats = async e => {
+	e.preventDefault();
+	await setStorageData({
+		stats: {
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0,
+		},
+	});
+	window.location.reload();
+};
+
 const initStats = async () => {
 	const statsBtn = querySelector(".stats");
 	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats"]);
 
 	if (statsEnabled) {
-		const { cleanedArea, numbOfItems } = stats;
+		try {
+			const { cleanedArea, numbOfItems } = stats;
 
-		addClass(statsBtn, "options__btn-active");
-		state = { ...state, stats: true };
-		querySelector(".statsCount").textContent = numbOfItems;
-		if (cleanedArea > 0) {
-			querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
-			querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+			addClass(statsBtn, "options__btn-active");
+			state = { ...state, stats: true };
+			querySelector(".statsCount").textContent = numbOfItems;
+			if (cleanedArea > 0) {
+				querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
+				querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+			}
+		} catch (e) {
+			console.log(e);
 		}
 	} else {
 		removeClass(statsBtn, "options__btn-active");
@@ -68,6 +84,10 @@ const initStats = async () => {
 			await setStorageData({ statsEnabled: true });
 			removeClass(statsBtn, "options__btn-active");
 			state = { ...state, stats: true };
+
+			if (!stats) {
+				await resetStats({ preventDefault: () => {} });
+			}
 		} else {
 			await setStorageData({ statsEnabled: false });
 			addClass(statsBtn, "options__btn-active");
@@ -135,18 +155,6 @@ const initReset = async () => {
 
 		closePopUp();
 	});
-
-	const resetStats = async e => {
-		e.preventDefault();
-		await setStorageData({
-			stats: {
-				cleanedArea: 0,
-				numbOfItems: 0,
-				restored: 0,
-			},
-		});
-		window.location.reload();
-	};
 
 	const resetSettings = async e => {
 		e.preventDefault();
@@ -323,7 +331,7 @@ const initDonation = async () => {
 }
 
 initDonation();
-// initStats();
+initStats();
 initKeyboard();
 initAutoMode();
 initReset();

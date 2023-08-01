@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 					numbOfItems: 0,
 					restored: 0,
 				},
-				statsEnabled: false,
+				statsEnabled: true,
 				restoreContActive: [...defPreventContArr],
 				curAutoMode: "whitelist",
 				staticSubMode: "relative",
@@ -38,7 +38,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 
 			addCtxMenu();
 
-			chrome.tabs.create({ url: "https://popupoff.org/tutorial" })
+			chrome.tabs.create({ url: "https://popupoff.org/tutorial?source=firefox" })
 		}
 	} else if (reason === "update") {
 		try {
@@ -56,7 +56,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 	}
 });
 
-chrome.runtime.setUninstallURL("https://popupoff.org/why-delete")
+chrome.runtime.setUninstallURL("https://popupoff.org/why-delete?source=firefox")
 
 // handle tab switch(focus)
 chrome.tabs.onActivated.addListener(activeInfo => {
