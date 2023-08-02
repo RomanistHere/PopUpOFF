@@ -149,10 +149,11 @@ document.addEventListener("openOptPage", e => {
 // send stats to website
 const sendStats = async () => {
 	const { stats } = await getStorageData("stats");
-	document.dispatchEvent(new CustomEvent("PopUpOFFStats", { detail: stats }));
+	const clonedDetail = cloneInto(stats, document.defaultView);
+	document.dispatchEvent(new CustomEvent('PopUpOFFStats', { detail: clonedDetail }));
 };
 
-if (window.location.href === "https://popupoff.org/visualization") {
+if (`${window.location.origin}${window.location.pathname}` === "https://popupoff.org/visualization") {
 	document.addEventListener("showPopUpOFFStats", ({ detail }) => {
 		if (detail === "letTheShowBegin") {
 			sendStats();

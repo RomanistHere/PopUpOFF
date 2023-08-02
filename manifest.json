@@ -11,6 +11,7 @@
 		"https://*/",
 		"contextMenus"
 	],
+	"optional_permissions": ["downloads"],
 	"options_ui": {
 		"page": "options/options.html",
 		"open_in_tab": true
@@ -26,7 +27,8 @@
 		}
 	],
 	"background": {
-		"page": "background/background.html"
+		"page": "background/background.html",
+		"persistent": false
 	},
 	"browser_action": {
 		"default_popup": "popup/popup.html",

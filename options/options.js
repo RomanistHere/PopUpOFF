@@ -221,34 +221,27 @@ const initExportSettings = () => {
 	const initExport = async () => {
 		const data = await getStorageData(null);
 		const compressed = JSON.stringify(data);
-		const url = 'data:application/json;base64,' + btoa(compressed);
+		const bytes = new TextEncoder().encode(compressed);
+		const blob = new Blob([bytes], {
+			type: "application/json;charset=utf-8"
+		});
 
 		chrome.downloads.download({
-			url: url,
+			url: URL.createObjectURL(blob),
 			filename: 'PopUpOFF_settings.json'
 		});
 	}
 
 	const exportSettings = async () => {
-		chrome.permissions.contains({
+		const response = await browser.permissions.request({
 			permissions: ["downloads"],
-		}, (result) => {
-			if (result) {
-				initExport();
-			} else {
-				chrome.permissions.request({
-					permissions: ["downloads"],
-				}, (granted) => {
-					// The callback argument will be true if the user granted the permissions.
-					if (granted) {
-						initExport();
-					} else {
-						alert("You can't export (download) settings without giving permissions first");
-					}
-				});
-			}
 		});
 
+		if (response) {
+			initExport();
+		} else {
+			alert("You can't export (download) settings without giving permissions first");
+		}
 	}
 
 	querySelector(".exportBtn").addEventListener("click", async e => {
