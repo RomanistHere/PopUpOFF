@@ -152,7 +152,7 @@ const sendStats = async () => {
 	document.dispatchEvent(new CustomEvent("PopUpOFFStats", { detail: stats }));
 };
 
-if (window.location.href === "https://popupoff.org/visualization") {
+if (`${window.location.origin}${window.location.pathname}` === "https://popupoff.org/visualization") {
 	document.addEventListener("showPopUpOFFStats", ({ detail }) => {
 		if (detail === "letTheShowBegin") {
 			sendStats();
