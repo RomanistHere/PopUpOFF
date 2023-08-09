@@ -29,7 +29,23 @@ Tracking is completely removed since 1.1.6
 
 Some newspapers are showing you an article you want to read and then remove half of it. Now it's in the past. There is an (experimental) option to prevent reduction of content after download. [More info here](https://romanisthere.github.io/posts/prev-cont-2/)
 
+#### Move popups to the top/bottom of the page instead of removing (Delicate) - since 2.1.0
+
+Changes `position: fixed` to `position: absolute/static/relative` based on an option parameter. If you want to keep popups on the page, just don't want them to block the view. Overlays are usually moved to the top or the bottom of the pages as a result. Experimental.
+
+# Development
+
+#### Branches
+
+- `firefox` is different from `develop` in some places, development should be done independently
+- `edge`, `opera` have the same code as `develop` with the only difference in `?source=` param in URL, merge `develop` before release
+
 #### [Changelog](https://popupoff.org/changelog):
+
+2.1.1 - 2.1.3
+
+- Minor fixes, for firefox mainly
+- Source added to links
 
 2.1.0
 
