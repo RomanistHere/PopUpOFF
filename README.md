@@ -35,11 +35,6 @@ Changes `position: fixed` to `position: absolute/static/relative` based on an op
 
 # Development
 
-#### Branches
-
-- `firefox` is different from `develop` in some places, development should be done independently
-- `edge`, `opera` have the same code as `develop` with the only difference in `?source=` param in URL, merge `develop` before release
-
 #### [Changelog](https://popupoff.org/changelog):
 
 2.1.1 - 2.1.3
