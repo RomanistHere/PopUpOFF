@@ -50,7 +50,8 @@
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "{154cddeb-4c8b-4627-a478-c7e5b427ffdf}"
-		}
+		},
+		"gecko_android": {}
 	},
 	"manifest_version": 2
 }
