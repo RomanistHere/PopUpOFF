@@ -25,13 +25,16 @@ const initMode = async () => {
 	// check if script is inside the iframe
 	if (window !== window.parent) return;
 
-	let { statsEnabled, curAutoMode, staticSubMode } = await getStorageData([
+	let { statsEnabled, curAutoMode, staticSubMode, ignoredSelectors } = await getStorageData([
 		"statsEnabled",
 		"curAutoMode",
 		"staticSubMode",
+		"ignoredSelectors",
 	]);
 	let { restoreContActive } = await getStorageLocal("restoreContActive");
 	const websites = await getWebsites();
+
+	setUserIgnoredSelectors(ignoredSelectors);
 
 	if (restoreContActive == null) {
 		await setStorageLocal({ restoreContActive: [] });
@@ -67,13 +70,16 @@ const changeMode = async (request, sender, sendResponse) => {
 	}
 
 	// check stats and restore content
-	const { statsEnabled, staticSubMode } = await getStorageData([
+	const { statsEnabled, staticSubMode, ignoredSelectors } = await getStorageData([
 		"statsEnabled",
-		"staticSubMode"
+		"staticSubMode",
+		"ignoredSelectors"
 	]);
 	const { restoreContActive } = await getStorageLocal("restoreContActive");
 	const pureUrl = getPureURL(window.location.href);
 	const shouldRestoreCont = (restoreContActive || []).includes(pureUrl);
+
+	setUserIgnoredSelectors(ignoredSelectors);
 
 	domObserver = disconnectObservers(domObserver);
 

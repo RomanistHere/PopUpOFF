@@ -65,6 +65,7 @@ chrome.runtime.onInstalled.addListener(async details => {
 				curAutoMode: "whitelist",
 				staticSubMode: "relative",
 				shortCutMode: null,
+				ignoredSelectors: "",
 			});
 			await setStorageLocal({
 				websites: {},

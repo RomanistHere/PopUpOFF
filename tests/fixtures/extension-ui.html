@@ -48,6 +48,14 @@
 			bottom: 10px;
 			left: 10px;
 		}
+		#user-widget {
+			top: 10px;
+			left: 10px;
+		}
+		#by-inner {
+			top: 120px;
+			left: 10px;
+		}
 	</style>
 </head>
 <body>
@@ -74,5 +82,10 @@
 
 	<!-- recognized by the public opt-out attribute -->
 	<div id="by-attribute" class="ext-ui" data-popupoff-ignore>password manager</div>
+
+	<!-- no token, no attribute: removed by default, kept only when the user
+	     adds matching selectors on the options page -->
+	<div id="user-widget" class="ext-ui">custom widget</div>
+	<div id="by-inner" class="ext-ui"><span class="user-inner-thing">inner handle</span></div>
 </body>
 </html>

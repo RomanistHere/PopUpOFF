@@ -1,4 +1,4 @@
-import { test, expect, setAutoMode, setWebsiteMode } from "./extension.mjs";
+import { test, expect, setAutoMode, setWebsiteMode, setIgnoredSelectors } from "./extension.mjs";
 
 // the user-level contract: a fixed cookie wall usually locks scrolling,
 // removing it must give scrolling back (fixture pages are 3000px tall).
@@ -113,6 +113,32 @@ test.describe("other extensions' UI", () => {
 		expect(
 			await page.evaluate(() => getComputedStyle(document.querySelector("#by-token")).position)
 		).toBe("fixed");
+		// the unprotected widgets are removed - only user selectors can save them
+		await expect(page.locator("#user-widget")).toBeHidden();
+		await expect(page.locator("#by-inner")).toBeHidden();
+	});
+
+	test("user-defined ignore selectors protect unknown widgets", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "hardModeActive");
+		await setIgnoredSelectors(serviceWorker, "#user-widget\n.user-inner-thing");
+		await page.goto("/extension-ui.html");
+
+		await expect(page.locator("#overlay")).toBeHidden();
+		// matched directly and via an inner element's selector
+		await expect(page.locator("#user-widget")).toBeVisible();
+		await expect(page.locator("#by-inner")).toBeVisible();
+		expect(
+			await page.evaluate(() => getComputedStyle(document.querySelector("#user-widget")).position)
+		).toBe("fixed");
+	});
+
+	test("an invalid user selector is skipped without breaking the rest", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "hardModeActive");
+		await setIgnoredSelectors(serviceWorker, "#user-widget\n)))not-a-selector(((");
+		await page.goto("/extension-ui.html");
+
+		await expect(page.locator("#overlay")).toBeHidden();
+		await expect(page.locator("#user-widget")).toBeVisible();
 	});
 
 	test("survives delicate mode", async ({ serviceWorker, page }) => {

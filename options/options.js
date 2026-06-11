@@ -168,6 +168,7 @@ const initReset = async () => {
 			curAutoMode: "whitelist",
 			staticSubMode: "relative",
 			shortCutMode: null,
+			ignoredSelectors: "",
 		});
 		window.location.reload();
 	};
@@ -179,6 +180,7 @@ const initReset = async () => {
 			curAutoMode: "whitelist",
 			staticSubMode: "relative",
 			shortCutMode: null,
+			ignoredSelectors: "",
 		});
 		await setStorageLocal({
 			stats: {
@@ -301,6 +303,45 @@ const initExportSettings = () => {
 	});
 };
 
+// user-defined CSS selectors the extension must never touch
+const initIgnoredSelectors = async () => {
+	const textarea = querySelector(".ignoredSelectors");
+	const saveBtn = querySelector(".saveIgnoredBtn");
+
+	const { ignoredSelectors } = await getStorageData("ignoredSelectors");
+	textarea.value = ignoredSelectors || "";
+
+	saveBtn.addEventListener("click", async e => {
+		e.preventDefault();
+
+		const lines = textarea.value
+			.split("\n")
+			.map(line => line.trim())
+			.filter(line => line.length > 0);
+
+		const invalidLines = lines.filter(line => {
+			try {
+				document.createDocumentFragment().querySelector(line);
+				return false;
+			} catch {
+				return true;
+			}
+		});
+
+		if (invalidLines.length > 0) {
+			alert(
+				"These lines are not valid CSS selectors and were not saved:\n\n" +
+					invalidLines.join("\n") +
+					"\n\nFix or remove them and save again."
+			);
+			return;
+		}
+
+		await setStorageData({ ignoredSelectors: textarea.value });
+		alert("Saved! Reload open tabs to apply.");
+	});
+};
+
 const initCtxMenu = async () => {
 	const ctxBtn = querySelector(".ctxMenu");
 	const { ctxEnabled } = await getStorageData("ctxEnabled");
@@ -348,5 +389,6 @@ initKeyboard();
 initAutoMode();
 initReset();
 initDelicate();
+initIgnoredSelectors();
 initExportSettings();
 initCtxMenu();

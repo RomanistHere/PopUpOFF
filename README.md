@@ -63,6 +63,7 @@ End-to-end tests live in `tests/e2e` and run against small fixture pages in `tes
 
 - Per-site settings and stats moved to local storage: fixes "storage full" errors and removes the cap on saved websites (existing data migrates automatically; settings export/import understands both old and new backups)
 - UI injected by other extensions (password managers, PrintFriendly, Print Edit WE, Tridactyl, Pocket, Simple Translate...) is no longer treated as a popup; any extension can also opt out explicitly with a data-popupoff-ignore attribute on its elements
+- New "Ignored elements" setting: add your own CSS selectors (one per line) and PopUpOFF will never hide or move anything matching them - covers whatever the built-in list misses
 - The keyboard shortcut now uses the browser's commands API: the combination is changeable in the browser's shortcut settings and no longer misfires on Alt+Shift+X
 - Popups injected after a delay on busy pages are caught again: the mutation watcher pauses under heavy load and rescans on resume instead of switching off for good
 - "Turn OFF" no longer applies any global CSS - pages are left fully untouched

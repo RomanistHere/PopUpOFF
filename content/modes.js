@@ -27,7 +27,7 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 
 		const elemPosStyle = getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			if (element.getAttribute("data-popupoff") === "notification" || isOtherExtensionUI(element))
+			if (element.getAttribute("data-popupoff") === "notification" || isIgnoredElem(element))
 				return;
 
 			const isFixed = checkToConvertToStatic({ elem: element });
@@ -124,7 +124,7 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 
 		const elemPosStyle = getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			if (element.getAttribute("data-popupoff") === "notification" || isOtherExtensionUI(element))
+			if (element.getAttribute("data-popupoff") === "notification" || isIgnoredElem(element))
 				return;
 
 			const isFixed = checkToConvertToStatic({ elem: element });
@@ -234,7 +234,7 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 		const elemPosStyle = getStyle(element, "position");
 
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			if (element.getAttribute("data-popupoff") === "notification" || isOtherExtensionUI(element))
+			if (element.getAttribute("data-popupoff") === "notification" || isIgnoredElem(element))
 				return;
 
 			if (getStyle(element, "display") !== "none")

@@ -251,6 +251,31 @@
 
         <section class="options__section">
             <h2 class="options__header options_text">
+                Ignored elements
+            </h2>
+            <p class="options__desc options_text">
+                PopUpOFF will never hide or move elements matching these CSS selectors - one per line.
+                Useful when it interferes with another extension or removes something a website needs.
+                Right click the element and pick "Inspect" to find its
+                <span class="options_text-col">id</span> or <span class="options_text-col">class</span>,
+                then add it here like <span class="options_text-col">#some-id</span> or
+                <span class="options_text-col">.some-class</span>.
+            </p>
+            <div class="options__desc">
+                <textarea
+                    class="ignoredSelectors options__textarea"
+                    rows="5"
+                    spellcheck="false"
+                    placeholder="#some-id&#10;.some-class"
+                ></textarea>
+            </div>
+            <div class="options__desc">
+                <a href="#" class="options__button saveIgnoredBtn">Save</a>
+            </div>
+        </section>
+
+        <section class="options__section">
+            <h2 class="options__header options_text">
                 Export / import configuration
             </h2>
             <p class="options__desc options_text">

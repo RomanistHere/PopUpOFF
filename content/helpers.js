@@ -183,16 +183,42 @@ const addItemToStats = (element, state) => {
 
 // UI injected by other browser extensions must never be treated as a popup:
 // match tag/id/class against known extension tokens, honor an explicit
-// data-popupoff-ignore attribute and skip anything embedding an extension page
+// data-popupoff-ignore attribute and skip anything embedding an extension page.
+// Users can extend this with their own CSS selectors on the options page.
 const extUIIframeSelector =
 	'iframe[src^="chrome-extension://"], iframe[src^="moz-extension://"]';
 
-const isOtherExtensionUI = element => {
+// user-defined CSS selectors (options page), parsed one per line
+let userIgnoredSelectors = [];
+
+const setUserIgnoredSelectors = raw => {
+	userIgnoredSelectors = (raw || "")
+		.split("\n")
+		.map(line => line.trim())
+		.filter(line => line.length > 0);
+};
+
+const matchesUserIgnored = element => {
+	for (const selector of userIgnoredSelectors) {
+		try {
+			// forgiving on purpose: the selector may target the fixed element
+			// itself, one of its ancestors or something inside it
+			if (element.closest(selector) || element.querySelector(selector)) return true;
+		} catch {
+			// invalid selector - skip it
+		}
+	}
+	return false;
+};
+
+const isIgnoredElem = element => {
 	if (element.hasAttribute("data-popupoff-ignore")) return true;
 
 	const haystack =
 		`${element.nodeName} ${element.id} ${element.getAttribute("class") || ""}`.toLowerCase();
 	if (extensionUITokens.some(token => haystack.includes(token))) return true;
+
+	if (matchesUserIgnored(element)) return true;
 
 	try {
 		if (element.matches(extUIIframeSelector) || element.querySelector(extUIIframeSelector))

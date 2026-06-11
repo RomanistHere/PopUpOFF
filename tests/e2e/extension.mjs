@@ -64,6 +64,7 @@ export const test = base.extend({
 								curAutoMode: "whitelist",
 								staticSubMode: "relative",
 								shortCutMode: null,
+								ignoredSelectors: "",
 							});
 							await chrome.storage.local.set({
 								websites: {},
@@ -94,6 +95,10 @@ export const test = base.extend({
 // the mode every page falls back to when the site has no own setting
 export const setAutoMode = (worker, mode) =>
 	worker.evaluate(m => chrome.storage.sync.set({ curAutoMode: m }), mode);
+
+// user-defined ignore selectors, as the options page textarea would save them
+export const setIgnoredSelectors = (worker, value) =>
+	worker.evaluate(v => chrome.storage.sync.set({ ignoredSelectors: v }), value);
 
 // a per-site preference, as the popup/context menu/shortcut would save it
 export const setWebsiteMode = (worker, host, mode) =>
