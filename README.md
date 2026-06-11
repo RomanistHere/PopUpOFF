@@ -35,6 +35,28 @@ Changes `position: fixed` to `position: absolute/static/relative` based on an op
 
 # Development
 
+Requirements: Node.js 22+
+
+```bash
+npm ci                # install tooling
+npm run lint          # eslint over the whole codebase
+npm run build         # builds dist/chrome and dist/firefox
+npm run lint:firefox  # addons-linter (web-ext) over the firefox build
+npm test              # builds, then runs the Playwright end-to-end tests
+```
+
+#### Structure
+
+- The repository root is the extension source; the root `manifest.json` is the Chrome one.
+- `scripts/build.mjs` produces both browser builds in `dist/`. The Firefox build is derived from the same source: event-page background instead of a service worker, the published AMO id, `all_frames` content scripts and `source=firefox` link params. The old separate `firefox` branch is superseded by this.
+- `constants/data.js` is the single source of truth for the default website lists. It is loaded both as the first content script and as a side-effect import from the ES modules (background, popup, options).
+
+#### Testing
+
+To try it in a browser, load `dist/chrome` (or the repo root) via `chrome://extensions` → Load unpacked, or run `npx web-ext run --source-dir dist/firefox` for Firefox.
+
+End-to-end tests live in `tests/e2e` and run against small fixture pages in `tests/fixtures` (cookie wall, sticky header, delayed popup). When changing the heuristics, add a fixture page encoding the new case so regressions get caught. In sandboxes that can't download browsers, point the tests at an existing binary: `CHROMIUM_PATH=/path/to/chrome npm test`.
+
 #### [Changelog](https://popupoff.org/changelog):
 
 2.1.1 - 2.1.3
