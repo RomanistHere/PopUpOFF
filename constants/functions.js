@@ -2,8 +2,13 @@
 const querySelector = selector => document.querySelector(selector);
 const querySelectorAll = selector => document.querySelectorAll(selector);
 // Get root url of website
-const getPureURL = ({ url }) =>
-	url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8));
+const getPureURL = ({ url }) => {
+	try {
+		return new URL(url).host;
+	} catch {
+		return "";
+	}
+};
 // DOM manipulating
 const addClass = (node, className) => node.classList.add(className);
 const removeClass = (node, className) => node.classList.remove(className);
@@ -62,36 +67,6 @@ const debounce = (func, wait, immediate) => {
 const arrayToObj = (arr, prop) =>
 	arr.reduce((acc, value) => ({ ...acc, [value]: prop }), {});
 
-const splitIntoChunks = obj => {
-	let obj1 = {};
-	let obj2 = {};
-	let obj3 = {};
-
-	const keys = Object.keys(obj);
-	const keysLength = keys.length;
-	let k = 0;
-
-	for (let i = 0; i < keysLength; i++) {
-		const key = keys[i];
-		if (k === 0) {
-			obj1 = { ...obj1, [key]: obj[key] };
-			k++;
-		} else if (k === 1) {
-			obj2 = { ...obj2, [key]: obj[key] };
-			k++;
-		} else if (k === 2) {
-			obj3 = { ...obj3, [key]: obj[key] };
-			k = 0;
-		}
-	}
-
-	return {
-		obj1: obj1,
-		obj2: obj2,
-		obj3: obj3,
-	};
-};
-
 const getStorageData = key =>
 	new Promise((resolve, reject) =>
 		chrome.storage.sync.get(key, result =>
@@ -110,38 +85,33 @@ const setStorageData = data =>
 		)
 	);
 
-const setWebsites = async obj => {
-	const { obj1, obj2, obj3 } = obj
-		? splitIntoChunks(obj)
-		: { obj1: {}, obj2: {}, obj3: {} };
+const getStorageLocal = key =>
+	new Promise((resolve, reject) =>
+		chrome.storage.local.get(key, result =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve(result)
+		)
+	);
 
-	// console.table(obj)
-	// console.table(obj1)
-	// console.table(obj2)
-	// console.table(obj3)
+const setStorageLocal = data =>
+	new Promise((resolve, reject) =>
+		chrome.storage.local.set(data, () =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve()
+		)
+	);
 
-	// console.log('st length: ', Object.keys(obj).length)
-	// console.log(Object.keys(obj1).length)
-	// console.log(Object.keys(obj2).length)
-	// console.log(Object.keys(obj3).length)
-	// console.log('fin length: ', Object.keys(obj1).length + Object.keys(obj2).length + Object.keys(obj3).length)
-
-	return setStorageData({
-		websites1: { ...obj1 },
-		websites2: { ...obj2 },
-		websites3: { ...obj3 },
-	});
-};
+// Per-site preferences live in storage.local: it has no meaningful size limit,
+// unlike storage.sync whose 8KB-per-item quota broke saving altogether
+// ("storage full") once users had collected a few hundred sites.
+const setWebsites = websites => setStorageLocal({ websites: { ...websites } });
 
 const getWebsites = async () => {
 	try {
-		const { websites1, websites2, websites3 } = await getStorageData([
-			"websites1",
-			"websites2",
-			"websites3",
-		]);
-		const websites = { ...websites1, ...websites2, ...websites3 };
-		return websites;
+		const { websites } = await getStorageLocal("websites");
+		return websites != null ? websites : {};
 	} catch {
 		return {};
 	}
@@ -157,10 +127,11 @@ export {
 	setBadgeText,
 	nFormatter,
 	debounce,
-	splitIntoChunks,
 	setWebsites,
 	getWebsites,
 	getStorageData,
 	setStorageData,
+	getStorageLocal,
+	setStorageLocal,
 	arrayToObj,
 };

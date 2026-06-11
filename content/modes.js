@@ -27,11 +27,11 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 
 		const elemPosStyle = getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			const isFixed = checkToConvertToStatic({ elem: element });
-			if (isFixed)
+			if (element.getAttribute("data-popupoff") === "notification" || isOtherExtensionUI(element))
 				return;
 
-			if (element.getAttribute("data-popupoff") === "notification")
+			const isFixed = checkToConvertToStatic({ elem: element });
+			if (isFixed)
 				return;
 
 			if (getStyle(element, "display") !== "none")
@@ -47,8 +47,8 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1600) {
-			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action);
+		if (infiniteLoopPreventCounter > MUTATION_LIMIT) {
+			pauseDomWatcher(domObserver, () => action(body.getElementsByTagName("*")));
 			return true;
 		}
 		infiniteLoopPreventCounter++;
@@ -98,11 +98,13 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 	// statistics
 	if (statsEnabled) {
 		setNewData(state);
-		if (!beforeUnloadAactive) {
-			window.addEventListener("beforeunload", () => {
+		if (!pagehideActive) {
+			// pagehide instead of beforeunload: a beforeunload listener disables
+			// the back/forward cache for every page the extension runs on
+			window.addEventListener("pagehide", () => {
 				setNewData(state);
 			});
-			beforeUnloadAactive = true;
+			pagehideActive = true;
 		}
 	}
 };
@@ -122,11 +124,11 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 
 		const elemPosStyle = getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			const isFixed = checkToConvertToStatic({ elem: element });
-			if (isFixed)
+			if (element.getAttribute("data-popupoff") === "notification" || isOtherExtensionUI(element))
 				return;
 
-			if (element.getAttribute("data-popupoff") === "notification")
+			const isFixed = checkToConvertToStatic({ elem: element });
+			if (isFixed)
 				return;
 
 			const memoized = memoize.has(element);
@@ -152,8 +154,8 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 	};
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1200) {
-			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action);
+		if (infiniteLoopPreventCounter > MUTATION_LIMIT) {
+			pauseDomWatcher(domObserver, () => action(body.getElementsByTagName("*")));
 			return true;
 		}
 		infiniteLoopPreventCounter++;
@@ -204,11 +206,13 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 	// statistics
 	if (statsEnabled) {
 		setNewData(state);
-		if (!beforeUnloadAactive) {
-			window.addEventListener("beforeunload", () => {
+		if (!pagehideActive) {
+			// pagehide instead of beforeunload: a beforeunload listener disables
+			// the back/forward cache for every page the extension runs on
+			window.addEventListener("pagehide", () => {
 				setNewData(state);
 			});
-			beforeUnloadAactive = true;
+			pagehideActive = true;
 		}
 	}
 };
@@ -230,7 +234,7 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 		const elemPosStyle = getStyle(element, "position");
 
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
-			if (element.getAttribute("data-popupoff") === "notification")
+			if (element.getAttribute("data-popupoff") === "notification" || isOtherExtensionUI(element))
 				return;
 
 			if (getStyle(element, "display") !== "none")
@@ -244,8 +248,8 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 
 	// watch DOM
 	const prevLoop = () => {
-		if (infiniteLoopPreventCounter > 1500) {
-			wasNotStoped = removeDomWatcher(domObserver, wasNotStoped, body, action);
+		if (infiniteLoopPreventCounter > MUTATION_LIMIT) {
+			pauseDomWatcher(domObserver, () => action(body.getElementsByTagName("*")));
 			return true;
 		}
 		infiniteLoopPreventCounter++;
@@ -295,11 +299,13 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	// statistics
 	if (statsEnabled) {
 		setNewData(state);
-		if (!beforeUnloadAactive) {
-			window.addEventListener("beforeunload", () => {
+		if (!pagehideActive) {
+			// pagehide instead of beforeunload: a beforeunload listener disables
+			// the back/forward cache for every page the extension runs on
+			window.addEventListener("pagehide", () => {
 				setNewData(state);
 			});
-			beforeUnloadAactive = true;
+			pagehideActive = true;
 		}
 	}
 };

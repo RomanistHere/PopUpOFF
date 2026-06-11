@@ -1,10 +1,12 @@
 import {
 	addClass,
 	getStorageData,
+	getStorageLocal,
 	querySelector,
 	querySelectorAll,
 	removeClass,
 	setStorageData,
+	setStorageLocal,
 } from "../constants/functions.js";
 
 import "../constants/data.js";
@@ -47,7 +49,7 @@ const secondsToHms = l => {
 
 const resetStats = async e => {
 	if (e) e.preventDefault();
-	await setStorageData({
+	await setStorageLocal({
 		stats: {
 			cleanedArea: 0,
 			numbOfItems: 0,
@@ -59,7 +61,8 @@ const resetStats = async e => {
 
 const initStats = async () => {
 	const statsBtn = querySelector(".stats");
-	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats"]);
+	const { statsEnabled } = await getStorageData("statsEnabled");
+	const { stats } = await getStorageLocal("stats");
 
 	if (statsEnabled) {
 		try {
@@ -161,10 +164,9 @@ const initReset = async () => {
 	const resetSettings = async e => {
 		e.preventDefault();
 		await setStorageData({
-			update: false,
 			statsEnabled: true,
-			backupData: {},
 			curAutoMode: "whitelist",
+			staticSubMode: "relative",
 			shortCutMode: null,
 		});
 		window.location.reload();
@@ -173,20 +175,19 @@ const initReset = async () => {
 	const resetAll = async e => {
 		e.preventDefault();
 		await setStorageData({
-			update: false,
+			statsEnabled: true,
+			curAutoMode: "whitelist",
+			staticSubMode: "relative",
+			shortCutMode: null,
+		});
+		await setStorageLocal({
 			stats: {
 				cleanedArea: 0,
 				numbOfItems: 0,
 				restored: 0,
 			},
-			statsEnabled: true,
-			backupData: {},
 			restoreContActive: [...defPreventContArr],
-			curAutoMode: "whitelist",
-			shortCutMode: null,
-			websites1: {},
-			websites2: {},
-			websites3: {},
+			websites: {},
 		});
 		window.location.reload();
 	};
@@ -221,8 +222,9 @@ const initDelicate = async () => {
 
 const initExportSettings = () => {
 	const initExport = async () => {
-		const data = await getStorageData(null);
-		const json = JSON.stringify(data);
+		const syncData = await getStorageData(null);
+		const localData = await getStorageLocal(null);
+		const json = JSON.stringify({ format: 2, sync: syncData, local: localData });
 		const blob = new Blob([new TextEncoder().encode(json)], {
 			type: "application/json;charset=utf-8"
 		});
@@ -263,7 +265,21 @@ const initExportSettings = () => {
 
 		reader.onload = async () => {
 			const data = JSON.parse(reader.result);
-			await setStorageData(data);
+
+			if (data && data.format === 2) {
+				await setStorageData(data.sync || {});
+				await setStorageLocal(data.local || {});
+			} else {
+				// legacy backups kept everything in one (sync) bag - split it up
+				const { websites1, websites2, websites3, restoreContActive, stats, ...settings } = data;
+				await setStorageData(settings);
+				await setStorageLocal({
+					websites: { ...websites1, ...websites2, ...websites3 },
+					restoreContActive: restoreContActive != null ? restoreContActive : [],
+					stats: stats != null ? stats : { cleanedArea: 0, numbOfItems: 0, restored: 0 },
+				});
+			}
+
 			alert("Success! Update this page to see the changes.");
 
 			input.value = '';

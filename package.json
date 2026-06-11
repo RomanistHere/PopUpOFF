@@ -1,6 +1,6 @@
 {
 	"name": "popupoff",
-	"version": "2.1.3",
+	"version": "2.1.4",
 	"private": true,
 	"description": "Browser extension removing popups, overlays and cookie notifications",
 	"type": "module",

@@ -59,6 +59,18 @@ End-to-end tests live in `tests/e2e` and run against small fixture pages in `tes
 
 #### [Changelog](https://popupoff.org/changelog):
 
+2.1.4
+
+- Per-site settings and stats moved to local storage: fixes "storage full" errors and removes the cap on saved websites (existing data migrates automatically; settings export/import understands both old and new backups)
+- UI injected by other extensions (password managers, PrintFriendly, Print Edit WE, Tridactyl, Pocket, Simple Translate...) is no longer treated as a popup; any extension can also opt out explicitly with a data-popupoff-ignore attribute on its elements
+- The keyboard shortcut now uses the browser's commands API: the combination is changeable in the browser's shortcut settings and no longer misfires on Alt+Shift+X
+- Popups injected after a delay on busy pages are caught again: the mutation watcher pauses under heavy load and rescans on resume instead of switching off for good
+- "Turn OFF" no longer applies any global CSS - pages are left fully untouched
+- Dropped the "tabs" permission, removing the "Read your browsing history" install warning - it was never needed
+- Stats bookkeeping no longer disables the browser's back/forward cache (faster back-button navigation everywhere)
+- Fixed the toolbar button staying disabled after visiting browser pages, the badge reading the wrong window's tab, and duplicated context-menu handlers
+- One source for Chrome and Firefox: the Firefox build is now generated, manifest v3, with a working event-page background
+
 2.1.1 - 2.1.3
 
 - Minor fixes, for firefox mainly

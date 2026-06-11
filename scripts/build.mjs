@@ -6,7 +6,6 @@
 // dist/firefox - same source with a derived manifest and firefox-specific tweaks:
 //                  * event page background ("scripts") instead of "service_worker"
 //                  * browser_specific_settings with the published AMO id
-//                  * all_frames content scripts (matches the previously shipped build)
 //                  * "source=chrome" link params rewritten to "source=firefox"
 
 import fs from "node:fs";
@@ -58,12 +57,6 @@ const buildFirefox = () => {
 		},
 		gecko_android: {},
 	};
-	// the previously shipped firefox build injected into all frames
-	manifest.content_scripts = manifest.content_scripts.map(script => ({
-		...script,
-		all_frames: true,
-	}));
-
 	fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, "\t") + "\n");
 
 	// rewrite the analytics source param in links (popup/options html, background js)

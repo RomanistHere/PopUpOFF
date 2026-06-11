@@ -34,8 +34,3 @@
 		opacity: 1;
 	}
 }
-
-/* Arc Publishing sites keep the page at opacity 0 until their consent script runs */
-div[id="fusion-app"] {
-	opacity: 1 !important;
-}

@@ -2,16 +2,19 @@
 
 // "global" variables //
 // event check
-let beforeUnloadAactive = false;
+let pagehideActive = false;
 let isCSSAppended = false;
+let isSiteFixCSSAppended = false;
 
 // dom sobservers
 let domObserver;
 
-// prevent infinite loop
+// mutation watcher throttling
+const MUTATION_LIMIT = 1500;
 let infiniteLoopPreventCounter = 0;
 let myTimer = 0;
-let wasNotStoped = true;
+let watcherPauseCount = 0;
+let watcherResumeTimer = 0;
 
 // helpers
 const getStyle = (elem, property) =>
@@ -21,7 +24,13 @@ const setPropImp = (elem, prop, val) => elem.style.setProperty(prop, val, "impor
 
 const checkIsInArr = (arr, item) => (arr.includes(item) ? true : false);
 
-const getPureURL = url => url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8));
+const getPureURL = url => {
+	try {
+		return new URL(url).host;
+	} catch {
+		return "";
+	}
+};
 
 const roundToTwo = num => +(Math.round(num + "e+2") + "e-2");
 
@@ -38,36 +47,6 @@ const debounce = (func, wait, immediate) => {
 		clearTimeout(timeout);
 		timeout = setTimeout(later, wait);
 		if (callNow) func.apply(context, args);
-	};
-};
-
-const splitIntoChunks = obj => {
-	let obj1 = {};
-	let obj2 = {};
-	let obj3 = {};
-
-	const keys = Object.keys(obj);
-	const keysLength = keys.length;
-	let k = 0;
-
-	for (let i = 0; i < keysLength; i++) {
-		const key = keys[i];
-		if (k === 0) {
-			obj1 = { ...obj1, [key]: obj[key] };
-			k++;
-		} else if (k === 1) {
-			obj2 = { ...obj2, [key]: obj[key] };
-			k++;
-		} else if (k === 2) {
-			obj3 = { ...obj3, [key]: obj[key] };
-			k = 0;
-		}
-	}
-
-	return {
-		obj1: obj1,
-		obj2: obj2,
-		obj3: obj3,
 	};
 };
 
@@ -89,39 +68,47 @@ const setStorageData = data =>
 		)
 	);
 
-const setWebsites = async obj => {
-	const { obj1, obj2, obj3 } = obj
-		? splitIntoChunks(obj)
-		: { obj1: {}, obj2: {}, obj3: {} };
+const getStorageLocal = key =>
+	new Promise((resolve, reject) =>
+		chrome.storage.local.get(key, result =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve(result)
+		)
+	);
 
-	return setStorageData({
-		websites1: { ...obj1 },
-		websites2: { ...obj2 },
-		websites3: { ...obj3 },
-	});
-};
+const setStorageLocal = data =>
+	new Promise((resolve, reject) =>
+		chrome.storage.local.set(data, () =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve()
+		)
+	);
+
+// Per-site preferences live in storage.local: it has no meaningful size limit,
+// unlike storage.sync whose 8KB-per-item quota broke saving altogether
+// ("storage full") once users had collected a few hundred sites.
+const setWebsites = websites => setStorageLocal({ websites: { ...websites } });
 
 const getWebsites = async () => {
 	try {
-		const { websites1, websites2, websites3 } = await getStorageData([
-			"websites1",
-			"websites2",
-			"websites3",
-		]);
-		const websites = { ...websites1, ...websites2, ...websites3 };
-		return websites;
-	} catch (e) {
+		const { websites } = await getStorageLocal("websites");
+		return websites != null ? websites : {};
+	} catch {
 		return {};
 	}
 };
 
 const disconnectObservers = domObserver => {
 	try {
+		clearTimeout(watcherResumeTimer);
+		watcherResumeTimer = 0;
 		if (domObserver) {
 			domObserver.disconnect();
 			domObserver = null;
 		}
-	} catch (e) {
+	} catch {
 		// console.log(e)
 	}
 	return null;
@@ -151,16 +138,19 @@ const fixStats = stats => {
 };
 
 const setNewData = state =>
-	chrome.storage.sync.get(["stats"], resp => {
+	chrome.storage.local.get(["stats"], resp => {
+		const oldStats = resp.stats != null
+			? resp.stats
+			: { cleanedArea: 0, numbOfItems: 0, restored: 0 };
 		// round to first decimal
 		const screenValue = roundToTwo(state.cleanedArea / state.windowArea);
 
 		let newStats = {
 			cleanedArea:
-				parseFloat(resp.stats.cleanedArea) +
+				parseFloat(oldStats.cleanedArea) +
 				parseFloat(isNaN(screenValue) ? 0 : screenValue),
-			numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
-			restored: parseFloat(resp.stats.restored) + parseFloat(state.restored),
+			numbOfItems: parseFloat(oldStats.numbOfItems) + parseFloat(state.numbOfItems),
+			restored: parseFloat(oldStats.restored) + parseFloat(state.restored),
 		};
 
 		if (
@@ -170,7 +160,7 @@ const setNewData = state =>
 		)
 			newStats = fixStats(newStats);
 
-		chrome.storage.sync.set({ stats: newStats });
+		chrome.storage.local.set({ stats: newStats });
 	});
 
 const addCountToStats = state => {
@@ -191,8 +181,43 @@ const addItemToStats = (element, state) => {
 		  };
 };
 
+// UI injected by other browser extensions must never be treated as a popup:
+// match tag/id/class against known extension tokens, honor an explicit
+// data-popupoff-ignore attribute and skip anything embedding an extension page
+const extUIIframeSelector =
+	'iframe[src^="chrome-extension://"], iframe[src^="moz-extension://"]';
+
+const isOtherExtensionUI = element => {
+	if (element.hasAttribute("data-popupoff-ignore")) return true;
+
+	const haystack =
+		`${element.nodeName} ${element.id} ${element.getAttribute("class") || ""}`.toLowerCase();
+	if (extensionUITokens.some(token => haystack.includes(token))) return true;
+
+	try {
+		if (element.matches(extUIIframeSelector) || element.querySelector(extUIIframeSelector))
+			return true;
+	} catch {
+		// non-element nodes
+	}
+
+	return false;
+};
+
+// Arc Publishing sites keep the page at opacity 0 until their consent script runs;
+// applied only while a mode is active so "Turn OFF" leaves pages truly untouched
+const applySiteFixCSS = () => {
+	if (isSiteFixCSSAppended) return;
+	document.head.insertAdjacentHTML(
+		"beforeend",
+		`<style>div[id="fusion-app"]{opacity:1!important}</style>`
+	);
+	isSiteFixCSSAppended = true;
+};
+
 // methods
 const removeOverflow = (statsEnabled, state, doc, body) => {
+	applySiteFixCSS();
 	const overFlowDoc = getStyle(doc, "overflow-y");
 	const overFlowBody = getStyle(body, "overflow-y");
 	const docPosStyle = getStyle(doc, "position");
@@ -519,29 +544,33 @@ const checkElemWithSibl = (element, checkElem) => {
 		// element itself
 		checkElem(element);
 		// all childs of element
-		if (wasNotStoped) {
-			const elems = element.querySelectorAll("*");
-			checkElems(elems, checkElem);
-		}
+		const elems = element.querySelectorAll("*");
+		checkElems(elems, checkElem);
 	} else if (element instanceof ShadowRoot) {
 		const elems = element.querySelectorAll("*");
 		checkElems(elems, checkElem);
 	}
 };
 
-const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
+// Pages mutating too heavily used to get their watcher disconnected for good,
+// letting any popup injected afterwards through (issue #48). Instead, pause with
+// a growing backoff and resume with a full rescan that catches everything that
+// appeared in between.
+const pauseDomWatcher = (observer, resume) => {
 	try {
-		domObserver.disconnect();
-		domObserver = false;
-		if (wasNotStoped) {
-			setTimeout(() => {
-				const newElems = body.getElementsByTagName("*");
-				action(newElems);
-			}, 2000);
-		}
-		wasNotStoped = false;
-		return wasNotStoped;
-	} catch (e) {}
+		observer.disconnect();
+	} catch {
+		// observer may already be gone
+	}
+
+	const delay = Math.min(2000 * 2 ** watcherPauseCount, 30000);
+	watcherPauseCount++;
+
+	clearTimeout(watcherResumeTimer);
+	watcherResumeTimer = setTimeout(() => {
+		infiniteLoopPreventCounter = 0;
+		resume();
+	}, delay);
 };
 
 const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {

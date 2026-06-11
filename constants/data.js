@@ -5,6 +5,25 @@
 //   2. as a side-effect import from ES modules (background, popup, options),
 //      which read the data from globalThis.popupoffData.
 
+// UI injected by other browser extensions must never be treated as a popup.
+// Matched as substrings against a fixed element's tag name, id and class.
+// Elements carrying a data-popupoff-ignore attribute or containing an
+// extension-origin iframe are skipped as well (see isOtherExtensionUI).
+const extensionUITokens = [
+	"tridactyl", // https://github.com/RomanistHere/PopUpOFF/issues/57
+	"printfriendly", // https://github.com/RomanistHere/PopUpOFF/issues/53
+	"printedit", // https://github.com/RomanistHere/PopUpOFF/issues/47
+	"pocket-extension", // https://github.com/RomanistHere/PopUpOFF/issues/42
+	"roboform", // https://github.com/RomanistHere/PopUpOFF/issues/44
+	"simple-translate", // https://github.com/RomanistHere/PopUpOFF/issues/45
+	"grammarly",
+	"lastpass",
+	"bitwarden",
+	"dashlane",
+	"1password",
+	"keepass",
+];
+
 // list of websites where prevent content feature enabled by default
 const defPreventContArr = [
 	"www.economist.com",
@@ -170,4 +189,4 @@ const defWebsites = {
 	"www.theladders.com": "easyModeActive",
 };
 
-globalThis.popupoffData = { defWebsites, defPreventContArr };
+globalThis.popupoffData = { defWebsites, defPreventContArr, extensionUITokens };

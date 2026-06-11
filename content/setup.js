@@ -22,18 +22,19 @@ const startMode = ({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode
 
 // initialize mode
 const initMode = async () => {
-	let { statsEnabled, restoreContActive, curAutoMode, staticSubMode } = await getStorageData([
-		"statsEnabled",
-		"restoreContActive",
-		"curAutoMode",
-		"staticSubMode",
-	]);
-	const websites = await getWebsites();
 	// check if script is inside the iframe
 	if (window !== window.parent) return;
 
+	let { statsEnabled, curAutoMode, staticSubMode } = await getStorageData([
+		"statsEnabled",
+		"curAutoMode",
+		"staticSubMode",
+	]);
+	let { restoreContActive } = await getStorageLocal("restoreContActive");
+	const websites = await getWebsites();
+
 	if (restoreContActive == null) {
-		await setStorageData({ restoreContActive: [] });
+		await setStorageLocal({ restoreContActive: [] });
 		restoreContActive = [];
 	}
 
@@ -41,6 +42,9 @@ const initMode = async () => {
 		await setStorageData({ statsEnabled: false });
 		statsEnabled = false;
 	}
+
+	// missing defaults (e.g. the background never ran on install) must not crash the page
+	if (curAutoMode == null) curAutoMode = "whitelist";
 
 	const fullWebsites = { ...defWebsites, ...websites };
 	const pureUrl = getPureURL(window.location.href);
@@ -55,24 +59,34 @@ initMode();
 const changeMode = async (request, sender, sendResponse) => {
 	const oldMode = appState.curMode;
 	const curModeName = request.activeMode;
+
+	// shortcut pressed for the mode that is already active - nothing to do
+	if (request.fromShortcut && oldMode === curModeName) {
+		sendResponse({ closePopup: false });
+		return;
+	}
+
 	// check stats and restore content
-	const { statsEnabled, restoreContActive, staticSubMode } = await getStorageData([
+	const { statsEnabled, staticSubMode } = await getStorageData([
 		"statsEnabled",
-		"restoreContActive",
 		"staticSubMode"
 	]);
+	const { restoreContActive } = await getStorageLocal("restoreContActive");
 	const pureUrl = getPureURL(window.location.href);
-	const shouldRestoreCont = restoreContActive.includes(pureUrl);
+	const shouldRestoreCont = (restoreContActive || []).includes(pureUrl);
 
 	domObserver = disconnectObservers(domObserver);
 
 	startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
 	modeChangedToBg();
 
+	if (request.fromShortcut)
+		createNotification(curModeName);
+
 	if (curModeName === "whitelist") {
 		if (shouldRestoreCont) {
 			const newContActive = restoreContActive.filter(url => url !== pureUrl);
-			chrome.storage.sync.set({ restoreContActive: newContActive });
+			chrome.storage.local.set({ restoreContActive: newContActive });
 		}
 
 		sendResponse({ closePopup: true });
@@ -94,52 +108,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	return true;
 });
 
-// shortcut (keycomb: "Alt + x") from browser listener
-const keyDownCallBack = async e => {
-	const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-
-	if (
-		(e.altKey && e.which == 88) ||
-		(isMac && e.metaKey && e.shiftKey && e.which == 88)
-	) {
-		// needed shortcut pressed
-		e.preventDefault();
-
-		const { statsEnabled, restoreContActive, shortCutMode, staticSubMode } = await getStorageData([
-			"statsEnabled",
-			"restoreContActive",
-			"shortCutMode",
-			"staticSubMode",
-		]);
-		const websites = await getWebsites();
-		const fullWebsites = { ...defWebsites, ...websites };
-
-		if (appState.curMode === shortCutMode || shortCutMode === null) return;
-
-		const pureUrl = getPureURL(window.location.href);
-		const shouldRestoreCont = restoreContActive.includes(pureUrl);
-
-		const curModeName = shortCutMode;
-		domObserver = disconnectObservers(domObserver);
-
-		if (pureUrl in fullWebsites && fullWebsites[pureUrl] === curModeName) return;
-
-		const newWebsites = { ...websites, [pureUrl]: curModeName };
-
-		startMode({ curModeName, statsEnabled, shouldRestoreCont, staticSubMode });
-		try {
-			await setWebsites(newWebsites);
-			modeChangedToBg();
-			createNotification(appState.curMode);
-		} catch (e) {
-			console.log(e);
-		}
-
-		// if (curModeName === 'whitelist')
-		// 	window.location.reload()
-	}
-};
-document.onkeydown = debounce(keyDownCallBack, 100);
+// The keyboard shortcut is handled by the background script via the
+// chrome.commands API (user-configurable in the browser's shortcut settings);
+// it arrives here as a regular changeMode message with fromShortcut set.
 
 // open option page programmatically from websites
 document.addEventListener("openOptPage", e => {
@@ -148,7 +119,7 @@ document.addEventListener("openOptPage", e => {
 
 // send stats to website
 const sendStats = async () => {
-	const { stats } = await getStorageData("stats");
+	const { stats } = await getStorageLocal("stats");
 	// Firefox requires cloning the detail object into the page context (Xray vision)
 	const detail = typeof cloneInto === "function" ? cloneInto(stats, document.defaultView) : stats;
 	document.dispatchEvent(new CustomEvent("PopUpOFFStats", { detail }));
