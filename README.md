@@ -45,6 +45,8 @@ npm run lint:firefox  # addons-linter (web-ext) over the firefox build
 npm test              # builds, then runs the Playwright end-to-end tests
 ```
 
+Versioning, packaging, store uploads and the release checklist are documented in [RELEASING.md](RELEASING.md).
+
 #### Structure
 
 - The repository root is the extension source; the root `manifest.json` is the Chrome one.
