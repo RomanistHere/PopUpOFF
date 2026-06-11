@@ -35,7 +35,44 @@ Changes `position: fixed` to `position: absolute/static/relative` based on an op
 
 # Development
 
+Requirements: Node.js 22+
+
+```bash
+npm ci                # install tooling
+npm run lint          # eslint over the whole codebase
+npm run build         # builds dist/chrome and dist/firefox
+npm run lint:firefox  # addons-linter (web-ext) over the firefox build
+npm test              # builds, then runs the Playwright end-to-end tests
+```
+
+Versioning, packaging, store uploads and the release checklist are documented in [RELEASING.md](RELEASING.md).
+
+#### Structure
+
+- The repository root is the extension source; the root `manifest.json` is the Chrome one.
+- `scripts/build.mjs` produces both browser builds in `dist/`. The Firefox build is derived from the same source: event-page background instead of a service worker, the published AMO id, `all_frames` content scripts and `source=firefox` link params. The old separate `firefox` branch is superseded by this.
+- `constants/data.js` is the single source of truth for the default website lists. It is loaded both as the first content script and as a side-effect import from the ES modules (background, popup, options).
+
+#### Testing
+
+To try it in a browser, load `dist/chrome` (or the repo root) via `chrome://extensions` → Load unpacked, or run `npx web-ext run --source-dir dist/firefox` for Firefox.
+
+End-to-end tests live in `tests/e2e` and run against small fixture pages in `tests/fixtures` (cookie wall, sticky header, delayed popup). When changing the heuristics, add a fixture page encoding the new case so regressions get caught. In sandboxes that can't download browsers, point the tests at an existing binary: `CHROMIUM_PATH=/path/to/chrome npm test`.
+
 #### [Changelog](https://popupoff.org/changelog):
+
+2.1.4
+
+- Per-site settings and stats moved to local storage: fixes "storage full" errors and removes the cap on saved websites (existing data migrates automatically; settings export/import understands both old and new backups)
+- UI injected by other extensions (password managers, PrintFriendly, Print Edit WE, Tridactyl, Pocket, Simple Translate...) is no longer treated as a popup; any extension can also opt out explicitly with a data-popupoff-ignore attribute on its elements
+- New "Ignored elements" setting: add your own CSS selectors (one per line) and PopUpOFF will never hide or move anything matching them - covers whatever the built-in list misses
+- The keyboard shortcut now uses the browser's commands API: the combination is changeable in the browser's shortcut settings and no longer misfires on Alt+Shift+X
+- Popups injected after a delay on busy pages are caught again: the mutation watcher pauses under heavy load and rescans on resume instead of switching off for good
+- "Turn OFF" no longer applies any global CSS - pages are left fully untouched
+- Dropped the "tabs" permission, removing the "Read your browsing history" install warning - it was never needed
+- Stats bookkeeping no longer disables the browser's back/forward cache (faster back-button navigation everywhere)
+- Fixed the toolbar button staying disabled after visiting browser pages, the badge reading the wrong window's tab, and duplicated context-menu handlers
+- One source for Chrome and Firefox: the Firefox build is now generated, manifest v3, with a working event-page background
 
 2.1.1 - 2.1.3
 

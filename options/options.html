@@ -154,9 +154,11 @@
             </h2>
 
             <p class="options__desc options_text">
-                Currently you can not change the shortcut itself. It is
+                The default combination is
                 <span class="options_text-col">"Alt + x"</span> or <span class="options_text-col">"Cmd + Shift + x"</span>
-                (Hi Apple). But here you can choose what mode is going to be active after you press the combination.
+                (Hi Apple). You can change it on your browser's extension shortcuts page
+                (chrome://extensions/shortcuts in Chrome, Manage Extension Shortcuts in Firefox's add-ons manager).
+                Here you can choose what mode is going to be active after you press the combination.
             </p>
 
             <fieldset class="options__set kbrd">
@@ -244,6 +246,31 @@
                     </div>
                     <span class="options__label">List PopUpOFF in context menu</span>
                 </a>
+            </div>
+        </section>
+
+        <section class="options__section">
+            <h2 class="options__header options_text">
+                Ignored elements
+            </h2>
+            <p class="options__desc options_text">
+                PopUpOFF will never hide or move elements matching these CSS selectors - one per line.
+                Useful when it interferes with another extension or removes something a website needs.
+                Right click the element and pick "Inspect" to find its
+                <span class="options_text-col">id</span> or <span class="options_text-col">class</span>,
+                then add it here like <span class="options_text-col">#some-id</span> or
+                <span class="options_text-col">.some-class</span>.
+            </p>
+            <div class="options__desc">
+                <textarea
+                    class="ignoredSelectors options__textarea"
+                    rows="5"
+                    spellcheck="false"
+                    placeholder="#some-id&#10;.some-class"
+                ></textarea>
+            </div>
+            <div class="options__desc">
+                <a href="#" class="options__button saveIgnoredBtn">Save</a>
             </div>
         </section>
 

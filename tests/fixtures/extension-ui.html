@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Other-extension UI fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		/* a popup that must be removed */
+		#overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			z-index: 9000;
+		}
+		#overlay .dialog {
+			background: #fff;
+			width: 400px;
+			margin: 20vh auto 0;
+			padding: 24px;
+		}
+		/* simulated UI injected by other browser extensions - must survive every mode */
+		.ext-ui {
+			position: fixed;
+			width: 220px;
+			height: 90px;
+			background: #fffbe6;
+			border: 1px solid #999;
+			z-index: 9999;
+		}
+		#by-token {
+			top: 10px;
+			right: 10px;
+		}
+		#by-iframe {
+			bottom: 10px;
+			right: 10px;
+		}
+		#by-attribute {
+			bottom: 10px;
+			left: 10px;
+		}
+		#user-widget {
+			top: 10px;
+			left: 10px;
+		}
+		#by-inner {
+			top: 120px;
+			left: 10px;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Article headline</h1>
+		<p>The actual page content readers came for.</p>
+	</main>
+
+	<div id="overlay">
+		<div class="dialog">
+			<h2>We value your privacy</h2>
+			<p>This site uses cookies. Please accept our cookie policy.</p>
+			<button>Accept all</button>
+		</div>
+	</div>
+
+	<!-- recognized by the tridactyl token in the class name -->
+	<div id="by-token" class="ext-ui tridactyl-hint-host">hint overlay</div>
+
+	<!-- recognized by the embedded extension-origin iframe -->
+	<div id="by-iframe" class="ext-ui">
+		<iframe src="chrome-extension://abcdefghijklmnop/panel.html" title="panel"></iframe>
+	</div>
+
+	<!-- recognized by the public opt-out attribute -->
+	<div id="by-attribute" class="ext-ui" data-popupoff-ignore>password manager</div>
+
+	<!-- no token, no attribute: removed by default, kept only when the user
+	     adds matching selectors on the options page -->
+	<div id="user-widget" class="ext-ui">custom widget</div>
+	<div id="by-inner" class="ext-ui"><span class="user-inner-thing">inner handle</span></div>
+</body>
+</html>

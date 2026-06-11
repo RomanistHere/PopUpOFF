@@ -291,3 +291,24 @@ input:checked + label {
 .donationYes:hover {
 	color: var(--yellow-col)
 }
+.options__textarea {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 640px;
+	padding: 10px 14px;
+	border: 2px solid var(--yellow-col);
+
+	background: transparent;
+	color: var(--white-col);
+	font-size: 18px;
+	font-family: monospace;
+	line-height: 1.5;
+	resize: vertical;
+
+	transition: border-color ease 0.15s;
+}
+
+.options__textarea:focus {
+	border-color: var(--white-col);
+	outline: none;
+}

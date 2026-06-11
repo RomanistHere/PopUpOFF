@@ -1,0 +1,26 @@
+{
+	"name": "popupoff",
+	"version": "2.1.4",
+	"private": true,
+	"description": "Browser extension removing popups, overlays and cookie notifications",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint .",
+		"build": "node scripts/build.mjs",
+		"lint:firefox": "web-ext lint --source-dir dist/firefox",
+		"pretest": "npm run build",
+		"test": "playwright test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RomanistHere/PopUpOFF.git"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@playwright/test": "^1.60.0",
+		"eslint": "^10.4.1",
+		"globals": "^17.6.0",
+		"web-ext": "^10.3.0"
+	}
+}

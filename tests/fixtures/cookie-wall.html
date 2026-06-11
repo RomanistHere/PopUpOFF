@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Cookie wall fixture</title>
+	<style>
+		body {
+			margin: 0;
+			/* typical scroll lock that comes with a cookie wall */
+			overflow: hidden;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		/* full-viewport overlay; intentionally no overflow:hidden on it so the
+		   aggressive mode hides it instead of converting it to position:static */
+		#overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			z-index: 9999;
+		}
+		#overlay .dialog {
+			background: #fff;
+			width: 400px;
+			margin: 20vh auto 0;
+			padding: 24px;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Article headline</h1>
+		<p>The actual page content readers came for.</p>
+	</main>
+	<div id="overlay">
+		<div class="dialog">
+			<h2>We value your privacy</h2>
+			<p>This site uses cookies to improve your experience. By clicking accept you consent to all cookies.</p>
+			<button>Accept all</button>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Delayed popup fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		#late {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			z-index: 9999;
+		}
+		#late .dialog {
+			background: #fff;
+			width: 400px;
+			margin: 20vh auto 0;
+			padding: 24px;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Article headline</h1>
+		<p>The actual page content readers came for.</p>
+	</main>
+	<script>
+		// simulates sites that inject their popup after a delay to dodge blockers
+		setTimeout(() => {
+			const overlay = document.createElement("div");
+			overlay.id = "late";
+			overlay.innerHTML =
+				'<div class="dialog"><h2>Before you continue</h2>' +
+				"<p>This site uses cookies. Please accept our cookie policy.</p>" +
+				"<button>OK</button></div>";
+			document.body.appendChild(overlay);
+			window.__popupAdded = true;
+		}, 1200);
+	</script>
+</body>
+</html>

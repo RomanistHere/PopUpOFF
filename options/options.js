@@ -1,13 +1,17 @@
 import {
 	addClass,
 	getStorageData,
+	getStorageLocal,
 	querySelector,
 	querySelectorAll,
 	removeClass,
 	setStorageData,
+	setStorageLocal,
 } from "../constants/functions.js";
 
-import { defPreventContArr } from "../constants/data.js";
+import "../constants/data.js";
+
+const { defPreventContArr } = globalThis.popupoffData;
 
 let state = {
 	stats: true,
@@ -43,19 +47,36 @@ const secondsToHms = l => {
 	return hDisplay + mDisplay + sDisplay;
 };
 
+const resetStats = async e => {
+	if (e) e.preventDefault();
+	await setStorageLocal({
+		stats: {
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0,
+		},
+	});
+	window.location.reload();
+};
+
 const initStats = async () => {
 	const statsBtn = querySelector(".stats");
-	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats"]);
+	const { statsEnabled } = await getStorageData("statsEnabled");
+	const { stats } = await getStorageLocal("stats");
 
 	if (statsEnabled) {
-		const { cleanedArea, numbOfItems, restored } = stats;
+		try {
+			const { cleanedArea, numbOfItems } = stats;
 
-		addClass(statsBtn, "options__btn-active");
-		state = { ...state, stats: true };
-		querySelector(".statsCount").textContent = numbOfItems;
-		if (cleanedArea > 0) {
-			querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
-			querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+			addClass(statsBtn, "options__btn-active");
+			state = { ...state, stats: true };
+			querySelector(".statsCount").textContent = numbOfItems;
+			if (cleanedArea > 0) {
+				querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
+				querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+			}
+		} catch (e) {
+			console.log(e);
 		}
 	} else {
 		removeClass(statsBtn, "options__btn-active");
@@ -68,6 +89,10 @@ const initStats = async () => {
 			await setStorageData({ statsEnabled: true });
 			removeClass(statsBtn, "options__btn-active");
 			state = { ...state, stats: true };
+
+			if (!stats) {
+				await resetStats();
+			}
 		} else {
 			await setStorageData({ statsEnabled: false });
 			addClass(statsBtn, "options__btn-active");
@@ -136,26 +161,14 @@ const initReset = async () => {
 		closePopUp();
 	});
 
-	const resetStats = async e => {
-		e.preventDefault();
-		await setStorageData({
-			stats: {
-				cleanedArea: 0,
-				numbOfItems: 0,
-				restored: 0,
-			},
-		});
-		window.location.reload();
-	};
-
 	const resetSettings = async e => {
 		e.preventDefault();
 		await setStorageData({
-			update: false,
 			statsEnabled: true,
-			backupData: {},
 			curAutoMode: "whitelist",
+			staticSubMode: "relative",
 			shortCutMode: null,
+			ignoredSelectors: "",
 		});
 		window.location.reload();
 	};
@@ -163,20 +176,20 @@ const initReset = async () => {
 	const resetAll = async e => {
 		e.preventDefault();
 		await setStorageData({
-			update: false,
+			statsEnabled: true,
+			curAutoMode: "whitelist",
+			staticSubMode: "relative",
+			shortCutMode: null,
+			ignoredSelectors: "",
+		});
+		await setStorageLocal({
 			stats: {
 				cleanedArea: 0,
 				numbOfItems: 0,
 				restored: 0,
 			},
-			statsEnabled: true,
-			backupData: {},
 			restoreContActive: [...defPreventContArr],
-			curAutoMode: "whitelist",
-			shortCutMode: null,
-			websites1: {},
-			websites2: {},
-			websites3: {},
+			websites: {},
 		});
 		window.location.reload();
 	};
@@ -211,36 +224,31 @@ const initDelicate = async () => {
 
 const initExportSettings = () => {
 	const initExport = async () => {
-		const data = await getStorageData(null);
-		const compressed = JSON.stringify(data);
-		const url = 'data:application/json;base64,' + btoa(compressed);
+		const syncData = await getStorageData(null);
+		const localData = await getStorageLocal(null);
+		const json = JSON.stringify({ format: 2, sync: syncData, local: localData });
+		const blob = new Blob([new TextEncoder().encode(json)], {
+			type: "application/json;charset=utf-8"
+		});
 
 		chrome.downloads.download({
-			url: url,
+			url: URL.createObjectURL(blob),
 			filename: 'PopUpOFF_settings.json'
 		});
 	}
 
 	const exportSettings = async () => {
-		chrome.permissions.contains({
+		// a single direct request() resolves true right away when already granted and
+		// keeps Firefox's "must be called from a user input handler" requirement happy
+		const granted = await chrome.permissions.request({
 			permissions: ["downloads"],
-		}, (result) => {
-			if (result) {
-				initExport();
-			} else {
-				chrome.permissions.request({
-					permissions: ["downloads"],
-				}, (granted) => {
-					// The callback argument will be true if the user granted the permissions.
-					if (granted) {
-						initExport();
-					} else {
-						alert("You can't export (download) settings without giving permissions first");
-					}
-				});
-			}
 		});
 
+		if (granted) {
+			initExport();
+		} else {
+			alert("You can't export (download) settings without giving permissions first");
+		}
 	}
 
 	querySelector(".exportBtn").addEventListener("click", async e => {
@@ -259,7 +267,21 @@ const initExportSettings = () => {
 
 		reader.onload = async () => {
 			const data = JSON.parse(reader.result);
-			await setStorageData(data);
+
+			if (data && data.format === 2) {
+				await setStorageData(data.sync || {});
+				await setStorageLocal(data.local || {});
+			} else {
+				// legacy backups kept everything in one (sync) bag - split it up
+				const { websites1, websites2, websites3, restoreContActive, stats, ...settings } = data;
+				await setStorageData(settings);
+				await setStorageLocal({
+					websites: { ...websites1, ...websites2, ...websites3 },
+					restoreContActive: restoreContActive != null ? restoreContActive : [],
+					stats: stats != null ? stats : { cleanedArea: 0, numbOfItems: 0, restored: 0 },
+				});
+			}
+
 			alert("Success! Update this page to see the changes.");
 
 			input.value = '';
@@ -278,6 +300,45 @@ const initExportSettings = () => {
 	querySelector(".importBtn").addEventListener("click", async e => {
 		e.preventDefault();
 		input.click();
+	});
+};
+
+// user-defined CSS selectors the extension must never touch
+const initIgnoredSelectors = async () => {
+	const textarea = querySelector(".ignoredSelectors");
+	const saveBtn = querySelector(".saveIgnoredBtn");
+
+	const { ignoredSelectors } = await getStorageData("ignoredSelectors");
+	textarea.value = ignoredSelectors || "";
+
+	saveBtn.addEventListener("click", async e => {
+		e.preventDefault();
+
+		const lines = textarea.value
+			.split("\n")
+			.map(line => line.trim())
+			.filter(line => line.length > 0);
+
+		const invalidLines = lines.filter(line => {
+			try {
+				document.createDocumentFragment().querySelector(line);
+				return false;
+			} catch {
+				return true;
+			}
+		});
+
+		if (invalidLines.length > 0) {
+			alert(
+				"These lines are not valid CSS selectors and were not saved:\n\n" +
+					invalidLines.join("\n") +
+					"\n\nFix or remove them and save again."
+			);
+			return;
+		}
+
+		await setStorageData({ ignoredSelectors: textarea.value });
+		alert("Saved! Reload open tabs to apply.");
 	});
 };
 
@@ -328,5 +389,6 @@ initKeyboard();
 initAutoMode();
 initReset();
 initDelicate();
+initIgnoredSelectors();
 initExportSettings();
 initCtxMenu();

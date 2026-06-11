@@ -1,171 +1,20 @@
-// other default settings
-const defWebsites = {
-	"a.goodtime.io": "whitelist",
-	"about.google": "whitelist",
-	"app.hubspot.com": "whitelist",
-	"cal.mixmax.com": "whitelist",
-	"calendar.google.com": "whitelist",
-	"catalog.onliner.by": "whitelist",
-	"cloud.google.com": "whitelist",
-	"discord.com": "whitelist",
-	"docs.google.com": "whitelist",
-	"drive.google.com": "whitelist",
-	"e-dostavka.by": "whitelist",
-	"hangouts.google.com": "whitelist",
-	"mail.google.com": "whitelist",
-	"music.yandex.com": "whitelist",
-	"music.yandex.ru": "whitelist",
-	"music.youtube.com": "whitelist",
-	"open.spotify.com": "whitelist",
-	"romanisthere.github.io": "whitelist",
-	"support.google.com": "whitelist",
-	"trello.com": "whitelist",
-	"twitter.com": "whitelist",
-	"vk.com": "whitelist",
-	"vk.ru": "whitelist",
-	"web.telegram.org": "whitelist",
-	"www.amazon.co.uk": "whitelist",
-	"www.amazon.com": "whitelist",
-	"www.baidu.com": "whitelist",
-	"www.bing.com": "whitelist",
-	"www.facebook.com": "whitelist",
-	"www.google.com": "whitelist",
-	"www.inspera.com": "whitelist",
-	"www.instagram.com": "whitelist",
-	"www.linkedin.com": "whitelist",
-	"www.netflix.com": "whitelist",
-	"www.onliner.by": "whitelist",
-	"www.pinterest.com": "whitelist",
-	"www.reddit.com": "whitelist",
-	"www.spotify.com": "whitelist",
-	"www.walmart.com": "whitelist",
-	"www.youtube.com": "whitelist",
-	"zoom.us": "whitelist",
-	"store.steampowered.com": "whitelist",
-	"www.hackerrank.com": "whitelist",
-	"www.coursera.org": "whitelist",
-	"azure.microsoft.com": "whitelist",
-	"store.google.com": "whitelist",
-	"www.oneplus.com": "whitelist",
-	"smallpdf.com": "whitelist",
-	"www.upwork.com": "whitelist",
-	"www.docusign.com": "whitelist",
-	"account.docusign.com": "whitelist",
-	"go.docusign.com": "whitelist",
-	"app.docusign.com": "whitelist",
-	"app.hellosign.com": "whitelist",
-	"www.oysho.com": "whitelist",
-	"www.zara.com": "whitelist",
-	"www.nike.com": "whitelist",
-	"www.adidas.com": "whitelist",
-	"www.adidas.co.uk": "whitelist",
-	"www.reebok.co.uk": "whitelist",
-	"www.reebok.com": "whitelist",
-	"www.newbalance.com": "whitelist",
-	"www.newbalance.co.uk": "whitelist",
-	"eu.puma.com": "whitelist",
-	"us.puma.com": "whitelist",
-	"www.lacoste.com": "whitelist",
-	"www.armani.com": "whitelist",
-	"www.hugoboss.com": "whitelist",
-	"www.calvinklein.co.uk": "whitelist",
-	"www.calvinklein.de": "whitelist",
-	"www.victoriassecret.com": "whitelist",
-	"l.macys.com": "whitelist",
-	"www.jcpenney.com": "whitelist",
-	"www.dillards.com": "whitelist",
-	"oldnavy.gap.com": "whitelist",
-	"www.gap.co.uk": "whitelist",
-	"www.gap.com": "whitelist",
-	"www2.hm.com": "whitelist",
-	"www.hm.com": "whitelist",
-	"www.childrensplace.com": "whitelist",
-	"www.carters.com": "whitelist",
-	"www.zarahome.com": "whitelist",
-	"www.walmart.com": "whitelist",
-	"www.ebay.co.uk": "whitelist",
-	"www.ebay.com": "whitelist",
-	"www.target.com": "whitelist",
-	"www.bestbuy.com": "whitelist",
-	"www.costco.com": "whitelist",
-	"www.lowes.com": "whitelist",
-	"www.homedepot.com": "whitelist",
-	"www.walgreens.com": "whitelist",
-	"www.samsclub.com": "whitelist",
-	"www.kohls.com": "whitelist",
-	"www.ae.com": "whitelist",
-	"www.forever21.com": "whitelist",
-	"www.lasenza.com": "whitelist",
-	"www.bathandbodyworks.com": "whitelist",
-	"www.levi.com": "whitelist",
-	"eu.wrangler.com": "whitelist",
-	"www.wrangler.com": "whitelist",
-	"www.massimodutti.com": "whitelist",
-	"uk.tommy.com": "whitelist",
-	"www.pullandbear.com": "whitelist",
-	"shop.mango.com": "whitelist",
-	"www.c-and-a.com": "whitelist",
-	"www.bershka.com": "whitelist",
-	"www.stradivarius.com": "whitelist",
-	"www.guess.eu": "whitelist",
-	"www.guess.com": "whitelist",
-	"www.dolcegabbana.com": "whitelist",
-	"www.gucci.com": "whitelist",
-	"www.prada.com": "whitelist",
-	"www.louisvuitton.com": "whitelist",
-	"www.armaniexchange.com": "whitelist",
-	"www.dior.com": "whitelist",
-	"www.ralphlauren.co.uk": "whitelist",
-	"www.ralphlauren.com": "whitelist",
-	"www.samsung.com": "whitelist",
-	"www.huawei.com": "whitelist",
-	"consumer.huawei.com": "whitelist",
-	"www.motorola.com": "whitelist",
-	"www.motorola.co.uk": "whitelist",
-	"www.sony.net": "whitelist",
-	"www.panasonic.com": "whitelist",
-	"www.lenovo.com": "whitelist",
-	"www.siemens.com": "whitelist",
-	"www.bosch.com": "whitelist",
-	"www.sony.co.uk": "whitelist",
-	"www.sony.com": "whitelist",
-	"www.asus.com": "whitelist",
-	"www.mi.com": "whitelist",
-	"www.apple.com": "whitelist",
-	"www.lg.com": "whitelist",
-	"www.realme.com": "whitelist",
-	"www.vivo.com": "whitelist",
-	"lolesports.com": "whitelist",
-	"aliexpress.ru": "whitelist",
-	"www.aliexpress.com": "whitelist",
-	"whatsapp.com": "whitelist",
-	"www.twitch.tv": "whitelist",
-	"www.fandom.com": "whitelist",
-	"www.microsoft.com": "whitelist",
-	"localhost:4200": "whitelist",
-	"localhost:3000": "whitelist",
-	"localhost:8000": "whitelist",
-	"localhost:5000": "whitelist",
-	"localhost:8080": "whitelist",
-	// moderate by default
-	"www.economist.com": "easyModeActive",
-	"www.reviewjournal.com": "easyModeActive",
-	"www.bostonglobe.com": "easyModeActive",
-	"www.theguardian.com": "easyModeActive",
-	"www.theladders.com": "easyModeActive",
-};
+// defWebsites is provided by constants/data.js, loaded right before this file (see manifest.json)
+
 // "global" variables //
 // event check
-let beforeUnloadAactive = false;
+let pagehideActive = false;
 let isCSSAppended = false;
+let isSiteFixCSSAppended = false;
 
 // dom sobservers
 let domObserver;
 
-// prevent infinite loop
+// mutation watcher throttling
+const MUTATION_LIMIT = 1500;
 let infiniteLoopPreventCounter = 0;
 let myTimer = 0;
-let wasNotStoped = true;
+let watcherPauseCount = 0;
+let watcherResumeTimer = 0;
 
 // helpers
 const getStyle = (elem, property) =>
@@ -175,7 +24,13 @@ const setPropImp = (elem, prop, val) => elem.style.setProperty(prop, val, "impor
 
 const checkIsInArr = (arr, item) => (arr.includes(item) ? true : false);
 
-const getPureURL = url => url.substring(url.lastIndexOf("//") + 2, url.indexOf("/", 8));
+const getPureURL = url => {
+	try {
+		return new URL(url).host;
+	} catch {
+		return "";
+	}
+};
 
 const roundToTwo = num => +(Math.round(num + "e+2") + "e-2");
 
@@ -192,36 +47,6 @@ const debounce = (func, wait, immediate) => {
 		clearTimeout(timeout);
 		timeout = setTimeout(later, wait);
 		if (callNow) func.apply(context, args);
-	};
-};
-
-const splitIntoChunks = obj => {
-	let obj1 = {};
-	let obj2 = {};
-	let obj3 = {};
-
-	const keys = Object.keys(obj);
-	const keysLength = keys.length;
-	let k = 0;
-
-	for (let i = 0; i < keysLength; i++) {
-		const key = keys[i];
-		if (k === 0) {
-			obj1 = { ...obj1, [key]: obj[key] };
-			k++;
-		} else if (k === 1) {
-			obj2 = { ...obj2, [key]: obj[key] };
-			k++;
-		} else if (k === 2) {
-			obj3 = { ...obj3, [key]: obj[key] };
-			k = 0;
-		}
-	}
-
-	return {
-		obj1: obj1,
-		obj2: obj2,
-		obj3: obj3,
 	};
 };
 
@@ -243,39 +68,47 @@ const setStorageData = data =>
 		)
 	);
 
-const setWebsites = async obj => {
-	const { obj1, obj2, obj3 } = obj
-		? splitIntoChunks(obj)
-		: { obj1: {}, obj2: {}, obj3: {} };
+const getStorageLocal = key =>
+	new Promise((resolve, reject) =>
+		chrome.storage.local.get(key, result =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve(result)
+		)
+	);
 
-	return setStorageData({
-		websites1: { ...obj1 },
-		websites2: { ...obj2 },
-		websites3: { ...obj3 },
-	});
-};
+const setStorageLocal = data =>
+	new Promise((resolve, reject) =>
+		chrome.storage.local.set(data, () =>
+			chrome.runtime.lastError
+				? reject(Error(chrome.runtime.lastError.message))
+				: resolve()
+		)
+	);
+
+// Per-site preferences live in storage.local: it has no meaningful size limit,
+// unlike storage.sync whose 8KB-per-item quota broke saving altogether
+// ("storage full") once users had collected a few hundred sites.
+const setWebsites = websites => setStorageLocal({ websites: { ...websites } });
 
 const getWebsites = async () => {
 	try {
-		const { websites1, websites2, websites3 } = await getStorageData([
-			"websites1",
-			"websites2",
-			"websites3",
-		]);
-		const websites = { ...websites1, ...websites2, ...websites3 };
-		return websites;
-	} catch (e) {
+		const { websites } = await getStorageLocal("websites");
+		return websites != null ? websites : {};
+	} catch {
 		return {};
 	}
 };
 
 const disconnectObservers = domObserver => {
 	try {
+		clearTimeout(watcherResumeTimer);
+		watcherResumeTimer = 0;
 		if (domObserver) {
 			domObserver.disconnect();
 			domObserver = null;
 		}
-	} catch (e) {
+	} catch {
 		// console.log(e)
 	}
 	return null;
@@ -305,16 +138,19 @@ const fixStats = stats => {
 };
 
 const setNewData = state =>
-	chrome.storage.sync.get(["stats"], resp => {
+	chrome.storage.local.get(["stats"], resp => {
+		const oldStats = resp.stats != null
+			? resp.stats
+			: { cleanedArea: 0, numbOfItems: 0, restored: 0 };
 		// round to first decimal
 		const screenValue = roundToTwo(state.cleanedArea / state.windowArea);
 
 		let newStats = {
 			cleanedArea:
-				parseFloat(resp.stats.cleanedArea) +
+				parseFloat(oldStats.cleanedArea) +
 				parseFloat(isNaN(screenValue) ? 0 : screenValue),
-			numbOfItems: parseFloat(resp.stats.numbOfItems) + parseFloat(state.numbOfItems),
-			restored: parseFloat(resp.stats.restored) + parseFloat(state.restored),
+			numbOfItems: parseFloat(oldStats.numbOfItems) + parseFloat(state.numbOfItems),
+			restored: parseFloat(oldStats.restored) + parseFloat(state.restored),
 		};
 
 		if (
@@ -324,7 +160,7 @@ const setNewData = state =>
 		)
 			newStats = fixStats(newStats);
 
-		chrome.storage.sync.set({ stats: newStats });
+		chrome.storage.local.set({ stats: newStats });
 	});
 
 const addCountToStats = state => {
@@ -345,8 +181,69 @@ const addItemToStats = (element, state) => {
 		  };
 };
 
+// UI injected by other browser extensions must never be treated as a popup:
+// match tag/id/class against known extension tokens, honor an explicit
+// data-popupoff-ignore attribute and skip anything embedding an extension page.
+// Users can extend this with their own CSS selectors on the options page.
+const extUIIframeSelector =
+	'iframe[src^="chrome-extension://"], iframe[src^="moz-extension://"]';
+
+// user-defined CSS selectors (options page), parsed one per line
+let userIgnoredSelectors = [];
+
+const setUserIgnoredSelectors = raw => {
+	userIgnoredSelectors = (raw || "")
+		.split("\n")
+		.map(line => line.trim())
+		.filter(line => line.length > 0);
+};
+
+const matchesUserIgnored = element => {
+	for (const selector of userIgnoredSelectors) {
+		try {
+			// forgiving on purpose: the selector may target the fixed element
+			// itself, one of its ancestors or something inside it
+			if (element.closest(selector) || element.querySelector(selector)) return true;
+		} catch {
+			// invalid selector - skip it
+		}
+	}
+	return false;
+};
+
+const isIgnoredElem = element => {
+	if (element.hasAttribute("data-popupoff-ignore")) return true;
+
+	const haystack =
+		`${element.nodeName} ${element.id} ${element.getAttribute("class") || ""}`.toLowerCase();
+	if (extensionUITokens.some(token => haystack.includes(token))) return true;
+
+	if (matchesUserIgnored(element)) return true;
+
+	try {
+		if (element.matches(extUIIframeSelector) || element.querySelector(extUIIframeSelector))
+			return true;
+	} catch {
+		// non-element nodes
+	}
+
+	return false;
+};
+
+// Arc Publishing sites keep the page at opacity 0 until their consent script runs;
+// applied only while a mode is active so "Turn OFF" leaves pages truly untouched
+const applySiteFixCSS = () => {
+	if (isSiteFixCSSAppended) return;
+	document.head.insertAdjacentHTML(
+		"beforeend",
+		`<style>div[id="fusion-app"]{opacity:1!important}</style>`
+	);
+	isSiteFixCSSAppended = true;
+};
+
 // methods
 const removeOverflow = (statsEnabled, state, doc, body) => {
+	applySiteFixCSS();
 	const overFlowDoc = getStyle(doc, "overflow-y");
 	const overFlowBody = getStyle(body, "overflow-y");
 	const docPosStyle = getStyle(doc, "position");
@@ -673,29 +570,33 @@ const checkElemWithSibl = (element, checkElem) => {
 		// element itself
 		checkElem(element);
 		// all childs of element
-		if (wasNotStoped) {
-			const elems = element.querySelectorAll("*");
-			checkElems(elems, checkElem);
-		}
+		const elems = element.querySelectorAll("*");
+		checkElems(elems, checkElem);
 	} else if (element instanceof ShadowRoot) {
 		const elems = element.querySelectorAll("*");
 		checkElems(elems, checkElem);
 	}
 };
 
-const removeDomWatcher = (domObserver, wasNotStoped, body, action) => {
+// Pages mutating too heavily used to get their watcher disconnected for good,
+// letting any popup injected afterwards through (issue #48). Instead, pause with
+// a growing backoff and resume with a full rescan that catches everything that
+// appeared in between.
+const pauseDomWatcher = (observer, resume) => {
 	try {
-		domObserver.disconnect();
-		domObserver = false;
-		if (wasNotStoped) {
-			setTimeout(() => {
-				const newElems = body.getElementsByTagName("*");
-				action(newElems);
-			}, 2000);
-		}
-		wasNotStoped = false;
-		return wasNotStoped;
-	} catch (e) {}
+		observer.disconnect();
+	} catch {
+		// observer may already be gone
+	}
+
+	const delay = Math.min(2000 * 2 ** watcherPauseCount, 30000);
+	watcherPauseCount++;
+
+	clearTimeout(watcherResumeTimer);
+	watcherResumeTimer = setTimeout(() => {
+		infiniteLoopPreventCounter = 0;
+		resume();
+	}, delay);
 };
 
 const checkMutation = (mutation, statsEnabled, state, doc, body, checkElem) => {

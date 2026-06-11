@@ -1,4 +1,4 @@
-import { defWebsites, defPreventContArr } from "../constants/data.js";
+import "../constants/data.js";
 
 import {
 	querySelector,
@@ -9,11 +9,13 @@ import {
 	setWebsites,
 	getWebsites,
 	getStorageData,
-	setStorageData,
+	getStorageLocal,
+	setStorageLocal,
 	getPureURL,
-	nFormatter,
 	debounce,
 } from "../constants/functions.js";
+
+const { defWebsites } = globalThis.popupoffData;
 
 let state = {
 	curMode: null,
@@ -97,13 +99,11 @@ buttons.forEach(item =>
 // init popup state
 const init = () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
-		const { statsEnabled, restoreContActive, curAutoMode, update } =
-			await getStorageData([
-				"update",
-				"curAutoMode",
-				"statsEnabled",
-				"restoreContActive",
-			]);
+		const { statsEnabled, curAutoMode } = await getStorageData([
+			"curAutoMode",
+			"statsEnabled",
+		]);
+		const { restoreContActive } = await getStorageLocal("restoreContActive");
 		const websites = await getWebsites();
 
 		// set statistics
@@ -121,7 +121,7 @@ const init = () => {
 		state = { ...state, pureUrl: pureUrl };
 
 		// check restore content array and set btn
-		if (restoreContActive.includes(pureUrl)) {
+		if ((restoreContActive || []).includes(pureUrl)) {
 			addClass(querySelector(".add_opt"), "add_opt-active");
 			state = { ...state, isRestContActive: true };
 		}
@@ -147,17 +147,18 @@ prevContBtn.addEventListener(
 	"click",
 	debounce(async function (e) {
 		e.preventDefault();
-		const { restoreContActive } = await getStorageData(["restoreContActive"]);
+		const { restoreContActive } = await getStorageLocal("restoreContActive");
+		const contActive = restoreContActive != null ? restoreContActive : [];
 		const websites = await getWebsites();
-		let newArr = [];
+		let newArr;
 		let newWebsites = { ...websites };
 
 		// add/remove site to restore content array
 		if (state.isRestContActive) {
-			newArr = restoreContActive.filter(url => url !== state.pureUrl);
+			newArr = contActive.filter(url => url !== state.pureUrl);
 			removeClass(this, "add_opt-active");
 		} else {
-			newArr = [...restoreContActive, state.pureUrl];
+			newArr = [...contActive, state.pureUrl];
 			addClass(this, "add_opt-active");
 		}
 
@@ -170,7 +171,7 @@ prevContBtn.addEventListener(
 		// set state
 		try {
 			await setWebsites(newWebsites);
-			await setStorageData({ restoreContActive: newArr });
+			await setStorageLocal({ restoreContActive: newArr });
 			state = { ...state, isRestContActive: !state.isRestContActive };
 		} catch (e) {
 			console.log(e);
