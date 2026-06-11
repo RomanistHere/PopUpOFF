@@ -1,4 +1,4 @@
-import { defWebsites, defPreventContArr } from "../constants/data.js";
+import "../constants/data.js";
 
 import {
 	querySelector,
@@ -11,9 +11,10 @@ import {
 	getStorageData,
 	setStorageData,
 	getPureURL,
-	nFormatter,
 	debounce,
 } from "../constants/functions.js";
+
+const { defWebsites } = globalThis.popupoffData;
 
 let state = {
 	curMode: null,
@@ -97,9 +98,8 @@ buttons.forEach(item =>
 // init popup state
 const init = () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, async tabs => {
-		const { statsEnabled, restoreContActive, curAutoMode, update } =
+		const { statsEnabled, restoreContActive, curAutoMode } =
 			await getStorageData([
-				"update",
 				"curAutoMode",
 				"statsEnabled",
 				"restoreContActive",
@@ -149,7 +149,7 @@ prevContBtn.addEventListener(
 		e.preventDefault();
 		const { restoreContActive } = await getStorageData(["restoreContActive"]);
 		const websites = await getWebsites();
-		let newArr = [];
+		let newArr;
 		let newWebsites = { ...websites };
 
 		// add/remove site to restore content array

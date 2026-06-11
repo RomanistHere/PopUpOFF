@@ -149,7 +149,9 @@ document.addEventListener("openOptPage", e => {
 // send stats to website
 const sendStats = async () => {
 	const { stats } = await getStorageData("stats");
-	document.dispatchEvent(new CustomEvent("PopUpOFFStats", { detail: stats }));
+	// Firefox requires cloning the detail object into the page context (Xray vision)
+	const detail = typeof cloneInto === "function" ? cloneInto(stats, document.defaultView) : stats;
+	document.dispatchEvent(new CustomEvent("PopUpOFFStats", { detail }));
 };
 
 if (`${window.location.origin}${window.location.pathname}` === "https://popupoff.org/visualization") {

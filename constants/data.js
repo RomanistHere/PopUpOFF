@@ -1,3 +1,10 @@
+// Single source of truth for the default website data.
+// This file is consumed in two ways:
+//   1. as a plain content script loaded before content/helpers.js (see manifest.json),
+//      where later content scripts read the top-level bindings directly;
+//   2. as a side-effect import from ES modules (background, popup, options),
+//      which read the data from globalThis.popupoffData.
+
 // list of websites where prevent content feature enabled by default
 const defPreventContArr = [
 	"www.economist.com",
@@ -91,7 +98,6 @@ const defWebsites = {
 	"www.childrensplace.com": "whitelist",
 	"www.carters.com": "whitelist",
 	"www.zarahome.com": "whitelist",
-	"www.walmart.com": "whitelist",
 	"www.ebay.co.uk": "whitelist",
 	"www.ebay.com": "whitelist",
 	"www.target.com": "whitelist",
@@ -164,4 +170,4 @@ const defWebsites = {
 	"www.theladders.com": "easyModeActive",
 };
 
-export { defWebsites, defPreventContArr };
+globalThis.popupoffData = { defWebsites, defPreventContArr };

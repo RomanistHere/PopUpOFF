@@ -12,7 +12,7 @@
 	},
 	"content_scripts": [
 		{
-			"js": ["content/helpers.js", "content/modes.js", "content/setup.js"],
+			"js": ["constants/data.js", "content/helpers.js", "content/modes.js", "content/setup.js"],
 			"css": ["css/content.css"],
 			"matches": ["<all_urls>"],
 			"run_at": "document_end"

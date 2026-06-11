@@ -7,7 +7,9 @@ import {
 	setStorageData,
 } from "../constants/functions.js";
 
-import { defPreventContArr } from "../constants/data.js";
+import "../constants/data.js";
+
+const { defPreventContArr } = globalThis.popupoffData;
 
 let state = {
 	stats: true,
@@ -43,19 +45,35 @@ const secondsToHms = l => {
 	return hDisplay + mDisplay + sDisplay;
 };
 
+const resetStats = async e => {
+	if (e) e.preventDefault();
+	await setStorageData({
+		stats: {
+			cleanedArea: 0,
+			numbOfItems: 0,
+			restored: 0,
+		},
+	});
+	window.location.reload();
+};
+
 const initStats = async () => {
 	const statsBtn = querySelector(".stats");
 	const { statsEnabled, stats } = await getStorageData(["statsEnabled", "stats"]);
 
 	if (statsEnabled) {
-		const { cleanedArea, numbOfItems, restored } = stats;
+		try {
+			const { cleanedArea, numbOfItems } = stats;
 
-		addClass(statsBtn, "options__btn-active");
-		state = { ...state, stats: true };
-		querySelector(".statsCount").textContent = numbOfItems;
-		if (cleanedArea > 0) {
-			querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
-			querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+			addClass(statsBtn, "options__btn-active");
+			state = { ...state, stats: true };
+			querySelector(".statsCount").textContent = numbOfItems;
+			if (cleanedArea > 0) {
+				querySelector(".statsArea").textContent = parseFloat(parseFloat(cleanedArea).toFixed(1));
+				querySelector(".statsTime").textContent = secondsToHms(cleanedArea * .3);
+			}
+		} catch (e) {
+			console.log(e);
 		}
 	} else {
 		removeClass(statsBtn, "options__btn-active");
@@ -68,6 +86,10 @@ const initStats = async () => {
 			await setStorageData({ statsEnabled: true });
 			removeClass(statsBtn, "options__btn-active");
 			state = { ...state, stats: true };
+
+			if (!stats) {
+				await resetStats();
+			}
 		} else {
 			await setStorageData({ statsEnabled: false });
 			addClass(statsBtn, "options__btn-active");
@@ -136,18 +158,6 @@ const initReset = async () => {
 		closePopUp();
 	});
 
-	const resetStats = async e => {
-		e.preventDefault();
-		await setStorageData({
-			stats: {
-				cleanedArea: 0,
-				numbOfItems: 0,
-				restored: 0,
-			},
-		});
-		window.location.reload();
-	};
-
 	const resetSettings = async e => {
 		e.preventDefault();
 		await setStorageData({
@@ -212,35 +222,29 @@ const initDelicate = async () => {
 const initExportSettings = () => {
 	const initExport = async () => {
 		const data = await getStorageData(null);
-		const compressed = JSON.stringify(data);
-		const url = 'data:application/json;base64,' + btoa(compressed);
+		const json = JSON.stringify(data);
+		const blob = new Blob([new TextEncoder().encode(json)], {
+			type: "application/json;charset=utf-8"
+		});
 
 		chrome.downloads.download({
-			url: url,
+			url: URL.createObjectURL(blob),
 			filename: 'PopUpOFF_settings.json'
 		});
 	}
 
 	const exportSettings = async () => {
-		chrome.permissions.contains({
+		// a single direct request() resolves true right away when already granted and
+		// keeps Firefox's "must be called from a user input handler" requirement happy
+		const granted = await chrome.permissions.request({
 			permissions: ["downloads"],
-		}, (result) => {
-			if (result) {
-				initExport();
-			} else {
-				chrome.permissions.request({
-					permissions: ["downloads"],
-				}, (granted) => {
-					// The callback argument will be true if the user granted the permissions.
-					if (granted) {
-						initExport();
-					} else {
-						alert("You can't export (download) settings without giving permissions first");
-					}
-				});
-			}
 		});
 
+		if (granted) {
+			initExport();
+		} else {
+			alert("You can't export (download) settings without giving permissions first");
+		}
 	}
 
 	querySelector(".exportBtn").addEventListener("click", async e => {

@@ -142,7 +142,7 @@ const getWebsites = async () => {
 		]);
 		const websites = { ...websites1, ...websites2, ...websites3 };
 		return websites;
-	} catch (e) {
+	} catch {
 		return {};
 	}
 };

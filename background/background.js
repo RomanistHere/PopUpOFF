@@ -1,4 +1,4 @@
-import { defWebsites, defPreventContArr } from "../constants/data.js";
+import "../constants/data.js";
 
 import {
 	getPureURL,
@@ -8,6 +8,8 @@ import {
 	getStorageData,
 	setStorageData,
 } from "../constants/functions.js";
+
+const { defWebsites, defPreventContArr } = globalThis.popupoffData;
 
 // handle install
 chrome.runtime.onInstalled.addListener(async details => {
@@ -42,7 +44,6 @@ chrome.runtime.onInstalled.addListener(async details => {
 		}
 	} else if (reason === "update") {
 		try {
-			const { websites } = await getStorageData("websites");
 			if (previousVersion === "2.0.3") {
 				// 2.0.3
 			} else if (previousVersion === "2.0.2") {
