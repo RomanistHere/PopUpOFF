@@ -1,4 +1,4 @@
-import { test, expect, setAutoMode } from "./extension.mjs";
+import { test, expect, setAutoMode, setWebsiteMode } from "./extension.mjs";
 
 // the user-level contract: a fixed cookie wall usually locks scrolling,
 // removing it must give scrolling back (fixture pages are 3000px tall).
@@ -87,5 +87,54 @@ test.describe("delicate mode", () => {
 			.poll(() => page.evaluate(() => getComputedStyle(document.querySelector("#overlay")).position))
 			.toBe("relative");
 		await expect.poll(() => canScroll(page)).toBe(true);
+	});
+});
+
+test.describe("per-site setting", () => {
+	test("a site saved as aggressive gets cleaned while automode stays off", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "whitelist");
+		await setWebsiteMode(serviceWorker, "127.0.0.1:8123", "hardModeActive");
+		await page.goto("/cookie-wall.html");
+
+		await expect(page.locator("#overlay")).toBeHidden();
+	});
+});
+
+test.describe("other extensions' UI", () => {
+	test("survives aggressive mode while the popup is still removed", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "hardModeActive");
+		await page.goto("/extension-ui.html");
+
+		await expect(page.locator("#overlay")).toBeHidden();
+		await expect(page.locator("#by-token")).toBeVisible();
+		await expect(page.locator("#by-iframe")).toBeVisible();
+		await expect(page.locator("#by-attribute")).toBeVisible();
+		// the ignored elements must keep their fixed position too
+		expect(
+			await page.evaluate(() => getComputedStyle(document.querySelector("#by-token")).position)
+		).toBe("fixed");
+	});
+
+	test("survives delicate mode", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "staticActive");
+		await page.goto("/extension-ui.html");
+
+		await expect
+			.poll(() => page.evaluate(() => getComputedStyle(document.querySelector("#overlay")).position))
+			.toBe("relative");
+		expect(
+			await page.evaluate(() => getComputedStyle(document.querySelector("#by-token")).position)
+		).toBe("fixed");
+	});
+});
+
+test.describe("mutation-heavy pages", () => {
+	test("watcher pauses under load but still catches a late popup", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "hardModeActive");
+		await page.goto("/mutation-storm.html");
+
+		await page.waitForFunction(() => window.__popupAdded === true);
+		// the resume rescan runs after a backoff; allow for it
+		await expect(page.locator("#late")).toBeHidden({ timeout: 10000 });
 	});
 });

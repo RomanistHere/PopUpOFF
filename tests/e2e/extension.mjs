@@ -37,34 +37,56 @@ export const test = base.extend({
 	serviceWorker: async ({ context }, use) => {
 		let [worker] = context.serviceWorkers();
 		if (!worker) worker = await context.waitForEvent("serviceworker");
-		// Write the install defaults ourselves instead of relying on onInstalled timing.
-		// This is idempotent with onInstalled (it skips its writes once curAutoMode is set)
-		// and the poll also absorbs the moment right after spawn when the chrome.*
-		// bindings are not available in the worker yet.
+
+		// wait until the background module finished evaluating: chrome.* already
+		// works in the worker while the module body is still being executed
 		await expect
 			.poll(async () => {
 				try {
-					await worker.evaluate(() =>
-						chrome.storage.sync.set({
-							ctxEnabled: true,
-							update: false,
-							stats: { cleanedArea: 0, numbOfItems: 0, restored: 0 },
-							statsEnabled: true,
-							restoreContActive: [],
-							curAutoMode: "whitelist",
-							staticSubMode: "relative",
-							shortCutMode: null,
-							websites1: {},
-							websites2: {},
-							websites3: {},
-						})
-					);
-					return true;
+					return await worker.evaluate(() => typeof globalThis.popupoffMigrateStorage);
 				} catch {
-					return false;
+					return "pending";
 				}
 			})
+			.toBe("function");
+
+		// Write the test defaults and verify they stick: on a fresh profile
+		// onInstalled writes its own defaults concurrently and must not be allowed
+		// to clobber ours after the test already changed them.
+		await expect
+			.poll(
+				async () => {
+					try {
+						return await worker.evaluate(async () => {
+							await chrome.storage.sync.set({
+								ctxEnabled: true,
+								statsEnabled: true,
+								curAutoMode: "whitelist",
+								staticSubMode: "relative",
+								shortCutMode: null,
+							});
+							await chrome.storage.local.set({
+								websites: {},
+								restoreContActive: [],
+								stats: { cleanedArea: 0, numbOfItems: 0, restored: 0 },
+							});
+							await new Promise(resolve => setTimeout(resolve, 250));
+							const { curAutoMode } = await chrome.storage.sync.get("curAutoMode");
+							const { websites } = await chrome.storage.local.get("websites");
+							return (
+								curAutoMode === "whitelist" &&
+								websites != null &&
+								Object.keys(websites).length === 0
+							);
+						});
+					} catch {
+						return false;
+					}
+				},
+				{ timeout: 10000 }
+			)
 			.toBe(true);
+
 		await use(worker);
 	},
 });
@@ -72,5 +94,17 @@ export const test = base.extend({
 // the mode every page falls back to when the site has no own setting
 export const setAutoMode = (worker, mode) =>
 	worker.evaluate(m => chrome.storage.sync.set({ curAutoMode: m }), mode);
+
+// a per-site preference, as the popup/context menu/shortcut would save it
+export const setWebsiteMode = (worker, host, mode) =>
+	worker.evaluate(
+		async ({ host, mode }) => {
+			const { websites } = await chrome.storage.local.get("websites");
+			await chrome.storage.local.set({
+				websites: { ...(websites || {}), [host]: mode },
+			});
+		},
+		{ host, mode }
+	);
 
 export { expect };
