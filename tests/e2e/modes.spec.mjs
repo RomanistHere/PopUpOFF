@@ -164,3 +164,91 @@ test.describe("mutation-heavy pages", () => {
 		await expect(page.locator("#late")).toBeHidden({ timeout: 10000 });
 	});
 });
+
+test.describe("moderate mode - language-independent signals", () => {
+	test("removes modals recognizable only by markup or z-index, keeps a plain widget", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "easyModeActive");
+		await page.goto("/centered-modal.html");
+
+		// no English keywords anywhere: aria-modal and the spam z-index decide
+		await expect(page.locator("#aria-newsletter")).toBeHidden();
+		await expect(page.locator("#spam-z")).toBeHidden();
+		await expect(page.locator("#plain-widget")).toBeVisible();
+		// give the watcher time to (wrongly) act on the widget, then re-check
+		await page.waitForTimeout(700);
+		await expect(page.locator("#plain-widget")).toBeVisible();
+	});
+
+	test("catches the same modal on a large screen where its relative size is tiny", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "easyModeActive");
+		// a 600x400 modal is only ~6% of this viewport - the old viewport-relative
+		// buckets classified it as a harmless side widget
+		await page.setViewportSize({ width: 2560, height: 1440 });
+		await page.goto("/centered-modal.html");
+
+		await expect(page.locator("#aria-newsletter")).toBeHidden();
+		await expect(page.locator("#spam-z")).toBeHidden();
+		await expect(page.locator("#plain-widget")).toBeVisible();
+		await page.waitForTimeout(700);
+		await expect(page.locator("#plain-widget")).toBeVisible();
+	});
+
+	test("keeps a modal the user opened themselves", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "easyModeActive");
+		await page.goto("/dialog-after-click.html");
+
+		// let the initial sweep finish, then act like a user
+		await page.waitForTimeout(700);
+		await page.click("#open-login");
+		await expect(page.locator("#login")).toBeVisible();
+		// the mutation watcher had time to (wrongly) remove it - re-check
+		await page.waitForTimeout(800);
+		await expect(page.locator("#login")).toBeVisible();
+		expect(await page.evaluate(() => document.querySelector("#login").open)).toBe(true);
+	});
+});
+
+test.describe("native modal dialogs", () => {
+	for (const [name, mode] of [
+		["aggressive", "hardModeActive"],
+		["moderate", "easyModeActive"],
+	]) {
+		test(`${name} mode closes a showModal() dialog so the page stops being inert`, async ({ serviceWorker, page }) => {
+			await setAutoMode(serviceWorker, mode);
+			await page.goto("/dialog-modal.html");
+
+			await expect(page.locator("#consent")).toBeHidden();
+			// close() must have run: otherwise the dialog stays in the top layer
+			// and the whole page remains inert (unclickable) although invisible
+			expect(await page.evaluate(() => document.querySelector("#consent").open)).toBe(false);
+			await page.click("#probe");
+			expect(await page.evaluate(() => window.__probeClicked)).toBe(true);
+		});
+	}
+});
+
+test.describe("wrapper scroll locks", () => {
+	for (const [name, mode] of [
+		["aggressive", "hardModeActive"],
+		["moderate", "easyModeActive"],
+	]) {
+		test(`${name} mode releases a scroll lock sitting on a page wrapper`, async ({ serviceWorker, page }) => {
+			await setAutoMode(serviceWorker, mode);
+			await page.goto("/wrapper-scroll-lock.html");
+
+			await expect(page.locator("#overlay")).toBeHidden();
+			await expect.poll(() => canScroll(page)).toBe(true);
+		});
+	}
+
+	test("leaves a legitimate app shell untouched", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "hardModeActive");
+		await page.goto("/app-shell.html");
+
+		// no popup was acted on, so the shell's own overflow must survive
+		await page.waitForTimeout(700);
+		expect(
+			await page.evaluate(() => getComputedStyle(document.querySelector("#shell")).overflowY)
+		).toBe("hidden");
+	});
+});

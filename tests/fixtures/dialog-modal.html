@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Native modal dialog fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		#consent {
+			width: 500px;
+			height: 300px;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Artikelüberschrift</h1>
+		<p>Der eigentliche Inhalt, für den die Leser gekommen sind.</p>
+		<button id="probe">Mehr lesen</button>
+	</main>
+
+	<!-- no English keywords on purpose: recognizable only as a native dialog.
+	     showModal() makes the rest of the page inert, so simply hiding the
+	     element would leave an unusable page behind. -->
+	<dialog id="consent">
+		<h2>Wir schätzen Ihre Privatsphäre</h2>
+		<p>Bitte bestätigen Sie, um fortzufahren.</p>
+		<button>Alles akzeptieren</button>
+	</dialog>
+
+	<script>
+		document.getElementById("probe").addEventListener("click", () => {
+			window.__probeClicked = true;
+		});
+		document.getElementById("consent").showModal();
+	</script>
+</body>
+</html>

@@ -39,6 +39,8 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
+			releaseTopLayer(element);
+			popupsActedOn = true;
 			setPropImp(element, "display", "none");
 		}
 
@@ -90,6 +92,7 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 		checkElems(elems, checkElem);
 		removeListeners();
 		if (shouldRestoreCont) state = findHidden(state, statsEnabled, doc);
+		state = unlockScrollContainers(statsEnabled, state, doc, body);
 		watchDOM();
 	};
 
@@ -110,6 +113,8 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 };
 
 const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
+	// the heuristic spares modals invoked by a click/keypress - track those
+	trackUserGestures();
 	// state
 	let state = getInitialState(statsEnabled);
 	// unmutable
@@ -143,6 +148,8 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 				if (getStyle(element, "display") !== "none")
 					element.setAttribute("data-popupoff", "bl");
 
+				releaseTopLayer(element);
+				popupsActedOn = true;
 				setPropImp(element, "display", "none");
 			}
 
@@ -198,6 +205,7 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 		checkElems(elems, checkElem);
 		removeListeners();
 		if (shouldRestoreCont) state = findHidden(state, statsEnabled, doc);
+		state = unlockScrollContainers(statsEnabled, state, doc, body);
 		watchDOM();
 	};
 
@@ -242,6 +250,18 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
+			// a repositioned showModal() dialog would keep the page inert:
+			// leave the top layer, then reopen it as a plain in-flow dialog
+			if (element.nodeName === "DIALOG" && element.open) {
+				try {
+					element.close();
+					element.setAttribute("open", "");
+				} catch {
+					// dialog may be detached already
+				}
+			}
+
+			popupsActedOn = true;
 			setPropImp(element, "position", staticSubMode || "relative");
 		}
 	};
@@ -291,6 +311,7 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 		checkElems(elems, checkElem);
 		removeListeners();
 		if (shouldRestoreCont) state = findHidden(state, statsEnabled, doc);
+		state = unlockScrollContainers(statsEnabled, state, doc, body);
 		watchDOM();
 	};
 

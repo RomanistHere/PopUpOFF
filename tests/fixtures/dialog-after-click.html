@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>User-invoked dialog fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		#login {
+			width: 450px;
+			height: 280px;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Artikelüberschrift</h1>
+		<button id="open-login">Konto öffnen</button>
+		<p>Der eigentliche Inhalt, für den die Leser gekommen sind.</p>
+	</main>
+
+	<!-- a "good" popup: opened by the user's own click, must not be removed -->
+	<dialog id="login">
+		<h2>Willkommen zurück</h2>
+		<p>Bitte melden Sie sich an.</p>
+		<input type="text" placeholder="Name">
+		<input type="password" placeholder="Passwort">
+		<button>Weiter</button>
+	</dialog>
+
+	<script>
+		document.getElementById("open-login").addEventListener("click", () => {
+			document.getElementById("login").showModal();
+		});
+	</script>
+</body>
+</html>

@@ -17,6 +17,8 @@ There are two modes removing fixed elements from the screen. Aggressive mode and
 
 Moderate on the other hand was super hard to develop (it still is), because I want it to be default mode, that won't block anything but "bad" popups. There are, of course, "good" ones. Send a tweet? Login to a website? Display some important info? Yeah these are popups as well. I developed a very smart algorithm to detect badness of the given popup, but there is still room for growth. So if you find a website where PopUpOFF blocks something important or doesn't block something you expect it to block - please, let me know. [RomanistHere@pm.me](mailto:RomanistHere@pm.me) or [Twitter](https://twitter.com/RomanistHere). It matters!
 
+The Moderate heuristic classifies each fixed element by viewport-true geometry (`getBoundingClientRect`), absolute size and centering, then decides the ambiguous cases by content: visible text matched against known phrases, consent-manager iframes, and language-independent modal markup (`<dialog>`, `aria-modal`, `role="dialog"`, extreme z-index). Modals that appear right after the user's own click or keypress are considered invited and left alone. Native `showModal()` dialogs are closed (not just hidden) so the page doesn't stay inert, and scroll locks sitting on page wrappers (`#app { height: 100vh; overflow: hidden }`) are released once a popup was actually removed.
+
 #### Prevent
 
 There is also [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) that allows PopUpOFF to check when some changes applied to the DOM. It re-checks added/changed elements with the algorithm to understand if it's a bad guy now. Made some interesting memoization with the WeakMap for Moderate mode.
@@ -60,6 +62,14 @@ To try it in a browser, load `dist/chrome` (or the repo root) via `chrome://exte
 End-to-end tests live in `tests/e2e` and run against small fixture pages in `tests/fixtures` (cookie wall, sticky header, delayed popup). When changing the heuristics, add a fixture page encoding the new case so regressions get caught. In sandboxes that can't download browsers, point the tests at an existing binary: `CHROMIUM_PATH=/path/to/chrome npm test`.
 
 #### [Changelog](https://popupoff.org/changelog):
+
+Unreleased
+
+- Moderate mode detects popups by language-independent signals - dialog markup (`aria-modal`, `role="dialog"`, native `<dialog>`) and stacking-war z-indexes - so non-English cookie walls and newsletter modals are caught; modals opened by the user's own click or keypress stay untouched
+- Moderate mode judges mid-page elements by absolute size and centering: the same popup is now caught on large monitors where its share of the screen is small; geometry is measured viewport-true, fixing misclassification inside transformed containers
+- Word matching runs on the visible text instead of raw markup (fewer false hits on class names and inline scripts) and recognizes consent-manager iframes by their src
+- Popups built on `showModal()` dialogs are properly closed instead of just hidden - previously the page could stay inert (unclickable) after removal; open popovers are closed as well
+- Scroll locks sitting on a page wrapper (`#app { height: 100vh; overflow: hidden }`) are released after a popup was removed; only `<html>`/`<body>` locks were handled before, leaving some pages frozen
 
 2.1.4
 
