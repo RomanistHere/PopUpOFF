@@ -27,8 +27,6 @@ const getStyle = (elem, property) =>
 
 const setPropImp = (elem, prop, val) => elem.style.setProperty(prop, val, "important");
 
-const checkIsInArr = (arr, item) => (arr.includes(item) ? true : false);
-
 const getPureURL = url => {
 	try {
 		return new URL(url).host;
@@ -109,6 +107,7 @@ const disconnectObservers = domObserver => {
 	try {
 		clearTimeout(watcherResumeTimer);
 		watcherResumeTimer = 0;
+		clearVerifyTimers();
 		if (domObserver) {
 			domObserver.disconnect();
 			domObserver = null;
@@ -365,6 +364,134 @@ const unlockScrollContainers = (statsEnabled, state, doc, body) => {
 	return state;
 };
 
+// --- sweep verification: check the outcome after acting, not just act ---
+// Two passes per sweep: one right after the page settles, one late enough to
+// catch consent scripts injecting after load.
+const VERIFY_FIRST_MS = 800;
+const VERIFY_SECOND_MS = 3000;
+let verifyTimers = [];
+
+// elements classified while the user was interacting - never escalate on these
+const userInvokedElems = new WeakSet();
+
+const clearVerifyTimers = () => {
+	verifyTimers.forEach(clearTimeout);
+	verifyTimers = [];
+};
+
+const scheduleVerify = fn => {
+	clearVerifyTimers();
+	verifyTimers.push(setTimeout(fn, VERIFY_FIRST_MS));
+	verifyTimers.push(setTimeout(fn, VERIFY_SECOND_MS));
+};
+
+const undoLargestHidden = () => {
+	const hidden = [...document.querySelectorAll('[data-popupoff="bl"]')];
+	if (!hidden.length) return false;
+	// the app wrapper that blanks a page dwarfs any real popup in content size
+	hidden.sort(
+		(a, b) => b.getElementsByTagName("*").length - a.getElementsByTagName("*").length
+	);
+	const candidate = hidden[0];
+	candidate.style.removeProperty("display");
+	candidate.removeAttribute("data-popupoff");
+	// the mutation watcher would hide it right back - opt it out for good
+	candidate.setAttribute("data-popupoff-ignore", "");
+	return true;
+};
+
+// Blank-page check: hiding a fixed app wrapper takes the whole page with it.
+// If the text that was there before the sweep is gone afterwards, restore
+// hidden elements (biggest first) until the content is back.
+const verifyNotBlank = (state, statsEnabled, initialTextLength, body) => {
+	// text-light pages (players, maps, galleries) can't be judged this way
+	if (initialTextLength < 300) return state;
+	for (let i = 0; i < 3; i++) {
+		if ((body.innerText || "").length >= initialTextLength * 0.1) return state;
+		if (!undoLargestHidden()) return state;
+		if (statsEnabled) state = { ...state, restored: parseFloat(state.restored) + 1 };
+	}
+	return state;
+};
+
+// Which fixed element owns the center of the viewport? Resolved through
+// elementFromPoint so stacking order is the browser's answer, not a guess.
+const findCenterBlocker = doc => {
+	const w = window.innerWidth;
+	const h = window.innerHeight;
+	const points = [
+		[w / 2, h / 2],
+		[w / 2, h * 0.3],
+		[w / 2, h * 0.7],
+		[w * 0.3, h / 2],
+		[w * 0.7, h / 2],
+	];
+	const owners = new Map();
+	for (const [x, y] of points) {
+		let elem = document.elementFromPoint(x, y);
+		// walk up to the fixed/sticky container owning this point
+		while (elem && elem !== document.body && elem !== doc) {
+			const pos = getStyle(elem, "position");
+			if (pos === "fixed" || pos === "sticky") break;
+			elem = elem.parentElement;
+		}
+		if (!elem || elem === document.body || elem === doc) continue;
+		owners.set(elem, (owners.get(elem) || 0) + 1);
+	}
+	for (const [elem, count] of owners) {
+		if (count >= 4) return elem;
+	}
+	return null;
+};
+
+// Escalation: the classifier kept everything it thought legitimate, yet
+// something still blocks reading. Acts only on hard evidence, and never on
+// anything the user invited or is interacting with.
+const escalateOnBlocker = (state, statsEnabled, doc, body) => {
+	// fullscreen video, or a user mid-interaction: off limits
+	if (document.fullscreenElement || wasRecentGesture()) return state;
+	// real content must exist behind the blocker: app pages (maps, editors)
+	// are exactly viewport-sized and must never be "cleaned"
+	if (Math.max(doc.scrollHeight, body.scrollHeight) < window.innerHeight * 1.5)
+		return state;
+
+	const blocker = findCenterBlocker(doc);
+	if (!blocker) return state;
+	if (blocker.getAttribute("data-popupoff") === "notification") return state;
+	if (userInvokedElems.has(blocker)) return state;
+	if (isIgnoredElem(blocker)) return state;
+	if (blocker.querySelector("video")) return state; // theater-mode players
+	try {
+		// hover-opened UI (mega menus) lives only while hovered
+		if (blocker.matches(":hover")) return state;
+	} catch {
+		// non-element nodes
+	}
+
+	const rect = blocker.getBoundingClientRect();
+	if (rect.width * rect.height < window.innerWidth * window.innerHeight * 0.35)
+		return state;
+
+	if (getStyle(blocker, "display") !== "none")
+		blocker.setAttribute("data-popupoff", "bl");
+	if (statsEnabled) state = addItemToStats(blocker, state);
+	releaseTopLayer(blocker);
+	popupsActedOn = true;
+	setPropImp(blocker, "display", "none");
+
+	// walls usually come with a scroll lock - clean that up in the same pass
+	state = removeOverflow(statsEnabled, state, doc, body);
+	return unlockScrollContainers(statsEnabled, state, doc, body);
+};
+
+const verifySweep = (state, statsEnabled, doc, body, opts) => {
+	// our own damage first: a blank page beats any popup concern
+	if (opts.undoBlank)
+		state = verifyNotBlank(state, statsEnabled, opts.initialTextLength, body);
+	if (opts.escalate) state = escalateOnBlocker(state, statsEnabled, doc, body);
+	return state;
+};
+
 const removeListeners = () => {
 	if (window.location.href.includes("glassdoor")) {
 		window.addEventListener(
@@ -379,7 +506,16 @@ const removeListeners = () => {
 
 const checkElems = (elems, checkElem) => {
 	const arr = [...elems];
-	arr.map(checkElem);
+	// batch all computed-style reads before the checks run: the checks write
+	// styles, and every write after a read forces a full style recalc - reading
+	// everything up front cuts that to one recalc per sweep instead of per write
+	const reads = arr.map(element => ({
+		pos: getStyle(element, "position"),
+		disp: getStyle(element, "display"),
+		filter: getStyle(element, "filter"),
+		webkitFilter: getStyle(element, "-webkit-filter"),
+	}));
+	arr.forEach((element, i) => checkElem(element, reads[i]));
 };
 
 const unhide = (elem, statsEnabled, state) => {
@@ -452,8 +588,10 @@ const detectGrad = (state, statsEnabled, element) => {
 	return state;
 };
 
-const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, checkElem) => {
-	if (getStyle(element, "filter") !== "none" || getStyle(element, "-webkit-filter") !== "none") {
+const additionalChecks = (element, state, statsEnabled, shouldRestoreCont, checkElem, pre) => {
+	const filterVal = pre ? pre.filter : getStyle(element, "filter");
+	const webkitFilterVal = pre ? pre.webkitFilter : getStyle(element, "-webkit-filter");
+	if (filterVal !== "none" || webkitFilterVal !== "none") {
 		setPropImp(element, "filter", "none");
 		setPropImp(element, "-webkit-filter", "none");
 
@@ -548,32 +686,6 @@ const forbWordsEasy = [
 	"the guardian",
 ];
 
-const forbWords = [
-	...forbWordsEasy,
-	"policy",
-	"subscri",
-	"sale",
-	"updates",
-	"member",
-	"value",
-	"advertis",
-	"подписаться",
-	"install",
-];
-
-const allowedWords = [
-	"sign in",
-	"language",
-	"basket",
-	"delivery",
-	"price",
-	"google meet",
-	"корзина",
-	"resume",
-	"apply",
-	"drive",
-];
-
 // consent-manager iframes carry no readable text - recognize them by src
 const consentIframeSelector = [
 	'iframe[src*="consent"]',
@@ -608,21 +720,6 @@ const contentEasyCheck = element => {
 	} catch {
 		return false;
 	}
-};
-
-const contentCheck = element => {
-	const textCont = element.innerHTML.toLowerCase();
-
-	// console.log('contentCheck(should block): ', forbWords.some(v => textCont.includes(v)))
-	return forbWords.some(v => textCont.includes(v));
-};
-
-const contentUnlockCheck = element => {
-	const textCont = element.innerHTML.toLowerCase();
-
-	const shouldNotBlock = allowedWords.some(v => textCont.includes(v));
-	// console.log('contentUnlockCheck(should block): ', !shouldNotBlock)
-	return !shouldNotBlock;
 };
 
 // User gesture tracking: a modal that shows up right after a click or
@@ -897,7 +994,7 @@ const watchMutations = (
 	checkElem,
 	memoize
 ) => {
-	let processedElems = [];
+	const processedElems = new Set();
 	const len = mutations.length;
 	for (let i = 0; i < len; i++) {
 		// stop and disconnect if oversized
@@ -909,10 +1006,9 @@ const watchMutations = (
 		if (mutation.attributeName === "data-popupoff") continue;
 
 		if (!shouldRestoreCont) {
-			const isProcessed = checkIsInArr(processedElems, mutation.target);
 			// skip if processed
-			if (isProcessed) continue;
-			else processedElems = [...processedElems, mutation.target];
+			if (processedElems.has(mutation.target)) continue;
+			processedElems.add(mutation.target);
 		} else {
 			state = checkForRestore(mutation, statsEnabled, state, memoize);
 		}
@@ -922,136 +1018,3 @@ const watchMutations = (
 	}
 	return state;
 };
-
-// archieved //
-
-// const positionCheckTypeII = (element, windowArea) => {
-//     if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-//         if (contentCheck(element))
-//             return { shouldRemove: true, shouldMemo: true }
-//         else
-//             return { shouldRemove: false, shouldMemo: false }
-//     }
-//
-//     const layoutArea = element.offsetHeight * element.offsetWidth
-//     const screenValue = roundToTwo(layoutArea/windowArea)
-//     const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
-//
-//     // console.log(element)
-//     // console.log('elemOffsetTop', element.offsetTop)
-//     // console.log('elemOffsetLeft', element.offsetLeft)
-//     // console.log('elemOffsetBot', offsetBot)
-//     // console.log('elemOffsetWidth ', element.offsetWidth)
-//     // console.log('elemOffsetHeight', element.offsetHeight)
-//     // console.log('layoutArea ', layoutArea)
-//     // console.log('screenValue ', screenValue)
-//
-//     if (screenValue >= .98) {
-//         // case 1: overlay on the whole screen - should block
-//         // case 2: video in full screen mode - should not
-//         console.warn('Full screen!')
-//         return { shouldRemove: contentUnlockCheck(element) && (videoCheck(element) || contentCheck(element)), shouldMemo: true }
-//     }
-//
-//     if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
-//         // popular notification
-//         if (element.id === 'onesignal-slidedown-container')
-//             return { shouldRemove: true, shouldMemo: true }
-//
-//         // it's a header!
-//         console.warn('Header!')
-//         return { shouldRemove: false, shouldMemo: true }
-//     }
-//
-//     if (element.offsetLeft <= 0 && element.offsetWidth <= 360 && screenValue >= .1) {
-//         // youtube/facebook sidebar
-//         console.warn('SideBar!')
-//         return { shouldRemove: false, shouldMemo: true }
-//     }
-//
-//     if (screenValue < .98 && screenValue >= .1) {
-//         // overlays
-//         console.warn('Overlay')
-//         return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
-//     }
-//
-//     if (offsetBot <= 212) {
-//         // bottom notification
-//         console.warn('Bottom notification')
-//         return { shouldRemove: contentUnlockCheck(element) && contentCheck(element), shouldMemo: true }
-//     }
-//
-//     if (screenValue <= .03 && element.offsetTop > 100) {
-//         // buttons and side/social menus
-//         console.warn('Super small')
-//         return { shouldRemove: false, shouldMemo: true }
-//     }
-//
-//     if (screenValue <= .1 && element.offsetTop > 100) {
-//         // buttons and side/social menus
-//         console.warn('nothing special')
-//         return { shouldRemove: false, shouldMemo: true }
-//     }
-//
-//     return { shouldRemove: true, shouldMemo: false }
-// }
-
-// const positionCheckTypeIII = (element, windowArea) => {
-// 	if (element.offsetHeight === 0 || element.offsetWidth === 0) {
-// 		if (contentEasyCheck(element))
-// 			return { shouldRemove: true, shouldMemo: true }
-// 		else
-// 			return { shouldRemove: true, shouldMemo: false }
-// 	}
-//
-// 	const layoutArea = element.offsetHeight * element.offsetWidth
-// 	const screenValue = roundToTwo(layoutArea/windowArea)
-// 	const offsetBot = window.innerHeight - (element.offsetTop + element.offsetHeight)
-//
-// 	if (screenValue >= .98) {
-// 		// case 1: overlay on the whole screen - should block
-// 		// case 2: video in full screen mode - should not
-// 		return { shouldRemove: videoCheck(element), shouldMemo: true }
-// 	}
-//
-// 	if (element.offsetTop <= 70 && element.offsetHeight <= 200 && element.offsetWidth > 640) {
-// 		// popular notification
-// 		if (element.id === 'onesignal-slidedown-container')
-// 			return { shouldRemove: true, shouldMemo: true }
-//
-// 		// it's a header!
-// 		return { shouldRemove: false, shouldMemo: true }
-// 	}
-//
-// 	if (element.offsetLeft <= 0 && element.offsetWidth <= 360) {
-// 		// youtube/facebook sidebar
-// 		return { shouldRemove: false, shouldMemo: true }
-// 	}
-//
-// 	if (screenValue < .98 && screenValue >= .1) {
-// 		// overlays
-// 		return { shouldRemove: true, shouldMemo: true }
-// 	}
-//
-// 	if (screenValue <= .03 && element.offsetTop > 100) {
-// 		// buttons and side/social menus
-// 		return { shouldRemove: false, shouldMemo: true }
-// 	}
-//
-// 	if (element.offsetHeight >= 160 && element.offsetWidth >= 300) {
-// 		// scrolling videos in the articles
-// 		return { shouldRemove: true, shouldMemo: true }
-// 	}
-//
-// 	if (offsetBot <= 212) {
-// 		// bottom notification
-// 		return { shouldRemove: true, shouldMemo: true }
-// 	}
-//
-// 	if (screenValue <= .1 && element.offsetTop > 100) {
-// 		// buttons and side/social menus
-// 		return { shouldRemove: false, shouldMemo: true }
-// 	}
-//
-// 	return { shouldRemove: true, shouldMemo: false }
-// }

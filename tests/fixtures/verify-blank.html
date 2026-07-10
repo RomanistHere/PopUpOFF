@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Blank-page undo fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		/* the whole page lives inside a fixed wrapper (chat-app style shell,
+		   but carrying real article content) - hiding it blanks the page */
+		#app {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			overflow: auto;
+			padding: 16px;
+			background: #fff;
+		}
+		#cookie-banner {
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 80px;
+			background: #222;
+			color: #fff;
+			padding: 16px;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<h1>Tram line approved</h1>
+		<p>The city council approved the new tram line on Tuesday after a long debate.
+		Construction will begin next spring and is expected to run for three years.
+		Local businesses along the route asked for clearer schedules and better
+		signage during the works.</p>
+		<p>The transport department promised weekly updates on progress and a hotline
+		for complaints. Residents welcomed the decision, noting that the eastern
+		districts have waited a decade for a direct connection to the harbour.</p>
+		<p>Funding comes from the regional budget with a small municipal share, and
+		the first trams are planned to run before the end of the decade.</p>
+	</div>
+
+	<div id="cookie-banner">
+		<p>This site uses cookies. Please accept our cookie policy.</p>
+		<button>Accept</button>
+	</div>
+</body>
+</html>

@@ -205,6 +205,41 @@ test.describe("moderate mode - language-independent signals", () => {
 		await page.waitForTimeout(800);
 		await expect(page.locator("#login")).toBeVisible();
 		expect(await page.evaluate(() => document.querySelector("#login").open)).toBe(true);
+		// outlive both verification passes too - escalation must spare it
+		await page.waitForTimeout(2600);
+		await expect(page.locator("#login")).toBeVisible();
+	});
+});
+
+test.describe("sweep verification", () => {
+	for (const [name, mode] of [
+		["aggressive", "hardModeActive"],
+		["moderate", "easyModeActive"],
+	]) {
+		test(`${name} mode restores the app wrapper it blanked the page with`, async ({ serviceWorker, page }) => {
+			await setAutoMode(serviceWorker, mode);
+			await page.goto("/verify-blank.html");
+
+			// the sweep hides the fixed app wrapper (page goes blank);
+			// the verification pass notices the text loss and brings it back
+			await expect(page.locator("#app")).toBeVisible({ timeout: 4000 });
+			// the actual popup stays gone
+			await expect(page.locator("#cookie-banner")).toBeHidden();
+			// and the restore sticks: the wrapper is opted out of future passes
+			await page.waitForTimeout(600);
+			await expect(page.locator("#app")).toBeVisible();
+		});
+	}
+
+	test("moderate escalates on a wall it kept once it provably blocks reading", async ({ serviceWorker, page }) => {
+		await setAutoMode(serviceWorker, "easyModeActive");
+		await page.goto("/verify-escalation.html");
+
+		// no known words, no modal markup, sane z-index: the classifier keeps it...
+		await expect(page.locator("#wall")).toBeVisible();
+		// ...until the verification pass sees it owning the center of a page
+		// with real content behind it
+		await expect(page.locator("#wall")).toBeHidden({ timeout: 5000 });
 	});
 });
 

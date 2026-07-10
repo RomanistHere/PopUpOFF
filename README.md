@@ -65,6 +65,8 @@ End-to-end tests live in `tests/e2e` and run against small fixture pages in `tes
 
 Unreleased
 
+- The sweep now verifies its own outcome: if hiding a fixed wrapper blanked the page, the wrapper is restored and excluded from future passes; if an unsolicited overlay still blocks the center of a content page after Moderate kept it, it is removed after all (never fires on user-invoked, hovered or video-carrying elements, nor on viewport-sized app pages)
+- Performance: computed-style reads are batched before writes in each sweep (one style recalc instead of one per hidden element), mutation deduplication uses a Set, and unused legacy word lists and archived heuristics no longer ship to every page
 - Moderate mode detects popups by language-independent signals - dialog markup (`aria-modal`, `role="dialog"`, native `<dialog>`) and stacking-war z-indexes - so non-English cookie walls and newsletter modals are caught; modals opened by the user's own click or keypress stay untouched
 - Moderate mode judges mid-page elements by absolute size and centering: the same popup is now caught on large monitors where its share of the screen is small; geometry is measured viewport-true, fixing misclassification inside transformed containers
 - Word matching runs on the visible text instead of raw markup (fewer false hits on class names and inline scripts) and recognizes consent-manager iframes by their src
