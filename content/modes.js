@@ -19,13 +19,16 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 	const doc = document.documentElement;
 	const body = document.body;
 	const elems = body.getElementsByTagName("*");
+	// how much text the page had before anything was touched - the blank-page
+	// check compares against this after the sweep
+	const initialTextLength = (body.innerText || "").length;
 
 	// methods
-	const checkElem = element => {
+	const checkElem = (element, pre) => {
 		if (!isDecentElem(element))
 			return;
 
-		const elemPosStyle = getStyle(element, "position");
+		const elemPosStyle = pre ? pre.pos : getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
 			if (element.getAttribute("data-popupoff") === "notification" || isIgnoredElem(element))
 				return;
@@ -34,15 +37,17 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 			if (isFixed)
 				return;
 
-			if (getStyle(element, "display") !== "none")
+			if ((pre ? pre.disp : getStyle(element, "display")) !== "none")
 				element.setAttribute("data-popupoff", "bl");
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
+			releaseTopLayer(element);
+			popupsActedOn = true;
 			setPropImp(element, "display", "none");
 		}
 
-		state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem);
+		state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem, pre);
 	};
 
 	// watch DOM
@@ -90,6 +95,13 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 		checkElems(elems, checkElem);
 		removeListeners();
 		if (shouldRestoreCont) state = findHidden(state, statsEnabled, doc);
+		state = unlockScrollContainers(statsEnabled, state, doc, body);
+		scheduleVerify(() => {
+			state = verifySweep(state, statsEnabled, doc, body, {
+				undoBlank: true,
+				initialTextLength,
+			});
+		});
 		watchDOM();
 	};
 
@@ -110,6 +122,8 @@ const hardMode = ({ statsEnabled, shouldRestoreCont }) => {
 };
 
 const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
+	// the heuristic spares modals invoked by a click/keypress - track those
+	trackUserGestures();
 	// state
 	let state = getInitialState(statsEnabled);
 	// unmutable
@@ -117,12 +131,15 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 	const body = document.body;
 	const elems = body.getElementsByTagName("*");
 	const memoize = new WeakMap();
+	// how much text the page had before anything was touched - the blank-page
+	// check compares against this after the sweep
+	const initialTextLength = (body.innerText || "").length;
 
-	const checkElem = element => {
+	const checkElem = (element, pre) => {
 		if (!isDecentElem(element))
 			return;
 
-		const elemPosStyle = getStyle(element, "position");
+		const elemPosStyle = pre ? pre.pos : getStyle(element, "position");
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
 			if (element.getAttribute("data-popupoff") === "notification" || isIgnoredElem(element))
 				return;
@@ -136,13 +153,19 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 				? { shouldRemove: memoize.get(element), shouldMemo: false }
 				: positionCheck(element, state.windowArea);
 
+			// remember what showed up on the user's own action: the verification
+			// pass must never escalate on an invited modal
+			if (!memoized && wasRecentGesture()) userInvokedElems.add(element);
+
 			if (shouldRemove) {
 				if (statsEnabled)
 					state = addItemToStats(element, state);
 
-				if (getStyle(element, "display") !== "none")
+				if ((pre ? pre.disp : getStyle(element, "display")) !== "none")
 					element.setAttribute("data-popupoff", "bl");
 
+				releaseTopLayer(element);
+				popupsActedOn = true;
 				setPropImp(element, "display", "none");
 			}
 
@@ -150,7 +173,7 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 				memoize.set(element, shouldRemove);
 		}
 
-		state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem);
+		state = additionalChecks(element, state, statsEnabled, shouldRestoreCont, checkElem, pre);
 	};
 	// watch DOM
 	const prevLoop = () => {
@@ -198,6 +221,14 @@ const easyMode = ({ statsEnabled, shouldRestoreCont, positionCheck }) => {
 		checkElems(elems, checkElem);
 		removeListeners();
 		if (shouldRestoreCont) state = findHidden(state, statsEnabled, doc);
+		state = unlockScrollContainers(statsEnabled, state, doc, body);
+		scheduleVerify(() => {
+			state = verifySweep(state, statsEnabled, doc, body, {
+				undoBlank: true,
+				escalate: true,
+				initialTextLength,
+			});
+		});
 		watchDOM();
 	};
 
@@ -227,21 +258,33 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 	const elems = body.getElementsByTagName("*");
 
 	// methods
-	const checkElem = element => {
+	const checkElem = (element, pre) => {
 		if (!isDecentElem(element))
 			return;
 
-		const elemPosStyle = getStyle(element, "position");
+		const elemPosStyle = pre ? pre.pos : getStyle(element, "position");
 
 		if (elemPosStyle === "fixed" || elemPosStyle === "sticky") {
 			if (element.getAttribute("data-popupoff") === "notification" || isIgnoredElem(element))
 				return;
 
-			if (getStyle(element, "display") !== "none")
+			if ((pre ? pre.disp : getStyle(element, "display")) !== "none")
 				element.setAttribute("data-popupoff", "st");
 
 			if (statsEnabled) state = addItemToStats(element, state);
 
+			// a repositioned showModal() dialog would keep the page inert:
+			// leave the top layer, then reopen it as a plain in-flow dialog
+			if (element.nodeName === "DIALOG" && element.open) {
+				try {
+					element.close();
+					element.setAttribute("open", "");
+				} catch {
+					// dialog may be detached already
+				}
+			}
+
+			popupsActedOn = true;
 			setPropImp(element, "position", staticSubMode || "relative");
 		}
 	};
@@ -291,6 +334,7 @@ const staticMode = ({ statsEnabled, shouldRestoreCont, staticSubMode }) => {
 		checkElems(elems, checkElem);
 		removeListeners();
 		if (shouldRestoreCont) state = findHidden(state, statsEnabled, doc);
+		state = unlockScrollContainers(statsEnabled, state, doc, body);
 		watchDOM();
 	};
 

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Centered modal fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		/* all three are horizontally centered, mid-page, fixed - the classic
+		   modal footprint. None of the text matches the English word lists:
+		   only the markup/z-index signals can tell them apart. */
+		.centered {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: #fff;
+			border: 1px solid #999;
+			padding: 16px;
+			box-sizing: border-box;
+		}
+		/* proper dialog markup - must be treated as an unsolicited modal */
+		#aria-newsletter {
+			width: 600px;
+			height: 400px;
+			z-index: 9999;
+		}
+		/* no dialog markup, but the stacking-war z-index gives it away */
+		#spam-z {
+			width: 500px;
+			height: 300px;
+			z-index: 2147483647;
+		}
+		/* plain centered widget: no modal markup, sane z-index - must stay */
+		#plain-widget {
+			width: 300px;
+			height: 200px;
+			z-index: 999;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Artikelüberschrift</h1>
+		<p>Der eigentliche Inhalt, für den die Leser gekommen sind.</p>
+	</main>
+
+	<div id="aria-newsletter" class="centered" role="dialog" aria-modal="true">
+		<h2>Bleiben Sie auf dem Laufenden</h2>
+		<p>Melden Sie sich an und erhalten Sie jede Woche neue Artikel.</p>
+		<button>Jetzt anmelden</button>
+	</div>
+
+	<div id="spam-z" class="centered">
+		<h2>Tolle Angebote nur heute</h2>
+		<p>Greifen Sie zu, bevor alles weg ist.</p>
+		<button>Zeig mir mehr</button>
+	</div>
+
+	<div id="plain-widget" class="centered">
+		<p>Folgen Sie uns für Neuigkeiten.</p>
+	</div>
+</body>
+</html>

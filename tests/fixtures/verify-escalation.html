@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Escalation fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		main {
+			height: 3000px;
+			padding: 16px;
+		}
+		/* a wall the moderate classifier has no verdict on: no known words
+		   (German), no dialog markup, unremarkable z-index - but it owns the
+		   center of a page that clearly has content behind it */
+		#wall {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 70vw;
+			height: 70vh;
+			background: #fff;
+			border: 1px solid #999;
+			padding: 24px;
+			z-index: 5000;
+			box-sizing: border-box;
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1>Article headline</h1>
+		<p>The actual page content readers came for.</p>
+	</main>
+
+	<div id="wall">
+		<h2>Ein wichtiger Hinweis</h2>
+		<p>Bitte lesen Sie die folgenden Informationen sorgfältig, bevor Sie weiterlesen.</p>
+		<img alt="Logo">
+		<button>Verstanden</button>
+	</div>
+</body>
+</html>

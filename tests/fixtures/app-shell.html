@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>App shell fixture</title>
+	<style>
+		body {
+			margin: 0;
+		}
+		/* a legitimate full-viewport app layout: the wrapper never scrolls,
+		   the inner pane does. No popups anywhere - the extension must not
+		   touch this, in any mode. */
+		#shell {
+			display: flex;
+			height: 100vh;
+			overflow: hidden;
+		}
+		nav {
+			width: 200px;
+			background: #eee;
+		}
+		#pane {
+			flex: 1;
+			overflow: auto;
+		}
+		#rows {
+			height: 5000px;
+			padding: 16px;
+		}
+	</style>
+</head>
+<body>
+	<div id="shell">
+		<nav>
+			<p>Menu</p>
+		</nav>
+		<div id="pane">
+			<div id="rows">
+				<h1>App content</h1>
+				<p>Row after row of application data.</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
